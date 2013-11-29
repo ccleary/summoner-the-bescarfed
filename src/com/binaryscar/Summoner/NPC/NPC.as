@@ -120,7 +120,111 @@ package com.binaryscar.Summoner.NPC
 			}
 		}
 		
-		public function initializeStates(fsm:StateMachine):void {
+		
+		override public function kill():void {
+			fsm.changeState("dead");
+			if (_target != null) {
+				_target.removeAttacker(this);
+			}
+			if (_targetedBy.length > 0) {
+				for each (var oppNPC:NPC in _targetedBy) {
+					oppNPC.removeAttacker(this);
+				}
+			}
+			super.kill();
+		}
+		
+		public function get target():NPC {
+			if (_target != null) {
+				return _target;
+			} else {
+				return null;
+			}
+		}
+		public function set target(oppNPC:NPC):void {
+			if (oppNPC != null) {
+				_target = oppNPC;
+				fsm.changeState("fighting");
+			} else {
+				_target = null;
+				fsm.changeState(defaultInitState);
+			}
+		}
+		
+		public function get onCooldown():Boolean {
+			if (_cooldownTimer == null) {
+				return false;
+			}
+			if (_cooldownTimer > 0) { // Timer needs to go longer than attackCooldown.
+				_cooldownTimer -= FlxG.elapsed;
+				return true; // onCooldown, no attacking.
+			} else {
+				_cooldownTimer = ATTACK_DELAY; // Attack and reset timer.
+				return false; // !onCooldown, attack!
+			}
+		}
+		
+		public function set onCooldown(bool:Boolean):void {
+			if (bool) {
+				_cooldownTimer = ATTACK_DELAY;
+			} else {
+				_cooldownTimer = null;
+			}
+		}
+		
+		public function get hitPoints():int {
+			return HP;
+		}
+		
+		public function set hitPoints(newHP:int):void {
+			HP = newHP;
+		}
+		
+		
+		public function stopMoving():void {
+			velocity.x = velocity.y = acceleration.x = acceleration.y = 0;
+		}
+		
+		public function startFight(me:NPC, oppNPC:NPC):void {
+//			if (_target == null) {
+				
+//				trace(this.toString() + " START FIGHT WITH " + oppNPC.toString());
+//				
+//				target = oppNPC;
+//				oppNPC.addAttacker(me);
+//				fsm.changeState("fighting");
+//			}
+		}
+		
+		public function addAttacker(attacker:NPC):void {
+			_targetedBy.push(attacker);
+		}
+		
+		public function removeAttacker(attacker:NPC):void {
+			var index:int = _targetedBy.indexOf(NPC);
+			if (index) {
+				_targetedBy.splice(index,1);
+			}
+		}
+		
+		public function attack():void { //en:Enemy):void {
+			if (_target == null) {
+				return;
+			}
+			
+			_target.hurt(STR);
+			onCooldown = true;
+			
+			if (_target.health <= 0) {
+				_target = null;
+			}
+		}
+		
+		public function hurtPlayer(me:NPC, player:Player):void {
+			player._core.hurt(STR); //TODO This is a problem.
+		}
+		
+		private function initializeStates(fsm:StateMachine):void {
 			
 			fsm.addState("idle", 
 				{
@@ -324,7 +428,7 @@ package com.binaryscar.Summoner.NPC
 				});
 		}
 		
-		public function searchForPursueTargets(_oppGrp:FlxGroup):void {
+		private function searchForPursueTargets(_oppGrp:FlxGroup):void {
 			if (_pursueTarget == null && _oppGrp != null && _oppGrp.members.length > 0) {
 				for each (var curr:NPC in _oppGrp.members) {
 					if ((facing == RIGHT && curr.x < x) || (facing == LEFT && curr.x > x)) { // Skip processing if oppNPC is behind me. 
@@ -349,13 +453,13 @@ package com.binaryscar.Summoner.NPC
 			}
 		}
 		
-		public function updatePursueTarget():void {
+		private function updatePursueTarget():void {
 			if (_pursueTarget == null || !_pursueTarget.alive) {
 				_pursueTarget = null; // In case it just died.
 				fsm.changeState("walking");
 				return;
 			} else if ( (facing == RIGHT && _pursueTarget.x < x) 
-			  || (facing == LEFT && _pursueTarget.x > x)) {
+				|| (facing == LEFT && _pursueTarget.x > x)) {
 				// Lose pursuit on targets behind me.
 				_pursueTarget = null;
 				fsm.changeState("walking");
@@ -367,45 +471,12 @@ package com.binaryscar.Summoner.NPC
 					//yDiff += yDiff;
 					acceleration.y = 0;
 				}
-					acceleration.y += yDiff;
+				acceleration.y += yDiff;
 			}
 		}
 		
-		public function stopMoving():void {
-			velocity.x = velocity.y = acceleration.x = acceleration.y = 0;
-		}
 		
-		public function get target():NPC {
-			if (_target != null) {
-				return _target;
-			} else {
-				return null;
-			}
-		}
-		public function set target(oppNPC:NPC):void {
-			if (oppNPC != null) {
-				_target = oppNPC;
-				fsm.changeState("fighting");
-			} else {
-				_target = null;
-				fsm.changeState(defaultInitState);
-			}
-		}
-		
-		public function attack():void { //en:Enemy):void {
-			if (_target == null) {
-				return;
-			}
-			
-			_target.hurt(STR);
-			onCooldown = true;
-			
-			if (_target.health <= 0) {
-				_target = null;
-			}
-		}
-		
-		public function avoidAlly(thisNPC:NPC, otherNPC:NPC):void {
+		private function avoidAlly(thisNPC:NPC, otherNPC:NPC):void {
 			
 			var compareY:Boolean = thisNPC.y <= otherNPC.y;
 			var compareX:Boolean = thisNPC.x == otherNPC.x;
@@ -426,19 +497,19 @@ package com.binaryscar.Summoner.NPC
 				thisNPC.acceleration.y += Math.random() * 5 + 1;
 			}
 			
-//			// TODO - May be problematic if we want *fsm* to be private?
-//			if (otherNPC.fsm.state != "avoidingDown" && otherNPC.fsm.state != "avoidingUp" && !otherNPC.immovable) {
-//				//trace("this is what happens when summons collide :: OTHER :: " + otherSumm.fsm.state);
-//				if (compareY) {
-//					otherNPC.fsm.changeState("avoidingUp");
-//				} else {
-//					otherNPC.fsm.changeState("avoidingDown");
-//				}
-//			} else if (otherNPC.fsm.state == "avoidingDown" || otherNPC.fsm.state == "avoidingUp") {
-//				otherNPC._avoidTimer += FlxG.elapsed*2;
-//			}
+			//			// TODO - May be problematic if we want *fsm* to be private?
+			//			if (otherNPC.fsm.state != "avoidingDown" && otherNPC.fsm.state != "avoidingUp" && !otherNPC.immovable) {
+			//				//trace("this is what happens when summons collide :: OTHER :: " + otherSumm.fsm.state);
+			//				if (compareY) {
+			//					otherNPC.fsm.changeState("avoidingUp");
+			//				} else {
+			//					otherNPC.fsm.changeState("avoidingDown");
+			//				}
+			//			} else if (otherNPC.fsm.state == "avoidingDown" || otherNPC.fsm.state == "avoidingUp") {
+			//				otherNPC._avoidTimer += FlxG.elapsed*2;
+			//			}
 		}
-		public function bounceAgaintAlly(thisNPC:NPC, otherNPC:NPC):void {
+		private function bounceAgaintAlly(thisNPC:NPC, otherNPC:NPC):void {
 			
 			var compareX:Boolean = thisNPC.x <= otherNPC.x;
 			
@@ -447,79 +518,7 @@ package com.binaryscar.Summoner.NPC
 			}
 		}
 		
-		public function get onCooldown():Boolean {
-			if (_cooldownTimer == null) {
-				return false;
-			}
-			if (_cooldownTimer > 0) { // Timer needs to go longer than attackCooldown.
-				_cooldownTimer -= FlxG.elapsed;
-				return true; // onCooldown, no attacking.
-			} else {
-				_cooldownTimer = ATTACK_DELAY; // Attack and reset timer.
-				return false; // !onCooldown, attack!
-			}
-		}
 		
-		public function set onCooldown(bool:Boolean):void {
-			if (bool) {
-				_cooldownTimer = ATTACK_DELAY;
-			} else {
-				_cooldownTimer = null;
-			}
-		}
-		
-		public function get hitPoints():int {
-			return HP;
-		}
-		
-		public function set hitPoints(newHP:int):void {
-			HP = newHP;
-		}
-		
-		public function startFight(me:NPC, oppNPC:NPC):void {
-//			if (_target == null) {
-				
-//				trace(this.toString() + " START FIGHT WITH " + oppNPC.toString());
-//				
-//				target = oppNPC;
-//				oppNPC.addAttacker(me);
-//				fsm.changeState("fighting");
-//			}
-		}
-		
-		public function hurtPlayer(me:NPC, player:Player):void {
-			player._core.hurt(STR);
-		}
-		
-		public function addAttacker(attacker:NPC):void {
-			_targetedBy.push(attacker);
-		}
-		
-		public function removeAttacker(attacker:NPC):void {
-			var index:int = _targetedBy.indexOf(NPC);
-			if (index) {
-				_targetedBy.splice(index,1);
-			}
-		}
-		
-//		override public function hurt(dam:Number):void {
-//			flicker(0.25);
-//			super.hurt(dam);
-//			// trace("Ouch, " + this.toString() + " health at: "+ health);
-//		}
-		
-		override public function kill():void {
-			fsm.changeState("dead");
-			if (_target != null) {
-				_target.removeAttacker(this);
-			}
-			if (_targetedBy.length > 0) {
-				for each (var oppNPC:NPC in _targetedBy) {
-					oppNPC.removeAttacker(this);
-				}
-			}
-			super.kill();
-		}
 	}
 }
 
