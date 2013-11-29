@@ -1,12 +1,15 @@
 package com.binaryscar.Summoner.NPC
 {
 	import com.binaryscar.Summoner.HealthBar;
+	import com.binaryscar.Summoner.PlayState;
 	import com.binaryscar.Summoner.FiniteStateMachine.State;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
 	import com.binaryscar.Summoner.Player.Player;
 	
+	import org.flixel.FlxEmitter;
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
+	import org.flixel.FlxObject;
 	import org.flixel.FlxPoint;
 	import org.flixel.FlxSprite;
 	
@@ -14,6 +17,7 @@ package com.binaryscar.Summoner.NPC
 	{		
 		//[Embed(source = "../../../../../art/Summon-demon-2.png")]public var clawDemon:Class;
 		[Embed(source = "../../../../../art/shitty-redblock-enemy1.png")]public var ph_redblock:Class;
+		[Embed(source = "../../../../../art/smokey-gibs1.png")]public var smokeyGibs:Class;
 		
 		protected var SPEED_X:Number = 60;
 		protected var SPEED_Y:Number = 40;
@@ -34,10 +38,14 @@ package com.binaryscar.Summoner.NPC
 		protected var fsm:StateMachine;
 		
 		protected var defaultInitState:String;
+		protected var _player:Player;
+		protected var _playState:PlayState;
 		
+		protected var gibs:FlxEmitter;
+		
+		private var _this:NPC;
 		private var _cooldownTimer:Number;		// When this reaches 0: Can attack.
 		private var _avoidTimer:Number;			// When this reaches 0: Stops "avoiding" state.
-		private var _player:Player;
 		
 		public var _target:NPC;					// Can only have one active target.
 		public var _pursueTarget:NPC;			// Can only be pursuing one target.
@@ -45,15 +53,19 @@ package com.binaryscar.Summoner.NPC
 		
 		public var stampTest:FlxSprite;
 		
-		public function NPC(myGrp:FlxGroup, oppGrp:FlxGroup, player:Player, X:Number=0, Y:Number=0, face:uint = RIGHT, initState:String = null)
+		public function NPC(myGrp:FlxGroup, oppGrp:FlxGroup, player:Player, playState:PlayState, X:Number=0, Y:Number=0, face:uint = RIGHT, initState:String = null)
 		{
 			super(X, Y);
+			
+			_this = this;
 			
 			facing = face;
 			
 			_allyGrp = myGrp;
 			_oppGrp = oppGrp;;
 			_player = player;
+			_playState = playState;
+			
 			_cooldownTimer = null; 		// These reset to *null* when not in use.
 			_avoidTimer = null;			// " "
 			
@@ -78,6 +90,15 @@ package com.binaryscar.Summoner.NPC
 			
 			health = HP;
 			elasticity = 1.5;
+			
+			gibs = new FlxEmitter(x, y, 20);
+			gibs.setXSpeed(-30,30);
+			gibs.setYSpeed(-30,30);
+			gibs.setRotation(0, 360);
+			gibs.gravity = 1.5;
+			gibs.makeParticles(smokeyGibs, 20, 16);
+			gibs.bounce = 0.5;
+			_playState.add(gibs);
 			
 //			hBar = new FlxSprite(x, y);
 //			hBar.makeGraphic(width, 2, 0xFFFF0000);
@@ -185,6 +206,10 @@ package com.binaryscar.Summoner.NPC
 			velocity.x = velocity.y = acceleration.x = acceleration.y = 0;
 		}
 		
+		public function lose():void {
+			fsm.changeState("idle");
+		}
+		
 		public function startFight(me:NPC, oppNPC:NPC):void {
 //			if (_target == null) {
 				
@@ -221,7 +246,7 @@ package com.binaryscar.Summoner.NPC
 		}
 		
 		public function hurtPlayer(me:NPC, player:Player):void {
-			player._core.hurt(STR); //TODO This is a problem.
+			player.hurt(STR); //TODO This is a problem.
 		}
 		
 		private function initializeStates(fsm:StateMachine):void {
@@ -404,6 +429,8 @@ package com.binaryscar.Summoner.NPC
 			fsm.addState("dead", 
 				{
 					enter: function():void  {
+						gibs.at(_this);
+						gibs.start(true, 0.25, 0.1, 20);
 						exists = false;
 						solid = false;
 						
@@ -429,6 +456,9 @@ package com.binaryscar.Summoner.NPC
 		}
 		
 		private function searchForPursueTargets(_oppGrp:FlxGroup):void {
+			var pursueOptions:Array = [];
+			var distanceLimit:int = 4500;
+			
 			if (_pursueTarget == null && _oppGrp != null && _oppGrp.members.length > 0) {
 				for each (var curr:NPC in _oppGrp.members) {
 					if ((facing == RIGHT && curr.x < x) || (facing == LEFT && curr.x > x)) { // Skip processing if oppNPC is behind me. 
@@ -441,13 +471,36 @@ package com.binaryscar.Summoner.NPC
 					
 					var yDist:Number = centerPoint.y - y;
 					var sqDist:Number = yDist * yDist + xDist * xDist;
-					if ( sqDist < 4500 ) {
-						trace(this.toString() + " proximity!");
+					if ( sqDist < distanceLimit ) {
+						//pursueOptions.push({oppNPC: curr as NPC, dist: sqDist}); // Add an entity if it's within range.
+						//distanceLimit = sqDist; // Set a new limit on search range
 						_pursueTarget = curr;
 						fsm.changeState("pursuing");
 						break;
 					}
 				}
+				
+				// TODO Figure out why the performance is inconsistent.
+//				if (pursueOptions.length > 0) {
+//					trace(pursueOptions.toString());
+//					if (pursueOptions.length == 1) {
+//						_pursueTarget = pursueOptions[0].oppNPC;
+//						fsm.changeState("pursuing");
+//					} else if (pursueOptions.length > 1) {
+//						pursueOptions.sort(function(A, B) {
+//							if (A.dist < B.dist) {
+//								return -1;
+//							} else if (A.dist == B.dist) {
+//								return 0;
+//							} else {
+//								return 1;
+//							}
+//						});
+//						// Choose closest target.
+//						_pursueTarget = pursueOptions[0].oppNPC;
+//						fsm.changeState("pursuing");
+//					}
+//				}
 			} else {
 				_pursueTarget = null;
 			}

@@ -16,12 +16,13 @@ package com.binaryscar.Summoner
 		private var _xOffset:int;
 		private var _yOffset:int;
 		
+		private var _barColor:uint = 0xffff0000; // Default to red.
+		
 		public var attachedTo:NPC;
 		
 		public function HealthBar(attachTo:NPC, xOffset:int, yOffset:int)
 		{
 			super();
-			
 			
 			attachedTo = attachTo;
 			_maxHealth = attachedTo.hitPoints;
@@ -30,12 +31,18 @@ package com.binaryscar.Summoner
 			_xOffset = xOffset;
 			_yOffset = yOffset;
 			
-			_frame = new FlxSprite(attachedTo.x-2, attachedTo.y - 6);
+			trace(attachedTo.toString());
+			if (attachedTo.toString() == "Summoned") {
+				trace("allied health bar");
+				_barColor = 0xff00ff00; // Green for allies.
+			}
+			
+			_frame = new FlxSprite(attachedTo.x + _xOffset, attachedTo.y + _yOffset);
 			_frame.makeGraphic(24, 4, 0xFF000000); // Black frame
 			
 			// TODO Make this a FlxGroup with an individually scaled "tick" for each HP.
-			_healthBar = new FlxSprite(attachedTo.x-1, attachedTo.y - 8);
-			_healthBar.makeGraphic(1, 2, 0xFFFF0000);
+			_healthBar = new FlxSprite(_frame.x + 1, _frame.y + 1);
+			_healthBar.makeGraphic(1, 2, _barColor);
 			_healthBar.setOriginToCorner();
 			_healthBar.scale.x = (_frame.width - 2) * (_currHealth / _maxHealth);
 			

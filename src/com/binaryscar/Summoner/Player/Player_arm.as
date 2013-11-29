@@ -28,6 +28,8 @@ package com.binaryscar.Summoner.Player
 			
 			super(X, Y);
 			
+			solid = false;
+			
 			_playState = playState;
 			//_dots = dots;
 			_torso = torso;
@@ -39,8 +41,8 @@ package com.binaryscar.Summoner.Player
 			//addAnimationCallback(checkAnimEnd);
 			
 			// Adjust hitbox.
-			height = 8;
-			width = 18;
+			height = 0;
+			width = 0;
 			offset.x = 10;
 			offset.y = 14;
 			

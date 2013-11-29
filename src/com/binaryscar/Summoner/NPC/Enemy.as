@@ -1,5 +1,6 @@
 package com.binaryscar.Summoner.NPC 
 {
+	import com.binaryscar.Summoner.PlayState;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
 	import com.binaryscar.Summoner.Player.Player;
 	
@@ -23,8 +24,8 @@ package com.binaryscar.Summoner.NPC
 		public var initX:int;
 		public var initY:int;
 		
-		public function Enemy(enemGrp:FlxGroup, summGrp:FlxGroup, player:Player, X:int, Y:int, face:uint = LEFT, initState:String = "walking") { 
-			super(enemGrp, summGrp, player, X, Y, face, initState);
+		public function Enemy(enemGrp:FlxGroup, summGrp:FlxGroup, player:Player, playState:PlayState, X:int, Y:int, face:uint = LEFT, initState:String = "walking") { 
+			super(enemGrp, summGrp, player, playState, X, Y, face, initState);
 			
 			// ESTABLISH STATS
 			HP = 3;
@@ -41,9 +42,9 @@ package com.binaryscar.Summoner.NPC
 			
 			loadGraphic(imgOrc, false, true, 32, 32);
 			width = 16;
-			height = 20;
+			height = 24;
 			offset.x = 8;
-			offset.y = 12;
+			offset.y = 6;
 			health = HP;
 			
 //			fsm = new StateMachine();
@@ -55,6 +56,9 @@ package com.binaryscar.Summoner.NPC
 		
 		override public function update():void {
 			super.update();
+			
+//			FlxG.collide(this, _player, hitPlayer);
+//			FlxG.overlap(this, _player, hitPlayer); 
 			
 			//trace("ENEMY :: " + fsm.state, _target, _targetedBy);
 			
@@ -80,6 +84,15 @@ package com.binaryscar.Summoner.NPC
 			health = HP;
 			fsm.changeState("walking");
 			super.revive();
+		}
+		
+		override public function kill():void {
+			if (x < FlxG.stage.x) { // Got past the Summoner
+				_playState.loseLife();
+			} else {
+				FlxG.score++; // Killed by Summoned
+			}
+			super.kill();
 		}
 		
 	}

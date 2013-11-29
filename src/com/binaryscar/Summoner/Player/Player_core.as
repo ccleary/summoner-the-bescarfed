@@ -15,7 +15,7 @@ package com.binaryscar.Summoner.Player
 		private static const SPEED_Y:Number = 80;
 		private static const SPEED_X:Number = 80;
 		
-		public var HP:Number = 5;
+		public var HP:int = 5;
 		
 		public function Player_core(X:Number, Y:Number) {
 			
