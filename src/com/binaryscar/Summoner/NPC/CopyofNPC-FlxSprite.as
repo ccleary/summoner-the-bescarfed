@@ -3,49 +3,47 @@ package com.binaryscar.Summoner.NPC
 	import com.binaryscar.Summoner.HealthBar;
 	import com.binaryscar.Summoner.FiniteStateMachine.State;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
-	import com.binaryscar.Summoner.Player.Player;
 	
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxPoint;
 	import org.flixel.FlxSprite;
 	
-	public class NPC extends FlxSprite	
+	public class NPC extends FlxSprite
 	{		
 		//[Embed(source = "../../../../../art/Summon-demon-2.png")]public var clawDemon:Class;
 		[Embed(source = "../../../../../art/shitty-redblock-enemy1.png")]public var ph_redblock:Class;
 		
-		protected var SPEED_X:Number = 60;
-		protected var SPEED_Y:Number = 40;
+		public var SPEED_X:Number = 60;
+		public var SPEED_Y:Number = 40;
 		
-		protected var ATTACK_DELAY:Number = 2;		// _cooldownTimer resets to this number.
-		protected var AVOID_DELAY:Number = 0.15;	// _avoidTimer resets to this number
+		public var ATTACK_DELAY:Number = 2;		// _cooldownTimer resets to this number.
+		public var AVOID_DELAY:Number = 0.15;	// _avoidTimer resets to this number
 		
 		// TODO Off-screen-kill bounds.
 		
-		protected var HP:int = 3; 				// Hit Points.
-		protected var MP:int = 10; 				// Magic Points. Unused.
-		protected var STR:int = 1;			 	// Attack Strength
-		
-		protected var _allyGrp:FlxGroup;
-		protected var _oppGrp:FlxGroup;			// "_opp" for "Opposition"
-		
-		protected var _state:State;
-		protected var fsm:StateMachine;
-		
-		protected var defaultInitState:String;
+		public var HP:int = 3; 					// Hit Points.
+		public var MP:int = 10; 				// Magic Points. Unused.
+		public var STR:int = 1;				 	// Attack Strength
 		
 		private var _cooldownTimer:Number;		// When this reaches 0: Can attack.
 		private var _avoidTimer:Number;			// When this reaches 0: Stops "avoiding" state.
-		private var _player:Player;
+		
+		private var _allyGrp:FlxGroup;
+		private var _oppGrp:FlxGroup;			// "_opp" for "Opposition"
 		
 		public var _target:NPC;					// Can only have one active target.
 		public var _pursueTarget:NPC;			// Can only be pursuing one target.
 		public var _targetedBy:Array = [];		// Can be targeted by multiple opposition entities.
 		
+		public var defaultInitState:String;
+		
+		public var _state:State;
+		public var fsm:StateMachine;
+		
 		public var stampTest:FlxSprite;
 		
-		public function NPC(myGrp:FlxGroup, oppGrp:FlxGroup, player:Player, X:Number=0, Y:Number=0, face:uint = RIGHT, initState:String = null)
+		public function NPC(myGrp:FlxGroup, oppGrp:FlxGroup, X:Number=0, Y:Number=0, face:uint = RIGHT, initState:String = null)
 		{
 			super(X, Y);
 			
@@ -53,7 +51,6 @@ package com.binaryscar.Summoner.NPC
 			
 			_allyGrp = myGrp;
 			_oppGrp = oppGrp;;
-			_player = player;
 			_cooldownTimer = null; 		// These reset to *null* when not in use.
 			_avoidTimer = null;			// " "
 			
@@ -110,9 +107,9 @@ package com.binaryscar.Summoner.NPC
 			FlxG.collide(this, _allyGrp, avoidAlly);
 			FlxG.overlap(this, _allyGrp, bounceAgaintAlly);
 			
-			//FlxG.collide(this, _player, hurtPlayer);
-			
-			fsm.update();
+			if (_state.execute != null) {
+				_state.execute.call(null);
+			}
 			
 			if (getScreenXY().x < -64 || getScreenXY().x > (FlxG.width + 64)) { // It's off-screen.
 				trace('Kill off-screen :: ' + this.toString());
@@ -182,7 +179,7 @@ package com.binaryscar.Summoner.NPC
 					parent: "moving",
 					from: ["moving", "walking", "sprinting", "idle"], // Not fighting.
 					enter: function():void {
-						trace(this + 'Enter avoid!');
+						trace('enter avoid!');
 						_avoidTimer = AVOID_DELAY;
 					},
 					execute: function():void {
@@ -302,11 +299,6 @@ package com.binaryscar.Summoner.NPC
 					enter: function():void  {
 						exists = false;
 						solid = false;
-						
-						if (flickering) {
-							flicker(0);
-						}
-						
 						stopMoving();
 						x = -20; // Move off screen;
 						y = -20; 
@@ -362,8 +354,8 @@ package com.binaryscar.Summoner.NPC
 				return;
 			} else { // We still have a target, move toward it.
 				var yDiff:int = (_pursueTarget.y + (_pursueTarget.height/2)) - (this.y + (this.height/2));
-				if ( (acceleration.y > 0 && yDiff <= 0) // Moving downward && pursueTarget is above 
-					|| (acceleration.y < 0 && yDiff >= 0) ) { // Moving upward && pursueTarget is below
+				if ((acceleration.y > 0 /* moving downward */ && yDiff <= 0 /* target above */) 
+					|| (acceleration.y < 0 && yDiff >= 0)) {
 					//yDiff += yDiff;
 					acceleration.y = 0;
 				}
@@ -468,14 +460,6 @@ package com.binaryscar.Summoner.NPC
 			}
 		}
 		
-		public function get hitPoints():int {
-			return HP;
-		}
-		
-		public function set hitPoints(newHP:int):void {
-			HP = newHP;
-		}
-		
 		public function startFight(me:NPC, oppNPC:NPC):void {
 //			if (_target == null) {
 				
@@ -485,10 +469,6 @@ package com.binaryscar.Summoner.NPC
 //				oppNPC.addAttacker(me);
 //				fsm.changeState("fighting");
 //			}
-		}
-		
-		public function hurtPlayer(me:NPC, player:Player):void {
-			player._core.hurt(STR);
 		}
 		
 		public function addAttacker(attacker:NPC):void {
@@ -502,11 +482,11 @@ package com.binaryscar.Summoner.NPC
 			}
 		}
 		
-//		override public function hurt(dam:Number):void {
-//			flicker(0.25);
-//			super.hurt(dam);
-//			// trace("Ouch, " + this.toString() + " health at: "+ health);
-//		}
+		override public function hurt(dam:Number):void {
+			flicker(0.25);
+			super.hurt(dam);
+			trace("Ouch, " + this.toString() + " health at: "+ health);
+		}
 		
 		override public function kill():void {
 			fsm.changeState("dead");

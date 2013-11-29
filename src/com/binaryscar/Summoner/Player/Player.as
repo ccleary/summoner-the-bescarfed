@@ -1,12 +1,15 @@
 package com.binaryscar.Summoner.Player 
 {
+	import com.binaryscar.Summoner.HealthBar;
+	
 	import flash.accessibility.AccessibilityProperties;
 	import flash.display.SpreadMethod;
+	import flash.filters.GlowFilter;
+	
 	import org.flixel.FlxEmitter;
+	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxSprite;
-	import org.flixel.FlxG;
-	import flash.filters.GlowFilter;
 	import org.flixel.FlxState;
 	
 	/**
@@ -20,27 +23,28 @@ package com.binaryscar.Summoner.Player
 		
 		public var playState:FlxState;
 		
-		public var _core:PlayerCore;
-		private var _arm:PlayerArm;
+		public var _core:Player_core;
+		public var _arm:Player_arm;
+		
+		private var _hBar:HealthBar;
 		
 		protected var _dots:FlxEmitter;
-		protected var _dotsDelay:Number;
 		
-		protected var _summoned:FlxGroup;
 		
-		public function Player(size:uint, X:int, Y:int, Parent:FlxState, dots:FlxEmitter) {
+		public function Player(X:int, Y:int, Parent:FlxState, dots:FlxEmitter) {
 			
-			super(size);
+			super(); // Create Group.
 			
 			playState = Parent;
-			_core = new PlayerCore(0, 0);
+			_core = new Player_core(0, 0); // Most of the work happens here.
+			_arm = new Player_arm(0, 0, _core, _dots, playState);
 			_dots = dots;
-			_arm = new PlayerArm(0, 0, _core, _dots, _summoned, playState);
-			
-			_summoned = new FlxGroup(3);
-			
+
 			add(_core);
 			add(_arm);
+			
+			//_hBar = new HealthBar();
+			//add(_hBar);
 		}
 		
 		override public function update():void {
@@ -49,6 +53,7 @@ package com.binaryscar.Summoner.Player
 			_arm.x = _core.x + 4;
 			_arm.y = _core.y + _arm.offset.y;
 			_arm.facing = _core.facing;
+			
 				
 		}
 		

@@ -1,6 +1,7 @@
 package com.binaryscar.Summoner.NPC 
 {
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
+	import com.binaryscar.Summoner.Player.Player;
 	
 	import flash.geom.Rectangle;
 	
@@ -22,8 +23,8 @@ package com.binaryscar.Summoner.NPC
 		public var initX:int;
 		public var initY:int;
 		
-		public function Enemy(enemGrp:FlxGroup, summGrp:FlxGroup, X:int, Y:int, face:uint = LEFT, initState:String = "walking") { 
-			super(enemGrp, summGrp, X, Y, face, initState);
+		public function Enemy(enemGrp:FlxGroup, summGrp:FlxGroup, player:Player, X:int, Y:int, face:uint = LEFT, initState:String = "walking") { 
+			super(enemGrp, summGrp, player, X, Y, face, initState);
 			
 			// ESTABLISH STATS
 			HP = 3;

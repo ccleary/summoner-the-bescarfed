@@ -44,6 +44,8 @@ package com.binaryscar.Summoner
 		private var _enemySpawnTimer:Number;
 		private var SPAWN_DELAY:Number;
 		
+		public var HealthBars:HealthBarController;
+		
 		public var hBar_frame:FlxSprite;
 		public var hBar_health:FlxSprite;
 		
@@ -52,13 +54,17 @@ package com.binaryscar.Summoner
 			map.loadTiles(shittygrass, 32, 32, 0);
 			add(map);
 			
+			HealthBars = new HealthBarController();
+			
 			_enemyGrp = new FlxGroup(10);
 			add(_enemyGrp);
 			
 			_summonedGrp = new FlxGroup(10);
 			add(_summonedGrp);
 			
-			_enemyGrp.add(new Enemy(_enemyGrp, _summonedGrp, 200, 20));
+			_enemy = new Enemy(_enemyGrp, _summonedGrp, player, 200, 20);
+			HealthBars.addHealthBar(_enemy, -2, -18);
+			_enemyGrp.add(_enemy);
 			
 			SPAWN_DELAY = 1;
 			_enemySpawnTimer = SPAWN_DELAY;
@@ -71,9 +77,11 @@ package com.binaryscar.Summoner
 			_dots.gravity = 30;
 			_dots.makeParticles( particlePixel, 30, 0, false, 0.2);
 			
-			player = new Player(2, 20, 20, this, _dots);
+			player = new Player(20, 20, this, _dots);
 			add(player);
 			add(_dots);
+			
+			add(HealthBars);
 			
 			
 			
@@ -90,7 +98,6 @@ package com.binaryscar.Summoner
 			hBar_health.scale.x = (hBar_frame.width-2)*(player._core.health / player._core.HP);
 			
 			add(hBar_frame);
-			//add(hBar_inside);
 			add(hBar_health);
 			
 		}
@@ -114,7 +121,7 @@ package com.binaryscar.Summoner
 			}
 			
 			if (FlxG.keys.justPressed("B")) {
-				trace("Show debug");
+				//trace("Show debug");
 				// show bounds
 				FlxG.visualDebug = !FlxG.visualDebug;
 			}
@@ -124,7 +131,7 @@ package com.binaryscar.Summoner
 			}
 			
 			if (FlxG.keys.justPressed("R")) {
-				trace('r pressed');
+				//trace('r pressed');
 				createEnemy();
 			}
 
@@ -132,27 +139,32 @@ package com.binaryscar.Summoner
 		}
 		
 		public function summon():void {
-			if (_summonedGrp.countDead() > 0) {
-				_summoned = _summonedGrp.getFirstDead() as Summoned;
-				if (player._core.facing === 0x0010) { // RIGHT
-					_summoned.x = player._core.x + 20;
+			if ( (_summonedGrp.members.length != _summonedGrp.maxSize)
+				|| (_summonedGrp.countDead() > 0) ) {
+				if (_summonedGrp.countDead() > 0) {
+					_summoned = _summonedGrp.getFirstDead() as Summoned;
+					if (player._core.facing === 0x0010) { // RIGHT
+						_summoned.x = player._core.x + 20;
+					} else {
+						_summoned.x = player._core.x - 20;
+					}
+					_summoned.y = player._core.y + 10;
+					_summoned.facing = player._core.facing;
+					//trace('attempt to revive summoned');
+					_summoned.revive();
 				} else {
-					_summoned.x = player._core.x - 20;
+					if (player._core.facing === 0x0010) { // RIGHT
+						_summoned = new Summoned(_summonedGrp, _enemyGrp, player, player._core.x + 20, player._core.y + 10, player._core.facing);
+						HealthBars.addHealthBar(_summoned, -2, -14);
+					} else if (player._core.facing === 1) {
+						_summoned = new Summoned(_summonedGrp, _enemyGrp, player, player._core.x - 20, player._core.y + 10, player._core.facing);
+						HealthBars.addHealthBar(_summoned, -2, -14);
+					}
+					//trace('attempt to add summoned');
+					_summonedGrp.add(_summoned);
 				}
-				_summoned.y = player._core.y + 10;
-				_summoned.facing = player._core.facing;
-				trace('attempt to revive summoned');
-				_summoned.revive();
-			} else {
-				if (player._core.facing === 0x0010) { // RIGHT
-					_summoned = new Summoned(_summonedGrp, _enemyGrp, player._core.x + 20, player._core.y + 10, player._core.facing);
-				} else if (player._core.facing === 1) {
-					_summoned = new Summoned(_summonedGrp, _enemyGrp, player._core.x - 20, player._core.y + 10, player._core.facing);
-				}
-				trace('attempt to add summoned');
-				_summonedGrp.add(_summoned);
 			}
-			_dots.at(_summoned);
+			_dots.at(player._arm);
 			_dots.start(true, 0.5);
 		}
 		
@@ -174,21 +186,26 @@ package com.binaryscar.Summoner
 				_enemy = _enemyGrp.getFirstDead() as Enemy;
 				_enemy.x = X;
 				_enemy.y = Y;
-				trace('attempt to revive enemy');
-				trace(_enemy._allyGrp, _enemy._oppGrp);
+				//trace('attempt to revive enemy');
 				_enemy.revive();
 			} else {
-				_enemy = new Enemy(_enemyGrp, _summonedGrp, X, Y);
+				_enemy = new Enemy(_enemyGrp, _summonedGrp, player, X, Y);
+				HealthBars.addHealthBar(_enemy, -2, -18);
 				_enemyGrp.add(_enemy);
 			}
-			trace("New enemy at :: " + X + "," + Y);
+			//trace("New enemy at :: " + X + "," + Y);
 			_dots.at(_enemy);
 			_dots.start(true, 0.5);
 		}
 		
 		public function startFight(meNPC:NPC, oppNPC:NPC):void {
-			meNPC.target = oppNPC;
-			oppNPC.target = meNPC;
+			//TODO figure out how to make the NPCs handle this.
+			if (meNPC.target == null) {
+				meNPC.target = oppNPC;
+			}
+			if (oppNPC.target == null) {
+				oppNPC.target = meNPC;
+			}
 		}
 		
 	}

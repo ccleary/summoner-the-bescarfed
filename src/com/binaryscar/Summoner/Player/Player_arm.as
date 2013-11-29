@@ -14,29 +14,29 @@ package com.binaryscar.Summoner.Player
 	 * ...
 	 * @author Connor Cleary
 	 */
-	public class PlayerArm extends FlxSprite 
+	public class Player_arm extends FlxSprite 
 	{
 		[Embed(source = "../../../../../art/Summoner4-Arm.png")]public var summonerArm:Class;
 		
-		private var _dots:FlxEmitter;
+		//private var _dots:FlxEmitter;
 		private var _torso:FlxSprite;
-		private var _summoned:FlxGroup;
-		private var _newSumm:Summoned; // temporary var for newly summoned monsters.
+		//private var _summoned:FlxGroup;
+		//private var _newSumm:Summoned; // temporary var for newly summoned monsters.
 		private var _playState:FlxState; // temporary var for newly summoned monsters.
 		
-		public function PlayerArm(X:Number, Y:Number, torso:FlxSprite, dots:FlxEmitter, summoned:FlxGroup, playState:FlxState) {
+		public function Player_arm(X:Number, Y:Number, torso:FlxSprite, dots:FlxEmitter, /*summoned:FlxGroup,*/ playState:FlxState) {
 			
 			super(X, Y);
 			
 			_playState = playState;
-			_dots = dots;
+			//_dots = dots;
 			_torso = torso;
-			_summoned = summoned;
+			//_summoned = summoned;
 			
 			loadGraphic(summonerArm, true, true);
 			addAnimation("casting", [0, 1, 2, 0], 8, false);
 			addAnimation("idle", [0]);
-			addAnimationCallback(checkAnimEnd);
+			//addAnimationCallback(checkAnimEnd);
 			
 			// Adjust hitbox.
 			height = 8;
@@ -58,15 +58,6 @@ package com.binaryscar.Summoner.Player
 			if (FlxG.keys.justPressed("Z")) {
 				play("casting", true);
 			}
-		}
-		
-		public function checkAnimEnd(name:String, frameNum:uint, frameIndex:uint):void {
-//			if (name === "casting" && frameNum == 2) {
-//				fireDots();
-//			}
-		}
-		
-		public function fireDots():void {
 		}
 	}
 

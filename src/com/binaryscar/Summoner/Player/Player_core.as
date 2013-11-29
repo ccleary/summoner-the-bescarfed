@@ -7,7 +7,7 @@ package com.binaryscar.Summoner.Player
 	 * ...
 	 * @author Connor Cleary
 	 */
-	public class PlayerCore extends FlxSprite 
+	public class Player_core extends FlxSprite 
 	{
 		[Embed(source = "../../../../../art/shittysummoner1.png")]public var shittysummoner:Class;
 		[Embed(source = "../../../../../art/Summoner4-NoArm.png")]public var summonerNoArm:Class;
@@ -17,7 +17,7 @@ package com.binaryscar.Summoner.Player
 		
 		public var HP:Number = 5;
 		
-		public function PlayerCore(X:Number, Y:Number) {
+		public function Player_core(X:Number, Y:Number) {
 			
 			super(X, Y);
 			

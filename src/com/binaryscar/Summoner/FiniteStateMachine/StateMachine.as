@@ -232,6 +232,10 @@ package com.binaryscar.Summoner.FiniteStateMachine
 			dispatchEvent(_outEvent);
 		}
 		
-		
+		public function update():void {
+			if (_states[_state].execute != null) {
+				_states[_state].execute.call(null);
+			}
+		}
 	}
 }

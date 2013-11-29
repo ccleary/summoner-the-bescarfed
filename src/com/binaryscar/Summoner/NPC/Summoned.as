@@ -1,11 +1,11 @@
 package com.binaryscar.Summoner.NPC 
 {
-	import com.binaryscar.Summoner.FiniteStateMachine.*;
-//	
-//	import flash.events.EventDispatcher;
-//	
+	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
+	import com.binaryscar.Summoner.Player.Player;
+	
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
+
 //	import org.flixel.FlxSprite;
 //	import org.flixel.FlxPoint;
 //	import com.binaryscar.Summoner.Enemy;
@@ -19,8 +19,8 @@ package com.binaryscar.Summoner.NPC
 		//[Embed(source = "../../../../art/Summon-demon-1.png")]public var clawDemon:Class;
 		[Embed(source = "../../../../../art/Summon-demon-2.png")]public var clawDemon:Class;
 		
-		public function Summoned(summGrp:FlxGroup, enemGrp:FlxGroup, X:int, Y:int, face:uint, initState:String = "walking") {
-			super(summGrp, enemGrp, X, Y, face, initState);
+		public function Summoned(summGrp:FlxGroup, enemGrp:FlxGroup, player:Player, X:int, Y:int, face:uint, initState:String = "walking") {
+			super(summGrp, enemGrp, player, X, Y, face, initState);
 			
 			// ESTABLISH STATS
 			HP = 4;
