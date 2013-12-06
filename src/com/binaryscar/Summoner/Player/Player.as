@@ -81,7 +81,7 @@ package com.binaryscar.Summoner.Player
 		}
 		
 		public function hurt(dam:int):void {
-			if (dam != null) {
+			if (dam != 0) {
 				// Red flash not working yet.
 				// need to figure out how to reset it after no longer flickering.
 //				_core.color = 0xffdd0000;

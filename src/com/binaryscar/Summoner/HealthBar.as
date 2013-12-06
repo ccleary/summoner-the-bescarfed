@@ -33,7 +33,7 @@ package com.binaryscar.Summoner
 			
 			trace(attachedTo.toString());
 			if (attachedTo.toString() == "Summoned") {
-				trace("allied health bar");
+				//trace("allied health bar");
 				_barColor = 0xff00ff00; // Green for allies.
 			}
 			

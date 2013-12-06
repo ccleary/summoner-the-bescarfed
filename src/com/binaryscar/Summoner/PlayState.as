@@ -236,6 +236,8 @@ package com.binaryscar.Summoner
 			if (oppNPC.target == null) {
 				oppNPC.target = meNPC;
 			}
+			meNPC.addAttacker(oppNPC);
+			oppNPC.addAttacker(meNPC);
 		}
 		
 		public function hitPlayer(enem:Enemy, playerPart:*):void {

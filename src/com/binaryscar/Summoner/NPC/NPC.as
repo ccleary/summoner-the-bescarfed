@@ -34,8 +34,14 @@ package com.binaryscar.Summoner.NPC
 		protected var _allyGrp:FlxGroup;
 		protected var _oppGrp:FlxGroup;			// "_opp" for "Opposition"
 		
+		protected var fsm:StateMachine;			// Finite State Machine
 		protected var _state:State;
-		protected var fsm:StateMachine;
+		
+		protected var sem:Object; 				// Status Effects Machine
+		//protected var _statusEffects:Array;
+		// TODO Temp work. Find better per-status timer solution
+		protected var _statusTimer1:Number;
+		protected var _statustimer2:Number;
 		
 		protected var defaultInitState:String;
 		protected var _player:Player;
@@ -66,8 +72,8 @@ package com.binaryscar.Summoner.NPC
 			_player = player;
 			_playState = playState;
 			
-			_cooldownTimer = null; 		// These reset to *null* when not in use.
-			_avoidTimer = null;			// " "
+			_cooldownTimer = NaN; 		// These reset to *null* when not in use.
+			_avoidTimer = NaN;			// " "
 			
 //			if (SimpleGraphic == null) {
 //				loadGraphic(ph_redblock, true, true, 32, 32, false);	
@@ -115,6 +121,9 @@ package com.binaryscar.Summoner.NPC
 			} else {
 				defaultInitState = "idle";
 			}
+			
+			sem = new Object;
+			_initializeStatusEffectMachine(sem, _semExecute);
 		}
 		
 		override public function update():void {
@@ -127,13 +136,16 @@ package com.binaryscar.Summoner.NPC
 			}
 			
 			super.update();
-			
+
 			FlxG.collide(this, _allyGrp, avoidAlly);
 			FlxG.overlap(this, _allyGrp, bounceAgaintAlly);
 			
 			//FlxG.collide(this, _player, hurtPlayer);
 			
-			fsm.update();
+			fsm.update(); // Finite State Machine Update
+			if (sem.statusEffects.length > 0) {
+				sem.update(); // Status Effect Machine Update
+			}
 			
 			if (getScreenXY().x < -64 || getScreenXY().x > (FlxG.width + 64)) { // It's off-screen.
 				trace('Kill off-screen :: ' + this.toString());
@@ -173,7 +185,7 @@ package com.binaryscar.Summoner.NPC
 		}
 		
 		public function get onCooldown():Boolean {
-			if (_cooldownTimer == null) {
+			if (_cooldownTimer == NaN) {
 				return false;
 			}
 			if (_cooldownTimer > 0) { // Timer needs to go longer than attackCooldown.
@@ -311,7 +323,7 @@ package com.binaryscar.Summoner.NPC
 					parent: "moving",
 					from: ["moving", "walking", "sprinting", "idle"], // Not fighting.
 					enter: function():void {
-						trace(this + 'Enter avoid!');
+						trace(fsm.id + ' Enter avoid!');
 						_avoidTimer = AVOID_DELAY;
 					},
 					execute: function():void {
@@ -506,10 +518,49 @@ package com.binaryscar.Summoner.NPC
 			}
 		}
 		
+		private function _initializeStatusEffectMachine(sem:Object, executeFunc:Function = null):void {
+			sem.statusEffects = [];	//
+			sem.statusEmitters = []; // TODO ? Figure out how to link these three
+									// Add them all together inside .statuseffects?
+									// [{ effect: "poison", emitter: new FlxEmitter, timer: new Number}]
+			sem.statusTimers = [];	//
+			sem.update = executeFunc;
+			// TODO add sem.emitters, FlxEmitter[]
+		}
+		
+		private function _semExecute():void {
+			if (sem.statusEffects.length > 0) {
+				for each (var status:String in sem.statusEffects) { // Allow for multiple status effects
+					switch(status) {
+						case "poison":
+							this.color = 0x99AAFFAA; // Tint green.
+							// TODO HealthBarController Indicator.
+							break;
+						default:
+							this.color = 0xFFFFFFFF; // Reset
+							break;
+					}
+				};
+			} else {
+				// Reset all status effect indicators.
+				this.color = 0xFFFFFFFF;
+			}
+		}
+		
+		public function addStatusEffect(newStatus:String) {
+			//trace(fsm.id + ' :: POISONED!');
+			// TODO, link up a timer.
+			if (sem.statusEffects.indexOf(newStatus) == -1) { // Only add if it's not already present.
+				sem.statusEffects.push(newStatus);
+			}
+		}
+		
 		private function updatePursueTarget():void {
 			if (_pursueTarget == null || !_pursueTarget.alive) {
 				_pursueTarget = null; // In case it just died.
-				fsm.changeState("walking");
+				if (fsm.state != "walking") {
+					fsm.changeState("walking");
+				}
 				return;
 			} else if ( (facing == RIGHT && _pursueTarget.x < x) 
 				|| (facing == LEFT && _pursueTarget.x > x)) {
