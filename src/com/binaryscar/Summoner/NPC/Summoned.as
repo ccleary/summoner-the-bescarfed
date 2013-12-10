@@ -57,7 +57,11 @@ package com.binaryscar.Summoner.NPC
 //			fsm = new StateMachine();
 		 	fsm.id = "[Summoned]";
 			addSummonedStates(fsm);
-			fsm.changeState(initState);
+			
+			//trace(fsm.state);
+			//if (fsm.state != "walking") {
+				//fsm.changeState("walking");
+			//}
 		}
 		
 		override public function update():void {
@@ -76,7 +80,9 @@ package com.binaryscar.Summoner.NPC
 		
 		override public function revive():void {
 			health = HP;
-			fsm.changeState("walking");
+			if (fsm.state != "walking") {
+				fsm.changeState("walking");
+			}
 			super.revive();
 		}
 	}

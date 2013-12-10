@@ -169,7 +169,11 @@ package com.binaryscar.Summoner.FiniteStateMachine
 			}
 			
 			// If state is not allowed to make this transition.
-			if(!canChangeStateTo(stateTo)) {
+			if (!canChangeStateTo(stateTo)) {
+				if (stateTo == _state) {
+					trace("[StateMachine] Can't transition from/to the same state: " + stateTo);
+					return;
+				}
 				trace("[StateMachine]", id, "Transition to " + stateTo + " not allowed from " + _state + ".");
 				_outEvent = new StateMachineEvent(StateMachineEvent.TRANSITION_DENIED);
 				_outEvent.fromState = _state;

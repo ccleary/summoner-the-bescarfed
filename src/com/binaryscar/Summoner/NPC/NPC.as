@@ -17,7 +17,8 @@ package com.binaryscar.Summoner.NPC
 	{		
 		//[Embed(source = "../../../../../art/Summon-demon-2.png")]public var clawDemon:Class;
 		[Embed(source = "../../../../../art/shitty-redblock-enemy1.png")]public var ph_redblock:Class;
-		[Embed(source = "../../../../../art/smokey-gibs1.png")]public var smokeyGibs:Class;
+		[Embed(source = "../../../../../art/smokey-gibs1.png")]public var gibsImg_smoke:Class;
+		[Embed(source = "../../../../../art/poison-gibs1.png")]public var gibsImg_poison:Class;
 		
 		protected var SPEED_X:Number = 60;
 		protected var SPEED_Y:Number = 40;
@@ -40,14 +41,15 @@ package com.binaryscar.Summoner.NPC
 		protected var sem:Object; 				// Status Effects Machine
 		//protected var _statusEffects:Array;
 		// TODO Temp work. Find better per-status timer solution
-		protected var _statusTimer1:Number;
+		protected var _poisonTimer:Number;
 		protected var _statustimer2:Number;
 		
 		protected var defaultInitState:String;
 		protected var _player:Player;
 		protected var _playState:PlayState;
 		
-		protected var gibs:FlxEmitter;
+		protected var gibs_smoke:FlxEmitter;
+		protected var gibs_poison:FlxEmitter;
 		
 		private var _this:NPC;
 		private var _cooldownTimer:Number;		// When this reaches 0: Can attack.
@@ -97,14 +99,28 @@ package com.binaryscar.Summoner.NPC
 			health = HP;
 			elasticity = 1.5;
 			
-			gibs = new FlxEmitter(x, y, 20);
-			gibs.setXSpeed(-30,30);
-			gibs.setYSpeed(-30,30);
-			gibs.setRotation(0, 360);
-			gibs.gravity = 1.5;
-			gibs.makeParticles(smokeyGibs, 20, 16);
-			gibs.bounce = 0.5;
-			_playState.add(gibs);
+			gibs_smoke = new FlxEmitter(x, y, 10);
+			gibs_smoke.setXSpeed(-30,30);
+			gibs_smoke.setYSpeed(-30,30);
+			gibs_smoke.setRotation(0, 360);
+			gibs_smoke.gravity = 1.5;
+			gibs_smoke.makeParticles(gibsImg_smoke, 10, 8, true, 0);
+			//gibs_smoke.bounce = 0.5;
+			_playState.add(gibs_smoke);
+			
+			// Why the fuck is everyone poisoned right off the bat?
+			_poisonTimer = 0;
+			gibs_poison = new FlxEmitter(x, y, 4);
+			gibs_poison.setXSpeed(-15,15);
+			gibs_poison.setYSpeed( -15, 15);
+			gibs_poison.lifespan = 0.4;
+			gibs_poison.setRotation(0, 180);
+			gibs_poison.gravity = -10;
+			gibs_poison.makeParticles(gibsImg_poison, 4, 8, true, 0);
+			for each (var gib:FlxSprite in gibs_poison.members) {
+				gib.alpha = 0.8;
+			}
+			_playState.add(gibs_poison);
 			
 //			hBar = new FlxSprite(x, y);
 //			hBar.makeGraphic(width, 2, 0xFFFF0000);
@@ -115,11 +131,12 @@ package com.binaryscar.Summoner.NPC
 			fsm = new StateMachine();
 			fsm.id = "[NPC]";
 			initializeStates(fsm);
-			fsm.initialState = "idle";
 			if (initState != null && fsm.getStateByName(initState)) {
 				defaultInitState = initState;
+				fsm.initialState = initState;
 			} else {
 				defaultInitState = "idle";
+				fsm.initialState = "idle";
 			}
 			
 			sem = new Object;
@@ -298,9 +315,9 @@ package com.binaryscar.Summoner.NPC
 				{
 					parent: "moving",
 					enter: function():void {
-						if (_pursueTarget == null) {
-							fsm.changeState("walking");
-						}
+						//if (_pursueTarget == null) {
+							//fsm.changeState("walking");
+						//}
 					},
 					execute: function():void {
 						if (_pursueTarget == null) {
@@ -441,8 +458,8 @@ package com.binaryscar.Summoner.NPC
 			fsm.addState("dead", 
 				{
 					enter: function():void  {
-						gibs.at(_this);
-						gibs.start(true, 0.25, 0.1, 20);
+						gibs_smoke.at(_this);
+						gibs_smoke.start(true, 0.25, 0.1, 20);
 						exists = false;
 						solid = false;
 						
@@ -519,6 +536,7 @@ package com.binaryscar.Summoner.NPC
 		}
 		
 		private function _initializeStatusEffectMachine(sem:Object, executeFunc:Function = null):void {
+			
 			sem.statusEffects = [];	//
 			sem.statusEmitters = []; // TODO ? Figure out how to link these three
 									// Add them all together inside .statuseffects?
@@ -533,25 +551,46 @@ package com.binaryscar.Summoner.NPC
 				for each (var status:String in sem.statusEffects) { // Allow for multiple status effects
 					switch(status) {
 						case "poison":
+							_poisonTimer += FlxG.elapsed;
+							if (_poisonTimer >= 5) { // customize timer by caster?
+								this.removeStatusEffect("poison");
+								//gibs_poison.destroy();
+								_poisonTimer = 0;
+								break;
+							}
 							this.color = 0x99AAFFAA; // Tint green.
+							this.gibs_poison.at(this);
+							this.gibs_poison.y -= 8;
+							//this.gibs_poison.emitParticle();
+							if ((gibs_poison.countDead() >= 1 && gibs_poison.countLiving() <= 2) || gibs_poison.countLiving() == 0) {
+								this.gibs_poison.emitParticle();
+							}
 							// TODO HealthBarController Indicator.
 							break;
 						default:
-							this.color = 0xFFFFFFFF; // Reset
+							this.color = 0xFFFFFFFF; // Reset tint
 							break;
 					}
 				};
-			} else {
+			} else { // Poison never gets removed?
 				// Reset all status effect indicators.
 				this.color = 0xFFFFFFFF;
+				gibs_poison.clear();
 			}
 		}
 		
-		public function addStatusEffect(newStatus:String) {
+		public function addStatusEffect(newStatus:String):void {
 			//trace(fsm.id + ' :: POISONED!');
 			// TODO, link up a timer.
 			if (sem.statusEffects.indexOf(newStatus) == -1) { // Only add if it's not already present.
 				sem.statusEffects.push(newStatus);
+			}
+		}
+		
+		public function removeStatusEffect(statusToRemove:String) {
+			var arrPos:int = sem.statusEffects.indexOf(statusToRemove);
+			if (arrPos != -1) {
+				sem.statusEffects.splice(arrPos, 1); 
 			}
 		}
 		
@@ -566,7 +605,9 @@ package com.binaryscar.Summoner.NPC
 				|| (facing == LEFT && _pursueTarget.x > x)) {
 				// Lose pursuit on targets behind me.
 				_pursueTarget = null;
-				fsm.changeState("walking");
+				if (fsm.state != "walking") {
+					fsm.changeState("walking");
+				}
 				return;
 			} else { // We still have a target, move toward it.
 				var yDiff:int = (_pursueTarget.y + (_pursueTarget.height/2)) - (this.y + (this.height/2));

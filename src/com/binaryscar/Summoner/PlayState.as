@@ -196,7 +196,7 @@ package com.binaryscar.Summoner
 						_summoned = new Summoned(_summonedGrp, _enemyGrp, player, this, player._core.x - 20, player._core.y + 10, player._core.facing);
 						HealthBars.addHealthBar(_summoned, -2, -14);
 					}
-					trace('attempt to add summoned');
+					//trace('attempt to add summoned');
 					_summonedGrp.add(_summoned);
 				}
 			}
