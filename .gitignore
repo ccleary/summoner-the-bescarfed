@@ -3,6 +3,10 @@ bin/
 bin-debug/
 bin-release/
 
+obj/summoner-the-bescarfedConfig.old
+obj/summoner-the-bescarfedConfig.xml
+obj/pmd.old
+
 # Other files and folders
 .settings/
 
