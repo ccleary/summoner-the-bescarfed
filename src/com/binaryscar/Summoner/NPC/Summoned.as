@@ -34,7 +34,7 @@ package com.binaryscar.Summoner.NPC
 			// END STATS
 			
 			facing = face;
-			 
+						
 			loadGraphic(clawDemon, true, true, 32, 32, false);
 			addAnimation("walking", [0, 1, 2, 3], 8, true);
 			addAnimation("attacking", [4, 5, 6, 7, 8, 5, 4], 16, false);
@@ -60,7 +60,7 @@ package com.binaryscar.Summoner.NPC
 			
 			//trace(fsm.state);
 			//if (fsm.state != "walking") {
-				//fsm.changeState("walking");
+				fsm.changeState("walking");
 			//}
 		}
 		

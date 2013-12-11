@@ -163,17 +163,19 @@ package com.binaryscar.Summoner.FiniteStateMachine
 		// TODO - Study the event stuff to better understand why that is a thing s/he does.
 		public function changeState(stateTo:String):void {
 			// First make sure there is a state that matches
-			if (!(stateTo in _states)) {
-				trace("[StateMachine]", id, "Cannot make transition, State " + stateTo + " is not defined.");
+			if (!(stateTo in _states)) {				
+				trace("[StateMachine]", id, " Cannot make transition, State " + stateTo + " is not defined.");
+				return;
+			}
+			
+			// Check if we're already in that state.
+			if (stateTo == _state) {
+				trace("[StateMachine]", id, " No transition, already in: " + stateTo);
 				return;
 			}
 			
 			// If state is not allowed to make this transition.
 			if (!canChangeStateTo(stateTo)) {
-				if (stateTo == _state) {
-					trace("[StateMachine] Can't transition from/to the same state: " + stateTo);
-					return;
-				}
 				trace("[StateMachine]", id, "Transition to " + stateTo + " not allowed from " + _state + ".");
 				_outEvent = new StateMachineEvent(StateMachineEvent.TRANSITION_DENIED);
 				_outEvent.fromState = _state;

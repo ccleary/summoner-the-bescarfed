@@ -71,7 +71,7 @@ package com.binaryscar.Summoner
 			
 			HealthBars = new HealthBarController();
 			
-			_enemyGrp = new FlxGroup(10);
+			_enemyGrp = new FlxGroup(2);
 			add(_enemyGrp);
 			
 			_summonedGrp = new FlxGroup(10);
@@ -212,9 +212,9 @@ package com.binaryscar.Summoner
 				Y = (Y < gameHeight - 32) ? Y : Y - 32;
 				//Y = (Y > 32) ? Y : Y + 32;
 			}
-			if (_enemyGrp.length == _enemyGrp.maxSize && _enemyGrp.getFirstDead() == null) {
-				_enemyGrp.getRandom().kill();
-			}
+			//if (_enemyGrp.length == _enemyGrp.maxSize && _enemyGrp.getFirstDead() == null) {
+				//_enemyGrp.getRandom().kill();
+			//}
 			if (_enemyGrp.countDead() > 0) {
 				_enemy = _enemyGrp.getFirstDead() as Enemy;
 				_enemy.x = X;

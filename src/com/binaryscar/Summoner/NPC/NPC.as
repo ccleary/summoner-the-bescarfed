@@ -133,11 +133,12 @@ package com.binaryscar.Summoner.NPC
 			initializeStates(fsm);
 			if (initState != null && fsm.getStateByName(initState)) {
 				defaultInitState = initState;
-				fsm.initialState = initState;
 			} else {
 				defaultInitState = "idle";
-				fsm.initialState = "idle";
 			}
+			// This is necessary so the Subclass can
+			// create and run animations properly.
+			fsm.initialState = "idle";
 			
 			sem = new Object;
 			_initializeStatusEffectMachine(sem, _semExecute);
@@ -174,12 +175,10 @@ package com.binaryscar.Summoner.NPC
 		override public function kill():void {
 			fsm.changeState("dead");
 			if (_target != null) {
-				_target.removeAttacker(this);
+				_target = null; // You dead, you not targetin' anybody.
 			}
 			if (_targetedBy.length > 0) {
-				for each (var oppNPC:NPC in _targetedBy) {
-					oppNPC.removeAttacker(this);
-				}
+				_targetedBy = [];
 			}
 			super.kill();
 		}
@@ -197,7 +196,6 @@ package com.binaryscar.Summoner.NPC
 				fsm.changeState("fighting");
 			} else {
 				_target = null;
-				fsm.changeState(defaultInitState);
 			}
 		}
 		
@@ -321,7 +319,7 @@ package com.binaryscar.Summoner.NPC
 					},
 					execute: function():void {
 						if (_pursueTarget == null) {
-							fsm.changeState("walking");
+							//fsm.changeState("walking");
 							return;
 						}
 						

@@ -66,9 +66,9 @@ package com.binaryscar.Summoner.NPC
 //			initializeStates(fsm);
 //			fsm.initialState("idle");
 
-			//if (fsm.state != "walking") {
-				//fsm.changeState("walking");
-			//}
+			if (fsm.state != "walking") {
+				fsm.changeState("walking");
+			}
 		}
 		
 		private function addEnemyStates(fsm:StateMachine):void 
