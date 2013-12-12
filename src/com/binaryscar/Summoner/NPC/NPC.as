@@ -108,7 +108,7 @@ package com.binaryscar.Summoner.NPC
 			//gibs_smoke.bounce = 0.5;
 			_playState.add(gibs_smoke);
 			
-			// Why the fuck is everyone poisoned right off the bat?
+			// Make dynamically when statuses added?
 			_poisonTimer = 0;
 			gibs_poison = new FlxEmitter(x, y, 4);
 			gibs_poison.setXSpeed(-15,15);
@@ -536,37 +536,41 @@ package com.binaryscar.Summoner.NPC
 		private function _initializeStatusEffectMachine(sem:Object, executeFunc:Function = null):void {
 			
 			sem.statusEffects = [];	//
-			sem.statusEmitters = []; // TODO ? Figure out how to link these three
+			//sem.statusEmitters = []; // TODO ? Figure out how to link these three
 									// Add them all together inside .statuseffects?
 									// [{ effect: "poison", emitter: new FlxEmitter, timer: new Number}]
-			sem.statusTimers = [];	//
+			//sem.statusTimers = [];	//
 			sem.update = executeFunc;
 			// TODO add sem.emitters, FlxEmitter[]
 		}
 		
 		private function _semExecute():void {
 			if (sem.statusEffects.length > 0) {
-				for each (var status:String in sem.statusEffects) { // Allow for multiple status effects
-					switch(status) {
+				//for each (var status:String in sem.statusEffects) { // Allow for multiple status effects
+				for (var i:int = 0; i < sem.statusEffects.length; i++) {
+					//var index:int = sem.statusEffects.indexOf(status);
+					var status = sem.statusEffects[i];
+					switch(status.name) {
 						case "poison":
-							_poisonTimer += FlxG.elapsed;
-							if (_poisonTimer >= 5) { // customize timer by caster?
+							status.timer += FlxG.elapsed;
+							if (_poisonTimer >= 3) { // customize timer by caster?
 								this.removeStatusEffect("poison");
 								//gibs_poison.destroy();
-								_poisonTimer = 0;
+								status.timer = 0;
 								break;
 							}
 							this.color = 0x99AAFFAA; // Tint green.
-							this.gibs_poison.at(this);
-							this.gibs_poison.y -= 8;
+							status.emitter.at(this);
+							status.emitter.y -= 8;
 							//this.gibs_poison.emitParticle();
 							if ((gibs_poison.countDead() >= 1 && gibs_poison.countLiving() <= 2) || gibs_poison.countLiving() == 0) {
-								this.gibs_poison.emitParticle();
+								status.emitter.emitParticle();
 							}
 							// TODO HealthBarController Indicator.
 							break;
 						default:
 							this.color = 0xFFFFFFFF; // Reset tint
+							status.emitter.on = false;
 							break;
 					}
 				};
@@ -581,7 +585,33 @@ package com.binaryscar.Summoner.NPC
 			//trace(fsm.id + ' :: POISONED!');
 			// TODO, link up a timer.
 			if (sem.statusEffects.indexOf(newStatus) == -1) { // Only add if it's not already present.
-				sem.statusEffects.push(newStatus);
+				var statusGibs:Class;
+				switch(newStatus) {
+					case "poison": statusGibs = gibsImg_poison; break;
+					default: break;
+				}
+				
+				var thisGibs:FlxEmitter = new FlxEmitter(this.x, this.y, 4);
+				thisGibs.makeParticles
+				thisGibs = new FlxEmitter(x, y, 4);
+				thisGibs.setXSpeed(-15,15);
+				thisGibs.setYSpeed( -15, 15);
+				thisGibs.lifespan = 0.4;
+				thisGibs.setRotation(0, 180);
+				thisGibs.gravity = -10;
+				thisGibs.makeParticles(statusGibs, 4, 8, true, 0);
+				//thisGibs.at(this);
+				
+				for each (var gib:FlxSprite in thisGibs.members) {
+					gib.alpha = 0.8;
+				}
+				_playState.add(gibs_poison);
+				
+				sem.statusEffects.push({
+					name: newStatus,
+					emitter: thisGibs,
+					timer: new Number(0)
+				});
 			}
 		}
 		
