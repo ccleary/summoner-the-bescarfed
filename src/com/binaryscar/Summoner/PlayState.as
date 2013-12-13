@@ -77,9 +77,9 @@ package com.binaryscar.Summoner
 			_summonedGrp = new FlxGroup(10);
 			add(_summonedGrp);
 			
-			createEnemy(200, 30);
+			createEnemy(300, 30);
 			
-			SPAWN_DELAY = 1;
+			SPAWN_DELAY = 10; // TEMP
 			_enemySpawnTimer = SPAWN_DELAY;
 			
 			_dots = new FlxEmitter(0, 0, 30);

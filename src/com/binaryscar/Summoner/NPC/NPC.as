@@ -5,6 +5,7 @@ package com.binaryscar.Summoner.NPC
 	import com.binaryscar.Summoner.FiniteStateMachine.State;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
 	import com.binaryscar.Summoner.Player.Player;
+	import com.binaryscar.Summoner.StatusEffectsController.StatusEffectsController;
 	
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxG;
@@ -38,11 +39,13 @@ package com.binaryscar.Summoner.NPC
 		protected var fsm:StateMachine;			// Finite State Machine
 		protected var _state:State;
 		
+		//TODO CLEANUP
 		protected var sem:Object; 				// Status Effects Machine
 		//protected var _statusEffects:Array;
-		// TODO Temp work. Find better per-status timer solution
 		protected var _poisonTimer:Number;
-		protected var _statustimer2:Number;
+		protected var _statustimer2:Number
+		
+		protected var sec:StatusEffectsController; // Status Effects Controller
 		
 		protected var defaultInitState:String;
 		protected var _player:Player;
@@ -140,8 +143,13 @@ package com.binaryscar.Summoner.NPC
 			// create and run animations properly.
 			fsm.initialState = "idle";
 			
+			//TODO CLEANUP
 			sem = new Object;
 			_initializeStatusEffectMachine(sem, _semExecute);
+			
+			sec = new StatusEffectsController(this);
+			sec.addStatusEffect("poison");
+			
 		}
 		
 		override public function update():void {
@@ -161,9 +169,11 @@ package com.binaryscar.Summoner.NPC
 			//FlxG.collide(this, _player, hurtPlayer);
 			
 			fsm.update(); // Finite State Machine Update
-			if (sem.statusEffects.length > 0) {
-				sem.update(); // Status Effect Machine Update
-			}
+			sec.update();
+			
+			//if (sem.statusEffects.length > 0) {
+			//	sem.update(); // Status Effect Machine Update
+			//}
 			
 			if (getScreenXY().x < -64 || getScreenXY().x > (FlxG.width + 64)) { // It's off-screen.
 				trace('Kill off-screen :: ' + this.toString());
@@ -592,7 +602,6 @@ package com.binaryscar.Summoner.NPC
 				}
 				
 				var thisGibs:FlxEmitter = new FlxEmitter(this.x, this.y, 4);
-				thisGibs.makeParticles
 				thisGibs = new FlxEmitter(x, y, 4);
 				thisGibs.setXSpeed(-15,15);
 				thisGibs.setYSpeed( -15, 15);
