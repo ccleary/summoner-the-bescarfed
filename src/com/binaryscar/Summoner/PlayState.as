@@ -79,7 +79,7 @@ package com.binaryscar.Summoner
 			
 			createEnemy(300, 30);
 			
-			SPAWN_DELAY = 10; // TEMP
+			SPAWN_DELAY = 2; // TEMP
 			_enemySpawnTimer = SPAWN_DELAY;
 			
 			_dots = new FlxEmitter(0, 0, 30);
@@ -201,6 +201,7 @@ package com.binaryscar.Summoner
 				}
 			}
 			_dots.at(player._arm);
+			_dots.x += (player._core.facing == 0x0010) ? 20 : -10;
 			_dots.start(true, 0.5);
 		}
 		

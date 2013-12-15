@@ -147,7 +147,7 @@ package com.binaryscar.Summoner.NPC
 			sem = new Object;
 			_initializeStatusEffectMachine(sem, _semExecute);
 			
-			sec = new StatusEffectsController(this);
+			sec = new StatusEffectsController(this, playState);
 			sec.addStatusEffect("poison");
 			
 		}
