@@ -1,14 +1,20 @@
-package com.binaryscar.Summoner.StatusEffectsController 
+package com.binaryscar.Summoner.EntityStatus 
 {
+	import com.binaryscar.Summoner.NPC.NPC;
+	
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxG;
+	import org.flixel.FlxGroup;
 	import org.flixel.FlxSprite;
 	import org.flixel.FlxObject;
 	/**
 	 * ...
 	 * @author Connor Cleary
+	 * 
+	 * Individual status effect.
+	 * 
 	 */
-	public class StatusEffect extends FlxObject
+	public class StatusEffect extends FlxGroup
 	{
 		[Embed(source = "../../../../../art/poison-gibs1.png")]public var prtImg_poison:Class;
 		[Embed(source = "../../../../../art/poison-spiral-small.png")]public var se_poisonSpiral:Class; // TEMP
@@ -22,6 +28,7 @@ package com.binaryscar.Summoner.StatusEffectsController
 		public var statusBox:FlxSprite;
 		
 		public var attachedTo:FlxSprite;
+		
 		private var _xOffset:int;
 		private var _yOffset:int;
 		
@@ -36,6 +43,8 @@ package com.binaryscar.Summoner.StatusEffectsController
 			_yOffset = yOffset;
 			
 			super(attachedTo.x + _xOffset, attachedTo.y + _yOffset);
+			
+			attachedTo.statusEffectsCount++;
 			
 			statusBox = new FlxSprite(attachedTo.x + _xOffset, attachedTo.y + _yOffset);
 			statusBox.makeGraphic(7, 7, 0xFF000000); // Black frame
@@ -61,6 +70,21 @@ package com.binaryscar.Summoner.StatusEffectsController
 		
 		override public function toString():String {
 			return this.name;
+		}
+		
+		override public function kill():void {
+			attachedTo.statusEffectsCount--;
+			super.kill();
+		}
+		
+		public function reset(Name:String, attachTo:NPC, xOffset:int, yOffset:int):void {
+			name = Name;
+			attachedTo = attachTo;
+			
+			_xOffset = xOffset;
+			_yOffset = yOffset;
+			
+			revive();
 		}
 		
 	}

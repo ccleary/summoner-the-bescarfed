@@ -1,7 +1,8 @@
 package com.binaryscar.Summoner 
 {
-	import com.binaryscar.Summoner.FiniteStateMachine.State;
-	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
+	import com.binaryscar.Summoner.FiniteStateMachine.*;
+	import com.binaryscar.Summoner.EntityStatus.HealthBarController; 
+	import com.binaryscar.Summoner.EntityStatus.StatusEffectsController;
 	import com.binaryscar.Summoner.HUD.HUD;
 	import com.binaryscar.Summoner.NPC.Enemy;
 	import com.binaryscar.Summoner.NPC.NPC;
@@ -69,8 +70,6 @@ package com.binaryscar.Summoner
 			map = new FlxTilemap();
 			add(map.loadMap(new testmap, shittygrass, 16, 16));
 			
-			HealthBars = new HealthBarController();
-			
 			_enemyGrp = new FlxGroup(2);
 			add(_enemyGrp);
 			
@@ -93,8 +92,10 @@ package com.binaryscar.Summoner
 			add(player);
 			add(_dots);
 			
+			HealthBars = new HealthBarController();
 			add(HealthBars);
 			
+			// TODO add getters for common _core properties like x, y, facing,
 			hBar_frame = new FlxSprite(player._core.x-2, player._core.y - 6);
 			hBar_frame.makeGraphic(24, 5, 0xFF000000); // Black frame
 			

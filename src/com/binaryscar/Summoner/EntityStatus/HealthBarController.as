@@ -1,4 +1,4 @@
-package com.binaryscar.Summoner
+package com.binaryscar.Summoner.EntityStatus
 {
 	import com.binaryscar.Summoner.NPC.NPC;
 	

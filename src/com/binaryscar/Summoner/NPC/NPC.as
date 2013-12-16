@@ -14,6 +14,12 @@ package com.binaryscar.Summoner.NPC
 	import org.flixel.FlxPoint;
 	import org.flixel.FlxSprite;
 	
+	/**
+	 * 
+	 * All Summoned and Enemy entities extend this NPC Class.
+	 * 
+	 */
+	
 	public class NPC extends FlxSprite	
 	{		
 		//[Embed(source = "../../../../../art/Summon-demon-2.png")]public var clawDemon:Class;
@@ -62,7 +68,7 @@ package com.binaryscar.Summoner.NPC
 		public var _pursueTarget:NPC;			// Can only be pursuing one target.
 		public var _targetedBy:Array = [];		// Can be targeted by multiple opposition entities.
 		
-		public var stampTest:FlxSprite;
+		public var statusEffectsCount:int;
 		
 		public function NPC(myGrp:FlxGroup, oppGrp:FlxGroup, player:Player, playState:PlayState, X:Number=0, Y:Number=0, face:uint = RIGHT, initState:String = null)
 		{
@@ -77,17 +83,8 @@ package com.binaryscar.Summoner.NPC
 			_player = player;
 			_playState = playState;
 			
-			_cooldownTimer = NaN; 		// These reset to *null* when not in use.
-			_avoidTimer = NaN;			// " "
-			
-//			if (SimpleGraphic == null) {
-//				loadGraphic(ph_redblock, true, true, 32, 32, false);	
-//			}
-			
-//			addAnimation("walking", [0]);
-//			addAnimation("attacking", [0]);
-//			addAnimation("idle", [0]);
-//			addAnimation("fightingIdle", [0]);
+			_cooldownTimer = 0; 		// These reset to *null* when not in use.
+			_avoidTimer = 0;			// " "
 			
 			drag.x = SPEED_X * 6;
 			drag.y = SPEED_Y * 4;
@@ -147,8 +144,10 @@ package com.binaryscar.Summoner.NPC
 			sem = new Object;
 			_initializeStatusEffectMachine(sem, _semExecute);
 			
-			sec = new StatusEffectsController(this, playState);
-			sec.addStatusEffect("poison");
+			//sec = new StatusEffectsController(this, playState);
+			//sec.addStatusEffect("poison");
+			
+			statusEffectsCount = 0;
 			
 		}
 		
@@ -210,7 +209,7 @@ package com.binaryscar.Summoner.NPC
 		}
 		
 		public function get onCooldown():Boolean {
-			if (_cooldownTimer == NaN) {
+			if (_cooldownTimer == 0 || _cooldownTimer <= 0) {
 				return false;
 			}
 			if (_cooldownTimer > 0) { // Timer needs to go longer than attackCooldown.
@@ -226,7 +225,7 @@ package com.binaryscar.Summoner.NPC
 			if (bool) {
 				_cooldownTimer = ATTACK_DELAY;
 			} else {
-				_cooldownTimer = null;
+				_cooldownTimer = 0;
 			}
 		}
 		
@@ -301,7 +300,7 @@ package com.binaryscar.Summoner.NPC
 				{
 					enter: function():void {
 						play("walking");
-						_cooldownTimer = null;
+						_cooldownTimer = 0;
 						target = null;
 					}
 				});
@@ -367,7 +366,7 @@ package com.binaryscar.Summoner.NPC
 						
 						_avoidTimer -= FlxG.elapsed;
 						if (_avoidTimer <= 0) {
-							_avoidTimer = null;
+							_avoidTimer = 0;
 							fsm.changeState("walking");
 						}
 					},
@@ -388,7 +387,7 @@ package com.binaryscar.Summoner.NPC
 						
 						_avoidTimer -= FlxG.elapsed;
 						if (_avoidTimer <= 0) {
-							_avoidTimer = null;
+							_avoidTimer = 0;
 							fsm.changeState("walking");
 						}
 					},
@@ -403,7 +402,7 @@ package com.binaryscar.Summoner.NPC
 					enter: function():void {
 						stopMoving();
 						immovable = true;
-						_cooldownTimer = null;
+						_cooldownTimer = 0;
 					},
 					execute: function():void {
 						//trace('fighting execute');
@@ -414,7 +413,7 @@ package com.binaryscar.Summoner.NPC
 						}
 					},
 					exit: function():void {
-						_cooldownTimer = null;
+						_cooldownTimer = 0;
 						immovable = false;
 					}
 				});
