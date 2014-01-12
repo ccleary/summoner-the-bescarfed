@@ -1,6 +1,6 @@
 Summoner: The Bescarfed
 ======================
-The epic tale of a humble youth, Young Hero, who must take up the Scarf of Strategically-Limited Power to protect his village from the oncoming hordes of humorously named monsters, using only the power of his Scarf--and also the power of his demons. 
+The epic tale of a humble youth, Young Hero, who must take up the Scarf of Strategically-Limited Power to protect his village from the oncoming hordes of humorously-named monsters, using only the power of his Scarf--and also the power of his demons. 
 
 Forsooth this mystical Scarf, bestowed upon our youth by the Village Chief, grants him the power to summon and command various demons through magicks ancient, arcane, and spelled with a "k." 
 
@@ -11,7 +11,7 @@ Go, now, Young Hero! Battle across the land. Gain priceless skill points. Domina
 ======================
 **NOTE**:: This is a super early prototype, I don't think it even deserves to be called a "game" yet.
 
-Made with Flixel. This is my first attempt at putting together a game of my own design.
+**Made with Flixel.** This is my first attempt at putting together a game of my own design.
 
 The repo is public because I doubt if my code is going to be top-notch on my first Flixel project -- that is: I wouldn't recommend reading my code if you're looking for best practices. (But if you have suggestions about how I could make my code better, I would certainly love to hear them!)
 
