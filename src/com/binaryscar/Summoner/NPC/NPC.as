@@ -1,11 +1,11 @@
 package com.binaryscar.Summoner.NPC
 {
-	import com.binaryscar.Summoner.HealthBar;
+	import com.binaryscar.Summoner.EntityStatus.HealthBar;
 	import com.binaryscar.Summoner.PlayState;
 	import com.binaryscar.Summoner.FiniteStateMachine.State;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
 	import com.binaryscar.Summoner.Player.Player;
-	import com.binaryscar.Summoner.StatusEffectsController.StatusEffectsController;
+	import com.binaryscar.Summoner.EntityStatus.StatusEffectsController;
 	
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxG;

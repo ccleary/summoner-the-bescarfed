@@ -42,9 +42,12 @@ package com.binaryscar.Summoner.EntityStatus
 			_xOffset = xOffset;
 			_yOffset = yOffset;
 			
-			super(attachedTo.x + _xOffset, attachedTo.y + _yOffset);
+			super(); // is FlxGroup now.
+			//super(attachedTo.x + _xOffset, attachedTo.y + _yOffset);
 			
-			attachedTo.statusEffectsCount++;
+			if (attachedTo.statusEffectsCount != null) {
+				attachedTo.statusEffectsCount++;
+			}
 			
 			statusBox = new FlxSprite(attachedTo.x + _xOffset, attachedTo.y + _yOffset);
 			statusBox.makeGraphic(7, 7, 0xFF000000); // Black frame
@@ -73,7 +76,9 @@ package com.binaryscar.Summoner.EntityStatus
 		}
 		
 		override public function kill():void {
-			attachedTo.statusEffectsCount--;
+			if (attachedTo.statusEffectsCount != null) {
+				attachedTo.statusEffectsCount--;
+			}
 			super.kill();
 		}
 		

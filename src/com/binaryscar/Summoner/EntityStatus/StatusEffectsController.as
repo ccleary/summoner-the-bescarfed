@@ -38,7 +38,7 @@ package com.binaryscar.Summoner.EntityStatus
 			statusEffects = new Dictionary(); // Contains all ACTIVE statuses.
 		}
 		
-		public function update():void {
+		override public function update():void {
 			super.update();
 			
 			for each (var SE:StatusEffect in this) {

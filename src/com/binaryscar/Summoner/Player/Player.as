@@ -1,6 +1,6 @@
 package com.binaryscar.Summoner.Player 
 {
-	import com.binaryscar.Summoner.HealthBar;
+	import com.binaryscar.Summoner.EntityStatus.HealthBar;
 	
 	import flash.accessibility.AccessibilityProperties;
 	import flash.display.SpreadMethod;
