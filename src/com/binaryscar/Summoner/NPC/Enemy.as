@@ -63,9 +63,10 @@ package com.binaryscar.Summoner.NPC
 //			fsm = new StateMachine();
 			fsm.id = "[Enemy]";
 			addEnemyStates(fsm);
-//			initializeStates(fsm);
-//			fsm.initialState("idle");
-			fsm.changeState("walking");
+			_initState = "walking";
+			if (fsm.state != _initState) {
+				fsm.changeState(_initState);
+			}
 		}
 		
 		private function addEnemyStates(fsm:StateMachine):void 
@@ -155,7 +156,9 @@ package com.binaryscar.Summoner.NPC
 			visible = true;
 			solid = true;
 			health = HP;
-			fsm.changeState("walking");
+			if (fsm.state != _initState) {
+				fsm.changeState(_initState);
+			}
 			super.revive();
 		}
 		
