@@ -7,6 +7,7 @@ package com.binaryscar.Summoner
 	import com.binaryscar.Summoner.NPC.NPC;
 	import com.binaryscar.Summoner.NPC.Summoned;
 	import com.binaryscar.Summoner.Player.Player;
+	import mx.core.FlexSprite;
 	
 	import flash.utils.Dictionary;
 	
@@ -47,6 +48,7 @@ package com.binaryscar.Summoner
 		private var _win:Boolean = false;
 		
 		private var hud:HUD;
+		private var pausedOverlay:FlxGroup;
 		
 		public var livesCount:int = 20;
 		
@@ -109,9 +111,43 @@ package com.binaryscar.Summoner
 			
 			hud = new HUD(this);
 			add(hud);
+			
+			// PAUSE STUFF
+			var pausedGreyOut:FlxSprite = new FlxSprite().makeGraphic(FlxG.worldBounds.width, FlxG.worldBounds.height, 0x33000000);
+			var pausedIcon:FlxGroup = new FlxGroup(2);
+			var pausedLeftBar:FlxSprite = new FlxSprite().makeGraphic(20, 50, 0xFFFFFFFF);
+			var pausedRightBar:FlxSprite = new FlxSprite().makeGraphic(20, 50, 0xFFFFFFFF); 
+			
+			pausedGreyOut.x = pausedGreyOut.y = 0;
+			pausedLeftBar.x = (FlxG.worldBounds.width / 2) - 22.5;
+			pausedRightBar.x = (FlxG.worldBounds.width / 2) + 2.5;
+			pausedLeftBar.y = pausedRightBar.y = (FlxG.worldBounds.height / 2) - 40;
+			
+			pausedIcon.add(pausedLeftBar);
+			pausedIcon.add(pausedRightBar);
+			pausedOverlay = new FlxGroup();
+			pausedOverlay.add(pausedGreyOut);
+			pausedOverlay.add(pausedIcon);
+			
+			pausedOverlay.visible = false;
+			add(pausedOverlay);
 		}
 
 		override public function update():void {
+			
+			if (FlxG.keys.justPressed("P")) {
+				FlxG.paused = !FlxG.paused;
+				pausedOverlay.visible = FlxG.paused;
+				
+				if (FlxG.paused) {
+					pause();
+				}
+			}
+			
+			if (FlxG.paused) {
+				return; // skip updating.
+			}
+			
 			super.update();
 			
 			if (_lose && FlxG.keys.justPressed("R")) {
@@ -125,12 +161,11 @@ package com.binaryscar.Summoner
 			if (!player._core.alive || livesCount <= 0) {
 				lose();
 			}
-
 			
 			// TEMP TESTING HEALTH BARS
-			hBar_frame.x = player._core.x-2;
+			hBar_frame.x = player._core.x - 2;
 			hBar_frame.y = player._core.y - 6;
-			hBar_health.x = player._core.x-1;
+			hBar_health.x = player._core.x - 1;
 			hBar_health.y = player._core.y - 5;
 			hBar_health.scale.x = (hBar_frame.width-2)*(player.health / player.hitPoints);
 			if (hBar_health.scale.x == 0) {
@@ -172,6 +207,11 @@ package com.binaryscar.Summoner
 			_summonedGrp.callAll("lose");
 			_enemyGrp.callAll("lose");
 			FlxG.paused = true;
+		}
+		
+		function pause():void {
+			_summonedGrp.callAll("pause");
+			_enemyGrp.callAll("pause");
 		}
 		
 		public function summon():void {

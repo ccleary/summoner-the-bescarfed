@@ -4,6 +4,7 @@ package com.binaryscar.Summoner.NPC
 	import com.binaryscar.Summoner.PlayState;
 	import com.binaryscar.Summoner.FiniteStateMachine.State;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
+	import com.binaryscar.Summoner.FiniteStateMachine.StateMachineEvent;
 	import com.binaryscar.Summoner.Player.Player;
 	
 	import org.flixel.FlxEmitter;
@@ -43,11 +44,13 @@ package com.binaryscar.Summoner.NPC
 		protected var _statusTimer1:Number;
 		protected var _statustimer2:Number;
 		
-		protected var defaultInitState:String;
+		protected var _initState:String;
 		protected var _player:Player;
 		protected var _playState:PlayState;
 		
 		protected var gibs:FlxEmitter;
+		
+		protected var _prevStateStorage:String;
 		
 		private var _this:NPC;
 		private var _cooldownTimer:Number;		// When this reaches 0: Can attack.
@@ -116,10 +119,10 @@ package com.binaryscar.Summoner.NPC
 			fsm.id = "[NPC]";
 			initializeStates(fsm);
 			fsm.initialState = "idle";
-			if (initState != null && fsm.getStateByName(initState)) {
-				defaultInitState = initState;
+			if (initState != null && fsm.getStateByName(_initState)) {
+				_initState = initState;
 			} else {
-				defaultInitState = "idle";
+				_initState = "idle";
 			}
 			
 			sem = new Object;
@@ -177,10 +180,14 @@ package com.binaryscar.Summoner.NPC
 		public function set target(oppNPC:NPC):void {
 			if (oppNPC != null) {
 				_target = oppNPC;
-				fsm.changeState("fighting");
+				if (fsm.state != "fighting") {
+					fsm.changeState("fighting");
+				}
 			} else {
 				_target = null;
-				fsm.changeState(defaultInitState);
+				if (fsm.state != _initState) {
+					fsm.changeState(_initState);
+				}
 			}
 		}
 		
@@ -213,6 +220,11 @@ package com.binaryscar.Summoner.NPC
 			HP = newHP;
 		}
 		
+		public function pause():void {
+			if (fsm.state != "paused") {
+				fsm.changeState("paused");
+			}
+		}
 		
 		public function stopMoving():void {
 			velocity.x = velocity.y = acceleration.x = acceleration.y = 0;
@@ -271,6 +283,21 @@ package com.binaryscar.Summoner.NPC
 					}
 				});
 			
+			fsm.addState("paused",
+			{
+				enter: function(evt:StateMachineEvent = null):void {
+					if (evt != null) {
+						_prevStateStorage = evt.fromState;
+					}
+					stopMoving();
+				},
+				execute: function():void {
+					if (!FlxG.paused) {
+						fsm.changeState(_prevStateStorage);
+					}
+				}
+			});
+			
 			
 			fsm.addState("moving", 
 				{
@@ -298,15 +325,15 @@ package com.binaryscar.Summoner.NPC
 				{
 					parent: "moving",
 					enter: function():void {
-						if (_pursueTarget == null) {
-							fsm.changeState("walking");
-						}
+						//if (_pursueTarget == null) {
+							//fsm.changeState("walking");
+						//}
 					},
 					execute: function():void {
-						if (_pursueTarget == null) {
-							fsm.changeState("walking");
-							return;
-						}
+						//if (_pursueTarget == null) {
+							//fsm.changeState("walking");
+							//return;
+						//}
 						
 						updatePursueTarget();
 					},
@@ -321,7 +348,7 @@ package com.binaryscar.Summoner.NPC
 			fsm.addState("avoiding",
 				{
 					parent: "moving",
-					from: ["moving", "walking", "sprinting", "idle"], // Not fighting.
+					from: ["moving", "walking", "sprinting", "idle", "paused"], // Not fighting.
 					enter: function():void {
 						trace(fsm.id + ' Enter avoid!');
 						_avoidTimer = AVOID_DELAY;
@@ -343,7 +370,9 @@ package com.binaryscar.Summoner.NPC
 						_avoidTimer -= FlxG.elapsed;
 						if (_avoidTimer <= 0) {
 							_avoidTimer = null;
-							fsm.changeState("walking");
+							if (fsm.state != "walking") {
+								fsm.changeState("walking");
+							}
 						}
 					},
 					exit: function():void {
@@ -364,7 +393,9 @@ package com.binaryscar.Summoner.NPC
 						_avoidTimer -= FlxG.elapsed;
 						if (_avoidTimer <= 0) {
 							_avoidTimer = null;
-							fsm.changeState("walking");
+							if (fsm.state != "walking") {
+								fsm.changeState("walking");
+							}
 						}
 					},
 					exit: function():void {
@@ -395,7 +426,7 @@ package com.binaryscar.Summoner.NPC
 				});
 			fsm.addState("cooldown", 
 				{
-					from: ["fighting", "attacking"],
+					from: ["fighting", "attacking", "paused"],
 					parent: "fighting",
 					enter: function():void  {
 						if (finished) {
@@ -407,7 +438,9 @@ package com.binaryscar.Summoner.NPC
 							_target = null;
 						}
 						if (_target == null) {
-							fsm.changeState("walking");
+							if (fsm.state != "walking") {
+								fsm.changeState("walking");
+							}
 							return;
 						} else if (!onCooldown) {
 							fsm.changeState("attacking");
@@ -420,17 +453,21 @@ package com.binaryscar.Summoner.NPC
 				});
 			fsm.addState("attacking", 
 				{
-					from: ["fighting", "cooldown"],
+					from: ["fighting", "cooldown", "paused"],
 					parent: "fighting",
 					enter: function():void {
 						if (_target == null) {
-							fsm.changeState("walking");
+							if (fsm.state != "walking") {
+								fsm.changeState("walking");
+							};
 							return;
 						}
 						play("attacking");
 						attack();
 						if(_target == null) {
-							fsm.changeState("walking");
+							if (fsm.state != "walking") {
+								fsm.changeState("walking");
+							}
 							return;
 						}
 						fsm.changeState("cooldown");
@@ -456,7 +493,7 @@ package com.binaryscar.Summoner.NPC
 					},
 					execute: function():void {
 						if (alive) {
-							fsm.changeState(defaultInitState);
+							fsm.changeState(_initState);
 						}
 					},
 					exit: function() {
@@ -566,7 +603,9 @@ package com.binaryscar.Summoner.NPC
 				|| (facing == LEFT && _pursueTarget.x > x)) {
 				// Lose pursuit on targets behind me.
 				_pursueTarget = null;
-				fsm.changeState("walking");
+				if (fsm.state != "walking") {
+					fsm.changeState("walking");
+				}
 				return;
 			} else { // We still have a target, move toward it.
 				var yDiff:int = (_pursueTarget.y + (_pursueTarget.height/2)) - (this.y + (this.height/2));
