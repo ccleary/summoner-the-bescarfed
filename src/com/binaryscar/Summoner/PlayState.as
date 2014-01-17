@@ -119,9 +119,9 @@ package com.binaryscar.Summoner
 			var pausedRightBar:FlxSprite = new FlxSprite().makeGraphic(20, 50, 0xFFFFFFFF); 
 			
 			pausedGreyOut.x = pausedGreyOut.y = 0;
-			pausedLeftBar.x = (FlxG.worldBounds.width / 2) - 22.5;
-			pausedRightBar.x = (FlxG.worldBounds.width / 2) + 2.5;
-			pausedLeftBar.y = pausedRightBar.y = (FlxG.worldBounds.height / 2) - 40;
+			pausedLeftBar.x = (FlxG.width / 2) - 23;
+			pausedRightBar.x = (FlxG.width / 2) + 3;
+			pausedLeftBar.y = pausedRightBar.y = (FlxG.height / 2) - 25;
 			
 			pausedIcon.add(pausedLeftBar);
 			pausedIcon.add(pausedRightBar);
