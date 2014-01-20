@@ -25,6 +25,9 @@ package com.binaryscar.Summoner.EntityStatus
 		// Load all graphics in the Controller and just pass them into the individual SE's?
 		[Embed(source = "../../../../../art/poison-spiral-small.png")]public var se_poisonSpiral:Class;
 		
+		public static const POISON:int	= 0;
+		public static const SLOW:int	= 1;
+		
 		private var _currSE:StatusEffect; //Helper for instantiating new StatusEffects.
 		
 		private var currIndex:int;

@@ -1,12 +1,12 @@
 package com.binaryscar.Summoner 
 {
-	import com.binaryscar.Summoner.FiniteStateMachine.*;
 	import com.binaryscar.Summoner.EntityStatus.HealthBarController; 
 	import com.binaryscar.Summoner.EntityStatus.StatusEffectsController;
+	import com.binaryscar.Summoner.Entity.NPC.Enemy;
+	import com.binaryscar.Summoner.Entity.NPC.NPC;
+	import com.binaryscar.Summoner.Entity.NPC.Summoned;
+	import com.binaryscar.Summoner.FiniteStateMachine.*;
 	import com.binaryscar.Summoner.HUD.HUD;
-	import com.binaryscar.Summoner.NPC.Enemy;
-	import com.binaryscar.Summoner.NPC.NPC;
-	import com.binaryscar.Summoner.NPC.Summoned;
 	import com.binaryscar.Summoner.Player.Player;
 	
 	import flash.utils.Dictionary;
