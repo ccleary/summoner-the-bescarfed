@@ -10,17 +10,16 @@ package com.binaryscar.Summoner.Entity.NPC
 	 * @author Connor Cleary
 	 */
 	public class EntityGroup extends FlxGroup 
-	{
+	{		
 		private var hb:HealthBar;
 		private var sec:StatusEffectsController;
 		
-		private var hbOffset:Vector.<int>;
+		private var hbOffset:Vector.<int> = new Vector.<int>([-2,-14]);
 		
 		public function EntityGroup(_attachedToEntity:Entity) 
 		{
 			super();
-			hbOffset = new Vector.<int>([-2,-14]);
-			hb = new HealthBar(_attachedToEntity, -2, -14);
+			hb = new HealthBar(_attachedToEntity, hcOffset[0], hbOffset[1]);
 			add(hbc);
 			
 			sec = new StatusEffectsController();

@@ -38,8 +38,6 @@ package com.binaryscar.Summoner.Entity
 		protected var _allyGrp:FlxGroup;
 		protected var _oppGrp:FlxGroup;			// "_opp" for "Opposition"
 		// protected var _neutralGrp:FlxGroup;  // is this needed for walls and obstacles and hazards?
-		
-		protected var esc:EntityStatusController; // Control health bar and status effects.
 	
 		protected var gibs_smoke:FlxEmitter;
 		
