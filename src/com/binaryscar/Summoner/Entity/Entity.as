@@ -30,12 +30,14 @@ package com.binaryscar.Summoner.Entity
 		protected var HP:int = 3; 				// Hit Points.
 		protected var MP:int = 10; 				// Magic Points. So far: Unused.
 		protected var STR:int = 1;			 	// Attack Strength
-		protected var SPD:int = 50;				// Base Speed, (this*1.2 for X) (this*0.8 for Y)
+		protected var MSPD:int = 50;			// Base Speed, (this*1.2 for X) (this*0.8 for Y)
+		protected var ASPD:int = 2;				// Figure out equation for this.
+												// Higher ASPD should = faster attack.
 		
 		protected var curHP:int = HP;
 		protected var curMP:int = MP;
 		protected var curSTR:int = STR;
-		protected var curSPD:int = SPD;
+		protected var curSPD:int = MSPD;
 		
 		protected var _allyGrp:FlxGroup;
 		protected var _oppGrp:FlxGroup;			// "_opp" for "Opposition"
@@ -57,13 +59,13 @@ package com.binaryscar.Summoner.Entity
 		}
 		
 		public function setSpeed(newSPD:int) {
-			SPD = newSPD;
+			MSPD = newSPD;
 		}
 		public function getSpeedX():int {
-			return SPD * 1.2;
+			return MSPD * 1.2;
 		}
 		public function getSpeedY():int {
-			return SPD * 0.8;
+			return MSPD * 0.8;
 		}
 		
 	}
