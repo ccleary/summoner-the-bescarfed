@@ -27,16 +27,21 @@ package com.binaryscar.Summoner.Entity.NPC
 		[Embed(source = "../../../../../art/smokey-gibs1.png")]public var gibsImg_smoke:Class;
 		[Embed(source = "../../../../../art/poison-gibs1.png")]public var gibsImg_poison:Class;
 		
+		protected var FSM:StateMachine;
 		protected var _allyGrp:FlxGroup;
 		protected var _oppGrp:FlxGroup;			// "_opp" for "Opposition"
 
 		protected var _player:Player;
 		protected var _playState:PlayState;
 		
+		protected var AVOID_DELAY:Number = 0.15;	// _avoidTimer resets to this number
+		private var _avoidTimer:Number;			// When this reaches 0: Stops "avoiding" state.
+		
 		public var _target:NPC;					// Can only have one active fighting-target.
 		public var _pursueTarget:NPC;			// Can only be pursuing one target.
 		
 		public var statusEffectsCount:int;
+		
 		
 		public function NPC(myGrp:FlxGroup, oppGrp:FlxGroup, player:Player, playState:PlayState, X:Number=0, Y:Number=0, face:uint = RIGHT, initState:String = null)
 		{
@@ -96,17 +101,17 @@ package com.binaryscar.Summoner.Entity.NPC
 			
 			//hBar = new HealthBar(this, -4, -8);
 			
-			fsm = new StateMachine();
-			fsm.id = "[NPC]";
-			initializeStates(fsm);
-			if (initState != null && fsm.getStateByName(initState)) {
+			FSM = new StateMachine();
+			FSM.id = "[NPC]";
+			initializeStates(FSM);
+			if (initState != null && FSM.getStateByName(initState)) {
 				defaultInitState = initState;
 			} else {
 				defaultInitState = "idle";
 			}
 			// This is necessary so the Subclass can
 			// create and run animations properly.
-			fsm.initialState = "idle";
+			FSM.initialState = "idle";
 			
 			//TODO CLEANUP
 			sem = new Object;
@@ -120,7 +125,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		override public function update():void {
-			_state = fsm.getStateByName(fsm.state); // Actual obj:State, not name:String.
+			_state = FSM.getStateByName(FSM.state); // Actual obj:State, not name:String.
 			
 			if (!alive) {
 				exists = false;
@@ -135,7 +140,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			
 			//FlxG.collide(this, _player, hurtPlayer);
 			
-			fsm.update(); // Finite State Machine Update
+			FSM.update(); // Finite State Machine Update
 			sec.update();
 			
 			//if (sem.statusEffects.length > 0) {
@@ -150,7 +155,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		
 		override public function kill():void {
-			fsm.changeState("dead");
+			FSM.changeState("dead");
 			if (_target != null) {
 				_target = null; // You dead, you not targetin' anybody.
 			}
@@ -170,7 +175,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		public function set target(oppNPC:NPC):void {
 			if (oppNPC != null) {
 				_target = oppNPC;
-				fsm.changeState("fighting");
+				FSM.changeState("fighting");
 			} else {
 				_target = null;
 			}
@@ -211,7 +216,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		public function lose():void {
-			fsm.changeState("idle");
+			FSM.changeState("idle");
 		}
 		
 		public function startFight(me:NPC, oppNPC:NPC):void {
@@ -221,7 +226,7 @@ package com.binaryscar.Summoner.Entity.NPC
 //				
 //				target = oppNPC;
 //				oppNPC.addAttacker(me);
-//				fsm.changeState("fighting");
+//				FSM.changeState("fighting");
 //			}
 		}
 		
@@ -253,9 +258,9 @@ package com.binaryscar.Summoner.Entity.NPC
 			player.hurt(STR); //TODO This is a problem.
 		}
 		
-		private function initializeStates(fsm:StateMachine):void {
+		private function initializeStates(FSM:StateMachine):void {
 			
-			fsm.addState("idle", 
+			FSM.addState("idle", 
 				{
 					enter: function():void {
 						stopMoving();
@@ -264,7 +269,7 @@ package com.binaryscar.Summoner.Entity.NPC
 				});
 			
 			
-			fsm.addState("moving", 
+			FSM.addState("moving", 
 				{
 					enter: function():void {
 						play("walking");
@@ -272,7 +277,7 @@ package com.binaryscar.Summoner.Entity.NPC
 						target = null;
 					}
 				});
-			fsm.addState("walking", 
+			FSM.addState("walking", 
 				{
 					parent: "moving",
 					enter: function():void {
@@ -286,17 +291,17 @@ package com.binaryscar.Summoner.Entity.NPC
 						searchForPursueTargets(_oppGrp); // Does passing in the group ensure it's updated every time?
 					}
 				});
-			fsm.addState("pursuing",
+			FSM.addState("pursuing",
 				{
 					parent: "moving",
 					enter: function():void {
 						//if (_pursueTarget == null) {
-							//fsm.changeState("walking");
+							//FSM.changeState("walking");
 						//}
 					},
 					execute: function():void {
 						if (_pursueTarget == null) {
-							//fsm.changeState("walking");
+							//FSM.changeState("walking");
 							return;
 						}
 						
@@ -310,18 +315,18 @@ package com.binaryscar.Summoner.Entity.NPC
 				});
 			
 			// TODO add "Evading" for trying to get away from oppNPC
-			fsm.addState("avoiding",
+			FSM.addState("avoiding",
 				{
 					parent: "moving",
 					from: ["moving", "walking", "sprinting", "idle"], // Not fighting.
 					enter: function():void {
-						trace(fsm.id + ' Enter avoid!');
+						trace(FSM.id + ' Enter avoid!');
 						_avoidTimer = AVOID_DELAY;
 					},
 					execute: function():void {
 					}
 				});
-			fsm.addState("avoidingDown", 
+			FSM.addState("avoidingDown", 
 				{
 					parent: "avoiding",
 					enter: function():void {
@@ -335,14 +340,14 @@ package com.binaryscar.Summoner.Entity.NPC
 						_avoidTimer -= FlxG.elapsed;
 						if (_avoidTimer <= 0) {
 							_avoidTimer = 0;
-							fsm.changeState("walking");
+							FSM.changeState("walking");
 						}
 					},
 					exit: function():void {
 						angle = acceleration.y = 0;
 					}
 				});
-			fsm.addState("avoidingUp",
+			FSM.addState("avoidingUp",
 				{
 					parent: "avoiding",
 					enter: function():void {
@@ -356,7 +361,7 @@ package com.binaryscar.Summoner.Entity.NPC
 						_avoidTimer -= FlxG.elapsed;
 						if (_avoidTimer <= 0) {
 							_avoidTimer = 0;
-							fsm.changeState("walking");
+							FSM.changeState("walking");
 						}
 					},
 					exit: function():void {
@@ -365,7 +370,7 @@ package com.binaryscar.Summoner.Entity.NPC
 				});
 			
 			
-			fsm.addState("fighting", 
+			FSM.addState("fighting", 
 				{
 					enter: function():void {
 						stopMoving();
@@ -375,9 +380,9 @@ package com.binaryscar.Summoner.Entity.NPC
 					execute: function():void {
 						//trace('fighting execute');
 						if (!onCooldown) {
-							fsm.changeState("attacking");
+							FSM.changeState("attacking");
 						} else {
-							fsm.changeState("cooldown");
+							FSM.changeState("cooldown");
 						}
 					},
 					exit: function():void {
@@ -385,7 +390,7 @@ package com.binaryscar.Summoner.Entity.NPC
 						immovable = false;
 					}
 				});
-			fsm.addState("cooldown", 
+			FSM.addState("cooldown", 
 				{
 					from: ["fighting", "attacking"],
 					parent: "fighting",
@@ -399,10 +404,10 @@ package com.binaryscar.Summoner.Entity.NPC
 							_target = null;
 						}
 						if (_target == null) {
-							fsm.changeState("walking");
+							FSM.changeState("walking");
 							return;
 						} else if (!onCooldown) {
-							fsm.changeState("attacking");
+							FSM.changeState("attacking");
 							return;
 						}
 						if (finished) {
@@ -410,27 +415,27 @@ package com.binaryscar.Summoner.Entity.NPC
 						}
 					}
 				});
-			fsm.addState("attacking", 
+			FSM.addState("attacking", 
 				{
 					from: ["fighting", "cooldown"],
 					parent: "fighting",
 					enter: function():void {
 						if (_target == null) {
-							fsm.changeState("walking");
+							FSM.changeState("walking");
 							return;
 						}
 						play("attacking");
 						attack();
 						if(_target == null) {
-							fsm.changeState("walking");
+							FSM.changeState("walking");
 							return;
 						}
-						fsm.changeState("cooldown");
+						FSM.changeState("cooldown");
 					}
 				});
 			
 			
-			fsm.addState("dead", 
+			FSM.addState("dead", 
 				{
 					enter: function():void  {
 						gibs_smoke.at(_this);
@@ -448,7 +453,7 @@ package com.binaryscar.Summoner.Entity.NPC
 					},
 					execute: function():void {
 						if (alive) {
-							fsm.changeState(defaultInitState);
+							FSM.changeState(defaultInitState);
 						}
 					},
 					exit: function() {
@@ -479,7 +484,7 @@ package com.binaryscar.Summoner.Entity.NPC
 						//pursueOptions.push({oppNPC: curr as NPC, dist: sqDist}); // Add an entity if it's within range.
 						//distanceLimit = sqDist; // Set a new limit on search range
 						_pursueTarget = curr;
-						fsm.changeState("pursuing");
+						FSM.changeState("pursuing");
 						break;
 					}
 				}
@@ -489,7 +494,7 @@ package com.binaryscar.Summoner.Entity.NPC
 //					trace(pursueOptions.toString());
 //					if (pursueOptions.length == 1) {
 //						_pursueTarget = pursueOptions[0].oppNPC;
-//						fsm.changeState("pursuing");
+//						FSM.changeState("pursuing");
 //					} else if (pursueOptions.length > 1) {
 //						pursueOptions.sort(function(A, B) {
 //							if (A.dist < B.dist) {
@@ -502,7 +507,7 @@ package com.binaryscar.Summoner.Entity.NPC
 //						});
 //						// Choose closest target.
 //						_pursueTarget = pursueOptions[0].oppNPC;
-//						fsm.changeState("pursuing");
+//						FSM.changeState("pursuing");
 //					}
 //				}
 			} else {
@@ -559,7 +564,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		public function addStatusEffect(newStatus:String):void {
-			//trace(fsm.id + ' :: POISONED!');
+			//trace(FSM.id + ' :: POISONED!');
 			// TODO, link up a timer.
 			if (sem.statusEffects.indexOf(newStatus) == -1) { // Only add if it's not already present.
 				var statusGibs:Class;
@@ -601,16 +606,16 @@ package com.binaryscar.Summoner.Entity.NPC
 		private function updatePursueTarget():void {
 			if (_pursueTarget == null || !_pursueTarget.alive) {
 				_pursueTarget = null; // In case it just died.
-				if (fsm.state != "walking") {
-					fsm.changeState("walking");
+				if (FSM.state != "walking") {
+					FSM.changeState("walking");
 				}
 				return;
 			} else if ( (facing == RIGHT && _pursueTarget.x < x) 
 				|| (facing == LEFT && _pursueTarget.x > x)) {
 				// Lose pursuit on targets behind me.
 				_pursueTarget = null;
-				if (fsm.state != "walking") {
-					fsm.changeState("walking");
+				if (FSM.state != "walking") {
+					FSM.changeState("walking");
 				}
 				return;
 			} else { // We still have a target, move toward it.
@@ -630,31 +635,31 @@ package com.binaryscar.Summoner.Entity.NPC
 			var compareY:Boolean = thisNPC.y <= otherNPC.y;
 			var compareX:Boolean = thisNPC.x == otherNPC.x;
 			
-			if (thisNPC.fsm.state != "avoidingDown" && thisNPC.fsm.state != "avoidingUp" && !thisNPC.immovable) {
-				//trace("this is what happens when summons collide :: THIS :: " + thisSumm.fsm.state);
+			if (thisNPC.FSM.state != "avoidingDown" && thisNPC.FSM.state != "avoidingUp" && !thisNPC.immovable) {
+				//trace("this is what happens when summons collide :: THIS :: " + thisSumm.FSM.state);
 				if (compareY) {
-					thisNPC.fsm.changeState("avoidingUp");
+					thisNPC.FSM.changeState("avoidingUp");
 				} else {
-					thisNPC.fsm.changeState("avoidingDown");
+					thisNPC.FSM.changeState("avoidingDown");
 				}
-			} else if (thisNPC.fsm.state == "avoidingDown" || thisNPC.fsm.state == "avoidingUp") {
+			} else if (thisNPC.FSM.state == "avoidingDown" || thisNPC.FSM.state == "avoidingUp") {
 				acceleration.y += Math.random() * 5 + 1;
 				thisNPC._avoidTimer += FlxG.elapsed*2; // Reset timer so the summoned keeps moving in same direction.
 			}
 			
-			if (compareX && (fsm.state != "avoidingDown" && fsm.state != "avoidingUp")) {
+			if (compareX && (FSM.state != "avoidingDown" && FSM.state != "avoidingUp")) {
 				thisNPC.acceleration.y += Math.random() * 5 + 1;
 			}
 			
-			//			// TODO - May be problematic if we want *fsm* to be private?
-			//			if (otherNPC.fsm.state != "avoidingDown" && otherNPC.fsm.state != "avoidingUp" && !otherNPC.immovable) {
-			//				//trace("this is what happens when summons collide :: OTHER :: " + otherSumm.fsm.state);
+			//			// TODO - May be problematic if we want *FSM* to be private?
+			//			if (otherNPC.FSM.state != "avoidingDown" && otherNPC.FSM.state != "avoidingUp" && !otherNPC.immovable) {
+			//				//trace("this is what happens when summons collide :: OTHER :: " + otherSumm.FSM.state);
 			//				if (compareY) {
-			//					otherNPC.fsm.changeState("avoidingUp");
+			//					otherNPC.FSM.changeState("avoidingUp");
 			//				} else {
-			//					otherNPC.fsm.changeState("avoidingDown");
+			//					otherNPC.FSM.changeState("avoidingDown");
 			//				}
-			//			} else if (otherNPC.fsm.state == "avoidingDown" || otherNPC.fsm.state == "avoidingUp") {
+			//			} else if (otherNPC.FSM.state == "avoidingDown" || otherNPC.FSM.state == "avoidingUp") {
 			//				otherNPC._avoidTimer += FlxG.elapsed*2;
 			//			}
 		}

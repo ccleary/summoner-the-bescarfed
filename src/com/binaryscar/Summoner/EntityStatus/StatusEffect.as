@@ -21,35 +21,35 @@ package com.binaryscar.Summoner.EntityStatus
 		
 		private const DEFAULT_TIMER:Number = 3;
 		
-		public var name:String;
+		public var typeOf:String;
 		public var timer:Number;
-		//public var emitter:FlxEmitter;
+		
 		public var spiral:FlxSprite; // TEMP
 		public var statusBox:FlxSprite;
 		
-		public var attachedTo:FlxSprite;
+		private var _attachedTo:FlxSprite;
 		
 		private var _xOffset:int;
 		private var _yOffset:int;
 		
 		public function StatusEffect(Name:String, AttachedTo:FlxSprite, xOffset:int = 0, yOffset:int = 0) //Emitter:FlxEmitter, Timer:Number = DEFAULT_TIMER) 
 		{
-			name = Name;
+			typeOf = Name;
 			//emitter = Emitter; //(Emitter) ? Emitter : new FlxEmitter(0,0);
 			timer = DEFAULT_TIMER;
 			
-			attachedTo = AttachedTo;
+			_attachedTo = AttachedTo;
 			_xOffset = xOffset;
 			_yOffset = yOffset;
 			
 			super(); // is FlxGroup now.
 			//super(attachedTo.x + _xOffset, attachedTo.y + _yOffset);
 			
-			if (attachedTo.statusEffectsCount != null) {
-				attachedTo.statusEffectsCount++;
+			if (_attachedTo.statusEffectsCount != null) {
+				_attachedTo.statusEffectsCount++;
 			}
 			
-			statusBox = new FlxSprite(attachedTo.x + _xOffset, attachedTo.y + _yOffset);
+			statusBox = new FlxSprite(_attachedTo.x + _xOffset, _attachedTo.y + _yOffset);
 			statusBox.makeGraphic(7, 7, 0xFF000000); // Black frame
 			spiral = new FlxSprite(statusBox.x + 1, statusBox.y + 1);
 			spiral.loadGraphic(se_poisonSpiral, true, false, 5, 5);
@@ -60,8 +60,8 @@ package com.binaryscar.Summoner.EntityStatus
 		override public function update():void {
 			super.update();
 			
-			statusBox.x = attachedTo.x + _xOffset;
-			statusBox.y = attachedTo.y + _yOffset;
+			statusBox.x = _attachedTo.x + _xOffset;
+			statusBox.y = _attachedTo.y + _yOffset;
 			spiral.x = statusBox.x + 1;
 			spiral.y = statusBox.y + 1;
 			//_rotationTimer -= FlxG.elapsed
@@ -72,19 +72,19 @@ package com.binaryscar.Summoner.EntityStatus
 		}
 		
 		override public function toString():String {
-			return this.name;
+			return this.typeOf;
 		}
 		
 		override public function kill():void {
-			if (attachedTo.statusEffectsCount != null) {
-				attachedTo.statusEffectsCount--;
+			if (_attachedTo.statusEffectsCount != null) {
+				_attachedTo.statusEffectsCount--;
 			}
 			super.kill();
 		}
 		
 		public function reset(Name:String, attachTo:NPC, xOffset:int, yOffset:int):void {
-			name = Name;
-			attachedTo = attachTo;
+			typeOf = Name;
+			_attachedTo = attachTo;
 			
 			_xOffset = xOffset;
 			_yOffset = yOffset;

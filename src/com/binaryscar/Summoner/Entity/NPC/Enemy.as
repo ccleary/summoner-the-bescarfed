@@ -60,14 +60,14 @@ package com.binaryscar.Summoner.Entity.NPC
 			offset.y = 6;
 			health = HP;
 			
-//			fsm = new StateMachine();
-			fsm.id = "[Enemy]";
-			addEnemyStates(fsm);
-//			initializeStates(fsm);
-//			fsm.initialState("idle");
+//			FSM = new StateMachine();
+			FSM.id = "[Enemy]";
+			addEnemyStates(FSM);
+//			initializeStates(FSM);
+//			FSM.initialState("idle");
 
-			if (fsm.state != "walking") {
-				fsm.changeState("walking");
+			if (FSM.state != "walking") {
+				FSM.changeState("walking");
 			}
 		}
 		
@@ -107,7 +107,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		override public function update():void {
 			if (this._targetedBy.length > 1 && !onSpellCooldown) { //FIXME
 				trace("POISON CLOUD!");
-				fsm.changeState("poisonCloud");
+				FSM.changeState("poisonCloud");
 			}
 			
 			super.update();
@@ -158,8 +158,8 @@ package com.binaryscar.Summoner.Entity.NPC
 			visible = true;
 			solid = true;
 			health = HP;
-			if (fsm.state != "walking") {
-				fsm.changeState("walking");
+			if (FSM.state != "walking") {
+				FSM.changeState("walking");
 			}
 			super.revive();
 		}

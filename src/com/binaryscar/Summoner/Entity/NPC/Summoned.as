@@ -55,12 +55,12 @@ package com.binaryscar.Summoner.Entity.NPC
 			elasticity = 1.5;
 			 
 //			fsm = new StateMachine();
-		 	fsm.id = "[Summoned]";
-			addSummonedStates(fsm);
+		 	FSM.id = "[Summoned]";
+			addSummonedStates(FSM);
 			
 			//trace(fsm.state);
 			//if (fsm.state != "walking") {
-				fsm.changeState("walking");
+				FSM.changeState("walking");
 			//}
 		}
 		
@@ -68,8 +68,8 @@ package com.binaryscar.Summoner.Entity.NPC
 			super.update();
 		}
 		
-		private function addSummonedStates(fsm:StateMachine):void {
-			fsm.addState("sprinting", 
+		private function addSummonedStates(FSM:StateMachine):void {
+			FSM.addState("sprinting", 
 				{
 					parent: "moving",
 					enter: function() {
@@ -80,8 +80,8 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		override public function revive():void {
 			health = HP;
-			if (fsm.state != "walking") {
-				fsm.changeState("walking");
+			if (FSM.state != "walking") {
+				FSM.changeState("walking");
 			}
 			super.revive();
 		}

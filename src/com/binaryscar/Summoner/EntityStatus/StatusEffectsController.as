@@ -1,8 +1,9 @@
 package com.binaryscar.Summoner.EntityStatus 
 {
+	import com.binaryscar.Summoner.Entity.EntityExtrasGroup;
 	import com.binaryscar.Summoner.NPC.NPC;
 	import flash.events.StatusEvent;
-	import flash.utils.Dictionary; // Basing this decision on the StateMachine I "borrowed"
+	import flash.utils.Dictionary; // Basing this decision on the FiniteStateMachine I "borrowed"
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxSprite;
@@ -12,35 +13,40 @@ package com.binaryscar.Summoner.EntityStatus
 	 * ...
 	 * @author Connor Cleary
 	 * 
-	 * TODO rebuild this to be more consistent with HealthBarController's style.
+	 * 
 	 * 
 	 */
-	// Inconsistent behavior / architecture as compared to the HealthBarController -- problematic? Probably.
-	// FIXME // REFACTORME
-	
-	// Wrap them all up together in a EntityStatus class?
 	
 	public class StatusEffectsController extends FlxGroup
 	{
 		// Load all graphics in the Controller and just pass them into the individual SE's?
 		[Embed(source = "../../../../../art/poison-spiral-small.png")]public var se_poisonSpiral:Class;
 		
-		public static const POISON:int	= 0;
-		public static const SLOW:int	= 1
+		public static const POISON:String	= "poison";
+		public static const SLOW:String		= "slow";
+		
+		private var _attachedTo:FlxSprite;
+		private var _parentGroup:FlxGroup;
+		private var _xOffset:int;
+		private var _yOffset:int;
 		
 		// Should I use a dictionary object to contain all info about a given status?
 		private var gibsArray:Array = new Array([se_poisonSpiral, se_poisonSpiral]);
 		
 		private var _currSE:StatusEffect; //Helper for instantiating new StatusEffects.
+	
+		private var _currCount:int = 0;
+		private var _currIndex:int; // for knowing how many SEs are currently active
 		
-		private var currIndex:int;
-		
-		public function StatusEffectsController() //(Entity:FlxSprite, PlayState:FlxState) // Need to be NPC? 
+		public function StatusEffectsController(Entity:FlxSprite, ExtrasGroup:EntityExtrasGroup, xOff:int, yOff:int, PlayState:FlxState) // Need to be NPC? 
 		{
 			super();
 			
-			_entity = Entity;
-			_playState = PlayState;
+			_attachedTo = Entity;
+			_parentGroup = ExtrasGroup;
+			_xOffset = xOff;
+			_yOffset = yOff;
+			//_playState = PlayState;
 			statusEffects = new Dictionary(); // Contains all ACTIVE statuses.
 		}
 		
@@ -54,30 +60,37 @@ package com.binaryscar.Summoner.EntityStatus
 			}
 		}
 		
-		public function addStatusEffect(name:String, attachTo:NPC, xOffset:int, yOffset:int):void {
+		
+		public function addStatusEffect(ofType:String):void {
 			if (countDead() > 0) {
 				_currSE = getFirstDead() as StatusEffect;
-				_currSE.reset(name, attachTo, xOffset, yOffset);
+				_currSE.reset(ofType, _attachedTo, getCurrentXOffset(), _yOffset);
+				// TODO Revisit this
 			}
 			if (statusEffects[name] == null) {
-				var newStatus:StatusEffect = new StatusEffect(name, _entity, -2, -20);
+				var newStatus:StatusEffect = new StatusEffect(ofType, _attachedTo, -2, -20);
 				//_initializeEmitter(newStatus.emitter, newStatus.name);
-				statusEffects[name] = newStatus;
+				statusEffects[ofType] = newStatus;
 				
-				_playState.add(statusEffects[name].statusBox);
-				_playState.add(statusEffects[name].spiral);
+				_parentGroup.add(statusEffects[ofType].statusBox);
+				_parentGroup.add(statusEffects[ofType].spiral);
 				//newStatus = null; // gc?
 			} else {
 				trace("Status already exists. " + name);
 			}
 		}
 		
-		public function removeStatusEffect(name:String):void {
-			if (statusEffects[name] != null) {
-				statusEffects[name] = null;
+		public function removeStatusEffect(ofType:String):void {
+			if (statusEffects[ofType] != null) {
+				statusEffects[ofType] = null;
+				_currCount--;
 				//garbage collection?
 			}
-		}		
+		}
+		
+		private function getCurrentXOffset():int {
+			return _xOffset + (_statusEffectWidth * _currCount);
+		}
 	}
 
 }
