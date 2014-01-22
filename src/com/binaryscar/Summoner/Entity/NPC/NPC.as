@@ -65,14 +65,14 @@ package com.binaryscar.Summoner.Entity.NPC
 			health = HP;
 			elasticity = 1.5;
 			
-			gibs_smoke = new FlxEmitter(x, y, 10);
-			gibs_smoke.setXSpeed(-30,30);
-			gibs_smoke.setYSpeed(-30,30);
-			gibs_smoke.setRotation(0, 360);
-			gibs_smoke.gravity = 1.5;
-			gibs_smoke.makeParticles(gibsImg_smoke, 10, 8, true, 0);
+			//gibs_smoke = new FlxEmitter(x, y, 10);
+			//gibs_smoke.setXSpeed(-30,30);
+			//gibs_smoke.setYSpeed(-30,30);
+			//gibs_smoke.setRotation(0, 360);
+			//gibs_smoke.gravity = 1.5;
+			//gibs_smoke.makeParticles(gibsImg_smoke, 10, 8, true, 0);
 			//gibs_smoke.bounce = 0.5;
-			_playState.add(gibs_smoke);
+			//_playState.add(gibs_smoke);
 			
 			// Make dynamically when statuses added?
 			//_poisonTimer = 0;
@@ -431,8 +431,8 @@ package com.binaryscar.Summoner.Entity.NPC
 			FSM.addState("dead", 
 				{
 					enter: function():void  {
-						gibs_smoke.at(this);
-						gibs_smoke.start(true, 0.25, 0.1, 20);
+						//gibs_smoke.at(this);
+						//gibs_smoke.start(true, 0.25, 0.1, 20);
 						exists = false;
 						solid = false;
 						

@@ -1,5 +1,6 @@
 package com.binaryscar.Summoner.Entity.EntityStatus 
 {
+	import com.binaryscar.Summoner.Entity.Entity;
 	import com.binaryscar.Summoner.Entity.EntityExtrasGroup;
 	import com.binaryscar.Summoner.Entity.NPC.NPC;
 
@@ -23,27 +24,26 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		public static const POISON:String	= "poison";
 		public static const SLOW:String		= "slow";
 		
-		private var _attachedTo:FlxSprite;
-		private var _parentGroup:FlxGroup;
-		private var _xOffset:int;
-		private var _yOffset:int;
+		private var attachedTo:Entity;
+		private var parentGroup:FlxGroup;
+		private var xOffset:int;
+		private var yOffset:int;
+		private var statusEffectWidth:int = 7;
 		
-		// Should I use a dictionary object to contain all info about a given status?
-		private var gibsArray:Array = new Array([se_poisonSpiral, se_poisonSpiral]);
+		private var statusEffects:Dictionary;
 		
-		private var _currSE:StatusEffect; //Helper for instantiating new StatusEffects.
-	
-		private var _currCount:int = 0;
-		private var _currIndex:int; // for knowing how many SEs are currently active
+		private var currentStatusEffect:StatusEffect; //Helper for instantiating new StatusEffects.
+		private var currentStatusCount:int = 0;
+		private var currentStatusIndex:int; // for knowing how many SEs are currently active
 		
-		public function StatusEffectsController(Entity:FlxSprite, ExtrasGroup:EntityExtrasGroup, xOff:int, yOff:int, PlayState:FlxState) // Need to be NPC? 
+		public function StatusEffectsController(AttachedTo:Entity, entityExtrasGroup:EntityExtrasGroup, XOffset:int, YOffset:int) // Need to be NPC? 
 		{
 			super();
 			
-			_attachedTo = Entity;
-			_parentGroup = ExtrasGroup;
-			_xOffset = xOff;
-			_yOffset = yOff;
+			attachedTo = AttachedTo;
+			parentGroup = entityExtrasGroup;
+			xOffset = XOffset;
+			yOffset = YOffset;
 			//_playState = PlayState;
 			statusEffects = new Dictionary(); // Contains all ACTIVE statuses.
 		}
@@ -51,8 +51,8 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		override public function update():void {
 			super.update();
 			
-			for each (var SE:StatusEffect in this) {
-				if (!SE.attachedTo.alive) {
+			if (!attachedTo.alive) {
+				for each (var SE:StatusEffect in this) {
 					SE.kill();
 				}
 			}
@@ -61,33 +61,33 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		
 		public function addStatusEffect(ofType:String):void {
 			if (countDead() > 0) {
-				_currSE = getFirstDead() as StatusEffect;
-				_currSE.reset(ofType, _attachedTo, getCurrentXOffset(), _yOffset);
+				currentStatusEffect = getFirstDead() as StatusEffect;
+				currentStatusEffect.reset(ofType, attachedTo, getCurrentXOffset(), yOffset);
 				// TODO Revisit this
 			}
-			if (statusEffects[name] == null) {
-				var newStatus:StatusEffect = new StatusEffect(ofType, _attachedTo, -2, -20);
+			if (statusEffects[ofType] == null) {
+				var newStatus:StatusEffect = new StatusEffect(ofType, attachedTo, -2, -20);
 				//_initializeEmitter(newStatus.emitter, newStatus.name);
 				statusEffects[ofType] = newStatus;
 				
-				_parentGroup.add(statusEffects[ofType].statusBox);
-				_parentGroup.add(statusEffects[ofType].spiral);
+				parentGroup.add(statusEffects[ofType].statusBox);
+				parentGroup.add(statusEffects[ofType].spiral);
 				//newStatus = null; // gc?
 			} else {
-				trace("Status already exists. " + name);
+				trace("Status already exists. " + ofType);
 			}
 		}
 		
 		public function removeStatusEffect(ofType:String):void {
 			if (statusEffects[ofType] != null) {
 				statusEffects[ofType] = null;
-				_currCount--;
+				currentStatusCount--;
 				//garbage collection?
 			}
 		}
 		
 		private function getCurrentXOffset():int {
-			return _xOffset + (_statusEffectWidth * _currCount);
+			return xOffset + (statusEffectWidth * currentStatusCount);
 		}
 	}
 

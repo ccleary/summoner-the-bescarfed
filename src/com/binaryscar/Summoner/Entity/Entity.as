@@ -18,8 +18,7 @@ package com.binaryscar.Summoner.Entity
 	 */
 	public class Entity extends FlxSprite
 	{
-		[Embed(source = "../../../../../art/shitty-redblock-enemy1.png")]public var ph_redblock:Class;
-		[Embed(source = "../../../../../art/smokey-gibs1.png")]public var gibsImg_smoke:Class;
+		[Embed(source = "../../../../../art/shitty-redblock-enemy1.png")]public var ph_redblock:Class; //Placeholder
 		
 		public static const TYPE_DEFAULT:String = "default";
 		public static const TYPE_ENEMY:String = "enemy";
@@ -52,11 +51,7 @@ package com.binaryscar.Summoner.Entity
 		
 		protected var allyGrp:FlxGroup;
 		protected var oppGrp:FlxGroup;			// "_opp" for "Opposition"
-		// protected var _neutralGrp:FlxGroup;  // is this needed for walls and obstacles and hazards?
-	
-		protected var gibs_smoke:FlxEmitter;
-		
-		// protected var ATTACK_DELAY:Number = 2;		// _cooldownTimer resets to this number.
+		protected var _neutralGrp:FlxGroup;  // is this needed for walls and obstacles and hazards?
 		
 		protected var _cooldownTimer:Number;			// When this reaches 0: Can attack.
 
@@ -75,7 +70,7 @@ package com.binaryscar.Summoner.Entity
 		}
 		
 		// HP Setters / Getters
-		public function set HP(value:int) {
+		public function set HP(value:int):void {
 			if (curHP == _HP) { // Reset current value if currently at max;
 				curHP = value;
 			} else { // Otherwise, add/subtract the difference;
@@ -91,7 +86,7 @@ package com.binaryscar.Summoner.Entity
 		}
 		
 		// MP Setters / Getters
-		public function set MP(value:int) {
+		public function set MP(value:int):void {
 			if (curMP == _MP) { // Reset current value if currently at max;
 				curMP = value;
 			} else { // Otherwise, add/subtract the difference
@@ -104,16 +99,16 @@ package com.binaryscar.Summoner.Entity
 		}
 		
 		// STR Setters / Getters
-		public function set STR(value:int) {
-			// Todo, add more in future.
-			STR = value;
+		public function set STR(value:int):void {
+			// TODO, add more in future.
+			_STR = value;
 		}
 		public function get STR():int {
 			return _STR;
 		}
 		
 		// ASPD Setters / Getters
-		public function set ASPD(value:int) {
+		public function set ASPD(value:int):void {
 			_ASPD = value;
 			ATTACK_DELAY = 10 - ASPD; // TODO make more interesteing.
 		}
