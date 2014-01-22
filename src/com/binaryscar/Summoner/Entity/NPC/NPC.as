@@ -1,11 +1,12 @@
 package com.binaryscar.Summoner.Entity.NPC
 {
-	import com.binaryscar.Summoner.EntityStatus.HealthBar;
-	import com.binaryscar.Summoner.PlayState;
+	import com.binaryscar.Summoner.Entity.Entity;
+	import com.binaryscar.Summoner.Entity.EntityStatus.HealthBar;
+	import com.binaryscar.Summoner.Entity.EntityStatus.StatusEffectsController;
 	import com.binaryscar.Summoner.FiniteStateMachine.State;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
+	import com.binaryscar.Summoner.PlayState;
 	import com.binaryscar.Summoner.Player.Player;
-	import com.binaryscar.Summoner.EntityStatus.StatusEffectsController;
 	
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxG;
@@ -21,48 +22,40 @@ package com.binaryscar.Summoner.Entity.NPC
 	 */
 	
 	public class NPC extends Entity	
-	{		
-		//[Embed(source = "../../../../../art/Summon-demon-2.png")]public var clawDemon:Class;
-		[Embed(source = "../../../../../art/shitty-redblock-enemy1.png")]public var ph_redblock:Class;
-		[Embed(source = "../../../../../art/smokey-gibs1.png")]public var gibsImg_smoke:Class;
-		[Embed(source = "../../../../../art/poison-gibs1.png")]public var gibsImg_poison:Class;
+	{
+		[Embed(source = "../../../../../../art/poison-gibs1.png")]public var gibsImg_poison:Class;
 		
 		protected var FSM:StateMachine;
-		protected var _allyGrp:FlxGroup;
-		protected var _oppGrp:FlxGroup;			// "_opp" for "Opposition"
+		protected var defaultInitState:String;
+		protected var _state:State;
 
 		protected var _player:Player;
 		protected var _playState:PlayState;
 		
 		protected var AVOID_DELAY:Number = 0.15;	// _avoidTimer resets to this number
-		private var _avoidTimer:Number;			// When this reaches 0: Stops "avoiding" state.
+		private var _avoidTimer:Number;			    // When this reaches 0: Stops "avoiding" state.
 		
 		public var _target:NPC;					// Can only have one active fighting-target.
 		public var _pursueTarget:NPC;			// Can only be pursuing one target.
 		
-		public var statusEffectsCount:int;
-		
-		
-		public function NPC(myGrp:FlxGroup, oppGrp:FlxGroup, player:Player, playState:PlayState, X:Number=0, Y:Number=0, face:uint = RIGHT, initState:String = null)
+		public function NPC(entityType:String, myGrp:FlxGroup, oppGrp:FlxGroup, player:Player, playState:PlayState, X:Number=0, Y:Number=0, face:uint = RIGHT, initState:String = null)
 		{
-			super(X, Y);
-			
-			_this = this;
+			super(entityType, X, Y);
 			
 			facing = face;
 			
-			_allyGrp = myGrp;
-			_oppGrp = oppGrp;;
+			allyGrp = myGrp;
+			oppGrp = oppGrp;;
 			_player = player;
 			_playState = playState;
 			
 			_cooldownTimer = 0; 		// These reset to *null* when not in use.
 			_avoidTimer = 0;			// " "
 			
-			drag.x = SPEED_X * 6;
-			drag.y = SPEED_Y * 4;
-			maxVelocity.x = SPEED_X;
-			maxVelocity.y = SPEED_Y;
+			drag.x = (MSPD_X) * 6;
+			drag.y = (MSPD_Y) * 4;
+			maxVelocity.x = MSPD_X;
+			maxVelocity.y = MSPD_Y;
 			
 			height = 32;
 			offset.y = 0;
@@ -82,18 +75,18 @@ package com.binaryscar.Summoner.Entity.NPC
 			_playState.add(gibs_smoke);
 			
 			// Make dynamically when statuses added?
-			_poisonTimer = 0;
-			gibs_poison = new FlxEmitter(x, y, 4);
-			gibs_poison.setXSpeed(-15,15);
-			gibs_poison.setYSpeed( -15, 15);
-			gibs_poison.lifespan = 0.4;
-			gibs_poison.setRotation(0, 180);
-			gibs_poison.gravity = -10;
-			gibs_poison.makeParticles(gibsImg_poison, 4, 8, true, 0);
-			for each (var gib:FlxSprite in gibs_poison.members) {
-				gib.alpha = 0.8;
-			}
-			_playState.add(gibs_poison);
+			//_poisonTimer = 0;
+			//gibs_poison = new FlxEmitter(x, y, 4);
+			//gibs_poison.setXSpeed(-15,15);
+			//gibs_poison.setYSpeed( -15, 15);
+			//gibs_poison.lifespan = 0.4;
+			//gibs_poison.setRotation(0, 180);
+			//gibs_poison.gravity = -10;
+			//gibs_poison.makeParticles(gibsImg_poison, 4, 8, true, 0);
+			//for each (var gib:FlxSprite in gibs_poison.members) {
+				//gib.alpha = 0.8;
+			//}
+			//_playState.add(gibs_poison);
 			
 //			hBar = new FlxSprite(x, y);
 //			hBar.makeGraphic(width, 2, 0xFFFF0000);
@@ -114,13 +107,13 @@ package com.binaryscar.Summoner.Entity.NPC
 			FSM.initialState = "idle";
 			
 			//TODO CLEANUP
-			sem = new Object;
-			_initializeStatusEffectMachine(sem, _semExecute);
+			//sem = new Object;
+			//_initializeStatusEffectMachine(sem, _semExecute);
 			
 			//sec = new StatusEffectsController(this, playState);
 			//sec.addStatusEffect("poison");
 			
-			statusEffectsCount = 0;
+			//statusEffectsCount = 0;
 			
 		}
 		
@@ -135,13 +128,13 @@ package com.binaryscar.Summoner.Entity.NPC
 			
 			super.update();
 
-			FlxG.collide(this, _allyGrp, avoidAlly);
-			FlxG.overlap(this, _allyGrp, bounceAgaintAlly);
+			FlxG.collide(this, allyGrp, avoidAlly);
+			FlxG.overlap(this, allyGrp, bounceAgaintAlly);
 			
 			//FlxG.collide(this, _player, hurtPlayer);
 			
 			FSM.update(); // Finite State Machine Update
-			sec.update();
+			//sec.update();
 			
 			//if (sem.statusEffects.length > 0) {
 			//	sem.update(); // Status Effect Machine Update
@@ -159,8 +152,8 @@ package com.binaryscar.Summoner.Entity.NPC
 			if (_target != null) {
 				_target = null; // You dead, you not targetin' anybody.
 			}
-			if (_targetedBy.length > 0) {
-				_targetedBy = [];
+			if (targetedBy.length > 0) {
+				targetedBy = [];
 			}
 			super.kill();
 		}
@@ -231,13 +224,13 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		public function addAttacker(attacker:NPC):void {
-			_targetedBy.push(attacker);
+			targetedBy.push(attacker);
 		}
 		
 		public function removeAttacker(attacker:NPC):void {
-			var index:int = _targetedBy.indexOf(NPC);
+			var index:int = targetedBy.indexOf(NPC);
 			if (index) {
-				_targetedBy.splice(index,1);
+				targetedBy.splice(index,1);
 			}
 		}
 		
@@ -288,7 +281,7 @@ package com.binaryscar.Summoner.Entity.NPC
 						}
 					},
 					execute: function():void {
-						searchForPursueTargets(_oppGrp); // Does passing in the group ensure it's updated every time?
+						searchForPursueTargets(oppGrp); // Does passing in the group ensure it's updated every time?
 					}
 				});
 			FSM.addState("pursuing",
@@ -331,11 +324,11 @@ package com.binaryscar.Summoner.Entity.NPC
 					parent: "avoiding",
 					enter: function():void {
 						angle = 20;
-						acceleration.y = SPEED_Y*10;
+						acceleration.y = MSPD_Y*10;
 					},
 					execute: function():void {
 						angle = (angle > 0) ? angle - (FlxG.elapsed*5) : 0;
-						acceleration.y = (acceleration.y > 0) ? acceleration.y - (SPEED_Y*(FlxG.elapsed*5)) : 0;
+						acceleration.y = (acceleration.y > 0) ? acceleration.y - (MSPD_Y*(FlxG.elapsed*5)) : 0;
 						
 						_avoidTimer -= FlxG.elapsed;
 						if (_avoidTimer <= 0) {
@@ -352,11 +345,11 @@ package com.binaryscar.Summoner.Entity.NPC
 					parent: "avoiding",
 					enter: function():void {
 						angle = -20;
-						acceleration.y = -SPEED_Y*10;
+						acceleration.y = -MSPD_Y*10;
 					},
 					execute: function():void {
 						angle = (angle < 0) ? angle + FlxG.elapsed : 0;
-						acceleration.y = (acceleration.y < 0) ? acceleration.y + (SPEED_Y*FlxG.elapsed) : 0;
+						acceleration.y = (acceleration.y < 0) ? acceleration.y + (MSPD_Y*FlxG.elapsed) : 0;
 						
 						_avoidTimer -= FlxG.elapsed;
 						if (_avoidTimer <= 0) {
@@ -438,7 +431,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			FSM.addState("dead", 
 				{
 					enter: function():void  {
-						gibs_smoke.at(_this);
+						gibs_smoke.at(this);
 						gibs_smoke.start(true, 0.25, 0.1, 20);
 						exists = false;
 						solid = false;
@@ -456,7 +449,7 @@ package com.binaryscar.Summoner.Entity.NPC
 							FSM.changeState(defaultInitState);
 						}
 					},
-					exit: function() {
+					exit: function():void {
 						exists = true;
 						solid = true;
 						
@@ -524,83 +517,6 @@ package com.binaryscar.Summoner.Entity.NPC
 			//sem.statusTimers = [];	//
 			sem.update = executeFunc;
 			// TODO add sem.emitters, FlxEmitter[]
-		}
-		
-		private function _semExecute():void {
-			if (sem.statusEffects.length > 0) {
-				//for each (var status:String in sem.statusEffects) { // Allow for multiple status effects
-				for (var i:int = 0; i < sem.statusEffects.length; i++) {
-					//var index:int = sem.statusEffects.indexOf(status);
-					var status = sem.statusEffects[i];
-					switch(status.name) {
-						case "poison":
-							status.timer += FlxG.elapsed;
-							if (_poisonTimer >= 3) { // customize timer by caster?
-								this.removeStatusEffect("poison");
-								//gibs_poison.destroy();
-								status.timer = 0;
-								break;
-							}
-							this.color = 0x99AAFFAA; // Tint green.
-							status.emitter.at(this);
-							status.emitter.y -= 8;
-							//this.gibs_poison.emitParticle();
-							if ((gibs_poison.countDead() >= 1 && gibs_poison.countLiving() <= 2) || gibs_poison.countLiving() == 0) {
-								status.emitter.emitParticle();
-							}
-							// TODO HealthBarController Indicator.
-							break;
-						default:
-							this.color = 0xFFFFFFFF; // Reset tint
-							status.emitter.on = false;
-							break;
-					}
-				};
-			} else { // Poison never gets removed?
-				// Reset all status effect indicators.
-				this.color = 0xFFFFFFFF;
-				gibs_poison.clear();
-			}
-		}
-		
-		public function addStatusEffect(newStatus:String):void {
-			//trace(FSM.id + ' :: POISONED!');
-			// TODO, link up a timer.
-			if (sem.statusEffects.indexOf(newStatus) == -1) { // Only add if it's not already present.
-				var statusGibs:Class;
-				switch(newStatus) {
-					case "poison": statusGibs = gibsImg_poison; break;
-					default: break;
-				}
-				
-				var thisGibs:FlxEmitter = new FlxEmitter(this.x, this.y, 4);
-				thisGibs = new FlxEmitter(x, y, 4);
-				thisGibs.setXSpeed(-15,15);
-				thisGibs.setYSpeed( -15, 15);
-				thisGibs.lifespan = 0.4;
-				thisGibs.setRotation(0, 180);
-				thisGibs.gravity = -10;
-				thisGibs.makeParticles(statusGibs, 4, 8, true, 0);
-				//thisGibs.at(this);
-				
-				for each (var gib:FlxSprite in thisGibs.members) {
-					gib.alpha = 0.8;
-				}
-				_playState.add(gibs_poison);
-				
-				sem.statusEffects.push({
-					name: newStatus,
-					emitter: thisGibs,
-					timer: new Number(0)
-				});
-			}
-		}
-		
-		public function removeStatusEffect(statusToRemove:String) {
-			var arrPos:int = sem.statusEffects.indexOf(statusToRemove);
-			if (arrPos != -1) {
-				sem.statusEffects.splice(arrPos, 1); 
-			}
 		}
 		
 		private function updatePursueTarget():void {

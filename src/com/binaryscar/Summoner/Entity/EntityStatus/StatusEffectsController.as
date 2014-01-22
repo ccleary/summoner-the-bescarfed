@@ -1,9 +1,10 @@
-package com.binaryscar.Summoner.EntityStatus 
+package com.binaryscar.Summoner.Entity.EntityStatus 
 {
 	import com.binaryscar.Summoner.Entity.EntityExtrasGroup;
-	import com.binaryscar.Summoner.NPC.NPC;
-	import flash.events.StatusEvent;
+	import com.binaryscar.Summoner.Entity.NPC.NPC;
+
 	import flash.utils.Dictionary; // Basing this decision on the FiniteStateMachine I "borrowed"
+	
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxSprite;
@@ -18,10 +19,7 @@ package com.binaryscar.Summoner.EntityStatus
 	 */
 	
 	public class StatusEffectsController extends FlxGroup
-	{
-		// Load all graphics in the Controller and just pass them into the individual SE's?
-		[Embed(source = "../../../../../art/poison-spiral-small.png")]public var se_poisonSpiral:Class;
-		
+	{		
 		public static const POISON:String	= "poison";
 		public static const SLOW:String		= "slow";
 		

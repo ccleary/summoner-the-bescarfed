@@ -1,7 +1,7 @@
 package com.binaryscar.Summoner.Player 
 {
 	import com.binaryscar.Summoner.*;
-	import com.binaryscar.Summoner.NPC.*;
+	import com.binaryscar.Summoner.Entity.NPC.*;
 	
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxSave;

@@ -19,8 +19,8 @@ package com.binaryscar.Summoner.Entity.NPC
 	public class Enemy extends NPC 
 	{
 		//[Embed(source = "../../../../art/shitty-redblock-enemy1.png")]public var shittyRedBlock:Class;
-		[Embed(source = "../../../../../art/enemy-orc-1.png")]public var imgOrc:Class;
-		[Embed(source = "../../../../../art/blackpx.png")]public var bkDot:Class;
+		[Embed(source = "../../../../../../art/enemy-orc-1.png")]public var imgOrc:Class;
+		[Embed(source = "../../../../../../art/blackpx.png")]public var bkDot:Class;
 
 		public var initX:int;
 		public var initY:int;
@@ -30,7 +30,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		private var _spellFX:FlxEmitter;
 		
 		public function Enemy(enemGrp:FlxGroup, summGrp:FlxGroup, player:Player, playState:PlayState, X:int, Y:int, face:uint = LEFT, initState:String = "walking") { 
-			super(enemGrp, summGrp, player, playState, X, Y, face, initState);
+			super(TYPE_ENEMY, enemGrp, summGrp, player, playState, X, Y, face, initState);
 			
 			// ESTABLISH STATS
 			HP = 3;
@@ -39,8 +39,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			STR = 1;
 			SPELL_DELAY = 3;
 			
-			SPEED_X = 50;
-			SPEED_Y = 30;
+			MSPD = 50;
 			// END STATS
 			
 			initX = X; // Save if needed for revival
@@ -81,22 +80,22 @@ package com.binaryscar.Summoner.Entity.NPC
 				{
 					parent: "fighting",
 					from: ["fighting"],
-					enter: function() {
+					enter: function():void {
 						trace(fsm.id + " CAST!");
 					}
 				});
 			fsm.addState("poisonCloud",
 				{
 					parent: "casting",
-					enter: function() {
-						for each (var attacker:NPC in _targetedBy) {
+					enter: function():void {
+						for each (var attacker:NPC in targetedBy) {
 							play("casting");
 							//trace('poisoned');
 							// I put a spell on you.
 							attacker.addStatusEffect("poison");
 						};
 					},
-					execute: function() {
+					execute: function():void {
 						if (finished) {
 							fsm.changeState("fighting");
 						}
@@ -105,7 +104,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		override public function update():void {
-			if (this._targetedBy.length > 1 && !onSpellCooldown) { //FIXME
+			if (this.targetedBy.length > 1 && !onSpellCooldown) { //FIXME
 				trace("POISON CLOUD!");
 				FSM.changeState("poisonCloud");
 			}

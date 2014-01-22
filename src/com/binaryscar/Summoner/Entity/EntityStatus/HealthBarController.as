@@ -1,6 +1,6 @@
-package com.binaryscar.Summoner.EntityStatus
+package com.binaryscar.Summoner.Entity.EntityStatus
 {
-	import com.binaryscar.Summoner.NPC.NPC;
+	import com.binaryscar.Summoner.Entity.NPC.NPC;
 	
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxSprite;

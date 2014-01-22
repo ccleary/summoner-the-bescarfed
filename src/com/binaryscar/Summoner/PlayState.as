@@ -1,7 +1,7 @@
 package com.binaryscar.Summoner 
 {
-	import com.binaryscar.Summoner.EntityStatus.HealthBarController; 
-	import com.binaryscar.Summoner.EntityStatus.StatusEffectsController;
+	//import com.binaryscar.Summoner.Entity.EntityStatus.HealthBarController; 
+	//import com.binaryscar.Summoner.Entity.EntityStatus.StatusEffectsController;
 	import com.binaryscar.Summoner.Entity.NPC.Enemy;
 	import com.binaryscar.Summoner.Entity.NPC.NPC;
 	import com.binaryscar.Summoner.Entity.NPC.Summoned;
@@ -58,7 +58,7 @@ package com.binaryscar.Summoner
 		
 		public var mapBoundaries:FlxRect;
 		
-		public var HealthBars:HealthBarController;
+		//public var HealthBars:HealthBarController;
 		
 		public var hBar_frame:FlxSprite;
 		public var hBar_health:FlxSprite;
@@ -92,8 +92,8 @@ package com.binaryscar.Summoner
 			add(player);
 			add(_dots);
 			
-			HealthBars = new HealthBarController();
-			add(HealthBars);
+			//HealthBars = new HealthBarController();
+			//add(HealthBars);
 			
 			// TODO add getters for common _core properties like x, y, facing,
 			hBar_frame = new FlxSprite(player._core.x-2, player._core.y - 6);
@@ -192,10 +192,10 @@ package com.binaryscar.Summoner
 				} else {
 					if (player._core.facing === 0x0010) { // RIGHT
 						_summoned = new Summoned(_summonedGrp, _enemyGrp, player, this, player._core.x + 20, player._core.y + 10, player._core.facing);
-						HealthBars.addHealthBar(_summoned, -2, -14);
+						//HealthBars.addHealthBar(_summoned, -2, -14);
 					} else if (player._core.facing === 1) {
 						_summoned = new Summoned(_summonedGrp, _enemyGrp, player, this, player._core.x - 20, player._core.y + 10, player._core.facing);
-						HealthBars.addHealthBar(_summoned, -2, -14);
+						//HealthBars.addHealthBar(_summoned, -2, -14);
 					}
 					//trace('attempt to add summoned');
 					_summonedGrp.add(_summoned);
@@ -225,7 +225,7 @@ package com.binaryscar.Summoner
 				_enemy.revive();
 			} else {
 				_enemy = new Enemy(_enemyGrp, _summonedGrp, player, this, X, Y);
-				HealthBars.addHealthBar(_enemy, -4, -14);
+				//HealthBars.addHealthBar(_enemy, -4, -14);
 				_enemyGrp.add(_enemy);
 			}
 		}

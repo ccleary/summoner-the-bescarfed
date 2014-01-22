@@ -1,6 +1,6 @@
-package com.binaryscar.Summoner.EntityStatus 
+package com.binaryscar.Summoner.Entity.EntityStatus 
 {
-	import com.binaryscar.Summoner.NPC.NPC;
+	import com.binaryscar.Summoner.Entity.Entity;
 	
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxG;
@@ -16,8 +16,8 @@ package com.binaryscar.Summoner.EntityStatus
 	 */
 	public class StatusEffect extends FlxGroup
 	{
-		[Embed(source = "../../../../../art/poison-gibs1.png")]public var prtImg_poison:Class;
-		[Embed(source = "../../../../../art/poison-spiral-small.png")]public var se_poisonSpiral:Class; // TEMP
+		[Embed(source = "../../../../../../art/poison-gibs1.png")]public var prtImg_poison:Class;
+		[Embed(source = "../../../../../../art/poison-spiral-small.png")]public var se_poisonSpiral:Class; // TEMP
 		
 		private const DEFAULT_TIMER:Number = 3;
 		
@@ -42,12 +42,7 @@ package com.binaryscar.Summoner.EntityStatus
 			_xOffset = xOffset;
 			_yOffset = yOffset;
 			
-			super(); // is FlxGroup now.
-			//super(attachedTo.x + _xOffset, attachedTo.y + _yOffset);
-			
-			if (_attachedTo.statusEffectsCount != null) {
-				_attachedTo.statusEffectsCount++;
-			}
+			super();
 			
 			statusBox = new FlxSprite(_attachedTo.x + _xOffset, _attachedTo.y + _yOffset);
 			statusBox.makeGraphic(7, 7, 0xFF000000); // Black frame
@@ -76,13 +71,10 @@ package com.binaryscar.Summoner.EntityStatus
 		}
 		
 		override public function kill():void {
-			if (_attachedTo.statusEffectsCount != null) {
-				_attachedTo.statusEffectsCount--;
-			}
 			super.kill();
 		}
 		
-		public function reset(Name:String, attachTo:NPC, xOffset:int, yOffset:int):void {
+		public function reset(Name:String, attachTo:Entity, xOffset:int, yOffset:int):void {
 			typeOf = Name;
 			_attachedTo = attachTo;
 			

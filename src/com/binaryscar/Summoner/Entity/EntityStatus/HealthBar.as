@@ -1,6 +1,6 @@
-package com.binaryscar.Summoner.EntityStatus
+package com.binaryscar.Summoner.Entity.EntityStatus
 {
-	import com.binaryscar.Summoner.NPC.NPC;
+	import com.binaryscar.Summoner.Entity.Entity;
 	
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxSprite;
@@ -16,25 +16,27 @@ package com.binaryscar.Summoner.EntityStatus
 		private var _xOffset:int;
 		private var _yOffset:int;
 		
-		private var _barColor:uint = 0xffff0000; // Default to red.
+		private var _barColor:uint;
 		
-		public var attachedTo:NPC;
+		public var attachedTo:Entity;
 		
-		public function HealthBar(attachTo:NPC, xOffset:int, yOffset:int)
+		public function HealthBar(attachTo:Entity, xOffset:int, yOffset:int)
 		{
 			super();
 			
 			attachedTo = attachTo;
-			_maxHealth = attachedTo.hitPoints;
-			_currHealth = attachedTo.health;
+			_maxHealth = attachedTo.HP;
+			_currHealth = attachedTo.curHP;
 			
 			_xOffset = xOffset;
 			_yOffset = yOffset;
 			
-			trace(attachedTo.toString());
-			if (attachedTo.toString() == "Summoned") {
-				//trace("allied health bar");
+			if (attachedTo.type == Entity.TYPE_SUMMONED || attachedTo.type == Entity.TYPE_PLAYER) {
 				_barColor = 0xff00ff00; // Green for allies.
+			} else if (attachedTo.type == Entity.TYPE_NEUTRAL) {
+				_barColor = 0xff00ff00; // Blue for neutrals.
+			} else {
+				_barColor = 0xffff0000; // Red for enemies.
 			}
 			
 			_frame = new FlxSprite(attachedTo.x + _xOffset, attachedTo.y + _yOffset);
@@ -52,10 +54,9 @@ package com.binaryscar.Summoner.EntityStatus
 		
 		override public function update():void {
 			super.update();
-			// TEMP TESTING HEALTH BARS
 			
-			_maxHealth = attachedTo.hitPoints;
-			_currHealth = attachedTo.health;
+			_maxHealth = attachedTo.HP;
+			_currHealth = attachedTo.curHP;
 			_healthBar.scale.x = (_frame.width - 2) * (_currHealth / _maxHealth);
 			
 			_frame.x = attachedTo.x + _xOffset;
@@ -64,10 +65,10 @@ package com.binaryscar.Summoner.EntityStatus
 			_healthBar.y = _frame.y + 1;
 		}
 		
-		public function reset(attachTo:NPC, xOffset:int, yOffset:int):void {
+		public function reset(attachTo:Entity, xOffset:int, yOffset:int):void {
 			attachedTo = attachTo;
-			_maxHealth = attachedTo.hitPoints;
-			_currHealth = attachedTo.health;
+			_maxHealth = attachedTo.HP;
+			_currHealth = attachedTo.curHP;
 			
 			_xOffset = xOffset;
 			_yOffset = yOffset;
