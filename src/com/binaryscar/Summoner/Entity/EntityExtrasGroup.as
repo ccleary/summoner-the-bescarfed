@@ -17,28 +17,22 @@ package com.binaryscar.Summoner.Entity
 		
 		protected var gibs_smoke:FlxEmitter;
 		
-		public static const HEALTH_BAR:int = 0;
-		public static const STATUS_EFFECT_CTRL:int = 1;
-		public static const SPRITE:int = 2;
+		public static const TYPE_HEALTH_BAR:int = 0;
+		public static const TYPE_STATUS_EFFECT_CTRL:int = 1;
+		public static const TYPE_SPRITE:int = 2;
 		
 		private var attachedTo:Entity;
 		
 		private var HB:HealthBar;
 		private var SEC:StatusEffectsController;
 		
-		private var hbOffset:Vector.<int> = new Vector.<int>([ -2, -14]);
-		private var secOffset:Vector.<int> = new Vector.<int>([ -2, -18]);
+		private var hbOffset:Vector.<int> = new Vector.<int>();
+		private var secOffset:Vector.<int> = new Vector.<int>();
 		
-		public function EntityExtrasGroup(attachedToEntity:Entity)
+		public function EntityExtrasGroup(attachedTo:Entity)
 		{
 			super(); 
-			attachedTo = attachedToEntity;
-			
-			//HB = new HealthBar(attachedTo, hbOffset[0], hbOffset[1]);
-			//add(HB);
-			//
-			//SEC = new StatusEffectsController(attachedTo, this, secOffset[0], secOffset[1]);
-			//add(SEC);
+			this.attachedTo = attachedTo;
 			
 			// Death smoke
 			gibs_smoke = new FlxEmitter(attachedTo.x, attachedTo.y, 10);
@@ -51,8 +45,8 @@ package com.binaryscar.Summoner.Entity
 		}
 		
 		override public function update():void {
-			this.setAll("x", attachedTo.x);
-			this.setAll("y", attachedTo.y);
+			super.update();
+			HB.updatePosition(attachedTo.x + hbOffset[0], attachedTo.y + hbOffset[1]);
 		}
 		
 		public function setHealthBarOffset(xOff:int, yOff:int):void {
@@ -62,19 +56,19 @@ package com.binaryscar.Summoner.Entity
 		
 		public function addEntityExtra(ofType:int, xOffset:int, yOffset:int, ... restArgs):void {
 			switch (ofType) {
-				case HEALTH_BAR :
+				case TYPE_HEALTH_BAR :
 					hbOffset[0] = xOffset;
 					hbOffset[1] = yOffset;
-					HB = new HealthBar(attachedTo, hbOffset[0], hbOffset[1]);
+					HB = new HealthBar(attachedTo, attachedTo.x + hbOffset[0], attachedTo.y + hbOffset[1]);
 					add(HB);
 					break;
-				case STATUS_EFFECT_CTRL :
+				case TYPE_STATUS_EFFECT_CTRL :
 					secOffset[0] = xOffset;
 					secOffset[1] = yOffset;
 					SEC = new StatusEffectsController(attachedTo, this, secOffset[0], secOffset[1]);
 					add(SEC);
 					break;
-				case SPRITE :
+				case TYPE_SPRITE :
 					break;
 				default :
 					break;

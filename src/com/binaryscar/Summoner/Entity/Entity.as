@@ -1,9 +1,11 @@
 package com.binaryscar.Summoner.Entity 
 {
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
+	import com.binaryscar.Summoner.Player.Player;
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxSprite;
+	import org.flixel.FlxState;
 	
 	/**
 	 * Begin Entity refactoring to use this base class for both PC and NPC entities.
@@ -51,18 +53,27 @@ package com.binaryscar.Summoner.Entity
 		
 		protected var allyGrp:FlxGroup;
 		protected var oppGrp:FlxGroup;			// "_opp" for "Opposition"
-		protected var _neutralGrp:FlxGroup;  // is this needed for walls and obstacles and hazards?
+		protected var neutralGrp:FlxGroup;  // is this needed for walls and obstacles and hazards?
+		protected var playState:FlxState;
 		
 		protected var _cooldownTimer:Number;			// When this reaches 0: Can attack.
 
 		public var targetedBy:Array = [];		// Can be targeted by multiple opposition entities.
 		
-		public function Entity(ofType:String, X:Number = 0, Y:Number = 0)
+		public function Entity(type:String, allyGrp:FlxGroup, oppGrp:FlxGroup, playState:FlxState, X:Number = 0, Y:Number = 0)
 		{
 			super(X, Y);
-			type = ofType;
+			this.type = type;
+			this.allyGrp = allyGrp;
+			this.oppGrp = oppGrp;
+			this.playState = playState;
+			
 			loadGraphic(ph_redblock, false, false, 32, 32, false);
 			entityExtrasGrp = new EntityExtrasGroup(this);
+			playState.add(entityExtrasGrp);
+			
+			entityExtrasGrp.addEntityExtra(EntityExtrasGroup.TYPE_HEALTH_BAR, -4, -14);
+			entityExtrasGrp.addEntityExtra(EntityExtrasGroup.TYPE_STATUS_EFFECT_CTRL, -4, -19);
 		}
 		
 		override public function update():void {

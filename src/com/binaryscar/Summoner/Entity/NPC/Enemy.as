@@ -90,9 +90,9 @@ package com.binaryscar.Summoner.Entity.NPC
 					enter: function():void {
 						for each (var attacker:NPC in targetedBy) {
 							play("casting");
-							//trace('poisoned');
+							trace('would cast poison');
 							// I put a spell on you.
-							attacker.addStatusEffect("poison");
+							//attacker.addStatusEffect("poison");
 						};
 					},
 					execute: function():void {

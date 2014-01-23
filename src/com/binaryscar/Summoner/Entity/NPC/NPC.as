@@ -40,7 +40,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		public function NPC(entityType:String, myGrp:FlxGroup, oppGrp:FlxGroup, player:Player, playState:PlayState, X:Number=0, Y:Number=0, face:uint = RIGHT, initState:String = null)
 		{
-			super(entityType, X, Y);
+			super(entityType, myGrp, oppGrp, playState, X, Y);
 			
 			facing = face;
 			

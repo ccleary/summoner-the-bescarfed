@@ -18,13 +18,16 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		
 		private var _barColor:uint;
 		
+		private var x:int;
+		private var y:int;
+		
 		public var attachedTo:Entity;
 		
-		public function HealthBar(attachTo:Entity, xOffset:int, yOffset:int)
+		public function HealthBar(attachedTo:Entity, xOffset:int, yOffset:int)
 		{
 			super();
 			
-			attachedTo = attachTo;
+			this.attachedTo = attachedTo;
 			_maxHealth = attachedTo.HP;
 			_currHealth = attachedTo.curHP;
 			
@@ -57,12 +60,14 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 			
 			_maxHealth = attachedTo.HP;
 			_currHealth = attachedTo.curHP;
-			_healthBar.scale.x = (_frame.width - 2) * (_currHealth / _maxHealth);
-			
-			_frame.x = attachedTo.x + _xOffset;
-			_frame.y = attachedTo.y + _yOffset;
-			_healthBar.x = _frame.x + 1;
-			_healthBar.y = _frame.y + 1;
+			_healthBar.scale.x = (_frame.width - 2) * (_currHealth / _maxHealth);	
+		}
+		
+		public function updatePosition(x:int, y:int):void {
+			_frame.x = x;
+			_frame.y = y;
+			_healthBar.x = x + 1;
+			_healthBar.y = y + 1;
 		}
 		
 		public function reset(attachTo:Entity, xOffset:int, yOffset:int):void {
