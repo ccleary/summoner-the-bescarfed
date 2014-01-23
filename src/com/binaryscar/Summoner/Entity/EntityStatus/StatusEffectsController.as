@@ -26,8 +26,7 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		
 		private var attachedTo:Entity;
 		private var entityExtras:FlxGroup;
-		private var xOffset:int;
-		private var yOffset:int;
+		private var offsetFromEntity:Vector.<int> = new Vector.<int>();
 		private var statusEffectWidth:int = 7;
 		
 		private var statusEffects:Dictionary;
@@ -42,8 +41,8 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 			
 			this.attachedTo = attachedTo;
 			entityExtras = entityExtras;
-			this.xOffset = xOffset;
-			this.yOffset = yOffset;
+			offsetFromEntity[0] = xOffset;
+			offsetFromEntity[1] = yOffset;
 			//_playState = PlayState;
 			statusEffects = new Dictionary(); // Contains all ACTIVE statuses.
 		}
@@ -52,42 +51,47 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 			super.update();
 			
 			if (!attachedTo.alive) {
-				for each (var SE:StatusEffect in this) {
-					SE.kill();
+				for each (var status:StatusEffect in this) {
+					status.kill();
 				}
 			}
+		}		
+		
+		public function updatePosition(x:int, y:int):void {
+			for each (var status:StatusEffect in this) {
+				status.updatePosition(x, y);
+			}
 		}
 		
-		
-		public function addStatusEffect(ofType:String):void {
+		public function addStatusEffect(kind:String):void {
 			if (countDead() > 0) {
 				currentStatusEffect = getFirstDead() as StatusEffect;
-				currentStatusEffect.reset(ofType, attachedTo, getCurrentXOffset(), yOffset);
+				currentStatusEffect.reset(kind, attachedTo, getCurrentXOffset(), attachedTo.y + offsetFromEntity[1]);
 				// TODO Revisit this
 			}
-			if (statusEffects[ofType] == null) {
-				var newStatus:StatusEffect = new StatusEffect(ofType, attachedTo, -2, -20);
+			if (statusEffects[kind] == null) {
+				var newStatus:StatusEffect = new StatusEffect(kind, attachedTo, getCurrentXOffset(), offsetFromEntity[1]);
 				//_initializeEmitter(newStatus.emitter, newStatus.name);
-				statusEffects[ofType] = newStatus;
+				statusEffects[kind] = newStatus;
 				
-				entityExtras.add(statusEffects[ofType].statusBox);
-				entityExtras.add(statusEffects[ofType].spiral);
+				entityExtras.add(statusEffects[kind].statusBox);
+				entityExtras.add(statusEffects[kind].spiral);
 				//newStatus = null; // gc?
 			} else {
-				trace("Status already exists. " + ofType);
+				trace("Status already exists. " + kind);
 			}
 		}
 		
-		public function removeStatusEffect(ofType:String):void {
-			if (statusEffects[ofType] != null) {
-				statusEffects[ofType] = null;
+		public function removeStatusEffect(kind:String):void {
+			if (statusEffects[kind] != null) {
+				statusEffects[kind] = null;
 				currentStatusCount--;
 				//garbage collection?
 			}
 		}
 		
 		private function getCurrentXOffset():int {
-			return xOffset + (statusEffectWidth * currentStatusCount);
+			return offsetFromEntity[0] + (statusEffectWidth * currentStatusCount);
 		}
 	}
 

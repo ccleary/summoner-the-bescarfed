@@ -15,19 +15,23 @@ package com.binaryscar.Summoner.Entity
 		
 		public var id:int;
 		
-		public var xOffset:int;
-		public var yOffset:int;
+		public var offsetFromEntity:Vector.<int>;
 		
-		public function EntityExtraSprite(attachedTo:Entity, xOffset:int, yOffset:int, id:int, graphic:Class)
+		public function EntityExtraSprite(attachedTo:Entity, id:int, graphic:Class, xOffset:int, yOffset:int)
 		{
 			super(attachedTo.x + xOffset, attachedTo.y + yOffset);
 			this.attachedTo = attachedTo;
-			this.xOffset = xOffset;
-			this.yOffset = yOffset;
+			offsetFromEntity[0] = xOffset;
+			offsetFromEntity[1] = yOffset;
 			this.id = id;
 			this.graphic = graphic;
 			
 			loadGraphic(graphic);
+		}
+		
+		public function updatePosition(x:int, y:int):void {
+			this.x = x + offsetFromEntity[0];
+			this.y = y + offsetFromEntity[1];
 		}
 		
 	}

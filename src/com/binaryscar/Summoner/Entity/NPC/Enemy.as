@@ -90,7 +90,7 @@ package com.binaryscar.Summoner.Entity.NPC
 					enter: function():void {
 						for each (var attacker:NPC in targetedBy) {
 							play("casting");
-							trace('would cast poison');
+							//trace('would cast poison');
 							// I put a spell on you.
 							//attacker.addStatusEffect("poison");
 						};
@@ -165,7 +165,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		override public function kill():void {
 			if (x < FlxG.stage.x) { // Got past the Summoner
-				_playState.loseLife();
+				playState.loseLife();
 			} else {
 				FlxG.score++; // Killed by Summoned
 			}

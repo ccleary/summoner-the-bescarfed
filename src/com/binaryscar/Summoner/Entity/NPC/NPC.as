@@ -30,17 +30,16 @@ package com.binaryscar.Summoner.Entity.NPC
 		protected var state:State;
 
 		protected var player:Player;
-		protected var playState:PlayState;
 		
 		protected var AVOID_DELAY:Number = 0.15;	// _avoidTimer resets to this number
 		private var avoidTimer:Number;			    // When this reaches 0: Stops "avoiding" state.
 		
-		public var target:NPC;					// Can only have one active fighting-target.
+		public var _target:NPC;					// Can only have one active fighting-target.
 		public var pursueTarget:NPC;			// Can only be pursuing one target.
 		
 		public function NPC(entityType:String, allyGrp:FlxGroup, oppGrp:FlxGroup, player:Player, playState:PlayState, X:Number=0, Y:Number=0, face:uint = RIGHT, initState:String = null)
 		{
-			super(entityType, myGrp, oppGrp, playState, X, Y);
+			super(entityType, allyGrp, oppGrp, playState, X, Y);
 			
 			facing = face;
 			
@@ -122,8 +121,8 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		override public function kill():void {
 			FSM.changeState("dead");
-			if (target != null) {
-				target = null; // You dead, you not targetin' anybody.
+			if (_target != null) {
+				_target = null; // You dead, you not targetin' anybody.
 			}
 			if (targetedBy.length > 0) {
 				targetedBy = [];
@@ -132,18 +131,18 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		public function get target():NPC {
-			if (target != null) {
-				return target;
+			if (_target != null) {
+				return _target;
 			} else {
 				return null;
 			}
 		}
 		public function set target(oppNPC:NPC):void {
 			if (oppNPC != null) {
-				target = oppNPC;
+				_target = oppNPC;
 				FSM.changeState("fighting");
 			} else {
-				target = null;
+				_target = null;
 			}
 		}
 		
@@ -208,15 +207,15 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		public function attack():void { //en:Enemy):void {
-			if (target == null) {
+			if (_target == null) {
 				return;
 			}
 			
-			target.hurt(STR);
+			_target.hurt(STR);
 			onCooldown = true;
 			
-			if (target.health <= 0) {
-				target = null;
+			if (_target.health <= 0) {
+				_target = null;
 			}
 		}
 		
@@ -240,7 +239,7 @@ package com.binaryscar.Summoner.Entity.NPC
 					enter: function():void {
 						play("walking");
 						_cooldownTimer = 0;
-						target = null;
+						_target = null;
 					}
 				});
 			FSM.addState("walking", 
@@ -366,10 +365,10 @@ package com.binaryscar.Summoner.Entity.NPC
 						}
 					},
 					execute: function():void {
-						if (target.health <= 0 || !target.alive) {
-							target = null;
+						if (_target.health <= 0 || !_target.alive) {
+							_target = null;
 						}
-						if (target == null) {
+						if (_target == null) {
 							FSM.changeState("walking");
 							return;
 						} else if (!onCooldown) {
@@ -386,13 +385,13 @@ package com.binaryscar.Summoner.Entity.NPC
 					from: ["fighting", "cooldown"],
 					parent: "fighting",
 					enter: function():void {
-						if (target == null) {
+						if (_target == null) {
 							FSM.changeState("walking");
 							return;
 						}
 						play("attacking");
 						attack();
-						if(target == null) {
+						if(_target == null) {
 							FSM.changeState("walking");
 							return;
 						}
@@ -539,18 +538,6 @@ package com.binaryscar.Summoner.Entity.NPC
 			if (compareX && (FSM.state != "avoidingDown" && FSM.state != "avoidingUp")) {
 				thisNPC.acceleration.y += Math.random() * 5 + 1;
 			}
-			
-			//			// TODO - May be problematic if we want *FSM* to be private?
-			//			if (otherNPC.FSM.state != "avoidingDown" && otherNPC.FSM.state != "avoidingUp" && !otherNPC.immovable) {
-			//				//trace("this is what happens when summons collide :: OTHER :: " + otherSumm.FSM.state);
-			//				if (compareY) {
-			//					otherNPC.FSM.changeState("avoidingUp");
-			//				} else {
-			//					otherNPC.FSM.changeState("avoidingDown");
-			//				}
-			//			} else if (otherNPC.FSM.state == "avoidingDown" || otherNPC.FSM.state == "avoidingUp") {
-			//				otherNPC._avoidTimer += FlxG.elapsed*2;
-			//			}
 		}
 		private function bounceAgaintAlly(thisNPC:NPC, otherNPC:NPC):void {
 			

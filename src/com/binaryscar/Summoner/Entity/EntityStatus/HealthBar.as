@@ -17,11 +17,15 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		
 		private var attachedTo:Entity;
 		
-		public function HealthBar(attachedTo:Entity, x:int, y:int)
+		public var offsetFromEntity:Vector.<int> = new Vector.<int>();
+		
+		public function HealthBar(attachedTo:Entity, xOffset:int, yOffset:int)
 		{
 			super();
 			
 			this.attachedTo = attachedTo;
+			offsetFromEntity[0] = xOffset;
+			offsetFromEntity[1] = yOffset;
 			
 			if (attachedTo.type == Entity.TYPE_SUMMONED || attachedTo.type == Entity.TYPE_PLAYER) {
 				barColor = 0xFF00FF00; // Green for allies.
@@ -52,10 +56,10 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		}
 		
 		public function updatePosition(x:int, y:int):void {
-			frame.x = x;
-			frame.y = y;
-			healthBar.x = x + 1;
-			healthBar.y = y + 1;
+			frame.x = x + offsetFromEntity[0];
+			frame.y = y + offsetFromEntity[1];
+			healthBar.x = frame.x + 1;
+			healthBar.y = frame.y + 1;
 		}
 	}
 }

@@ -2,6 +2,7 @@ package com.binaryscar.Summoner.Entity
 {
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
 	import com.binaryscar.Summoner.Player.Player;
+	import com.binaryscar.Summoner.PlayState;
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxSprite;
@@ -54,13 +55,13 @@ package com.binaryscar.Summoner.Entity
 		protected var allyGrp:FlxGroup;
 		protected var oppGrp:FlxGroup;			// "_opp" for "Opposition"
 		protected var neutralGrp:FlxGroup;  // is this needed for walls and obstacles and hazards?
-		protected var playState:FlxState;
+		protected var playState:PlayState;
 		
 		protected var _cooldownTimer:Number;			// When this reaches 0: Can attack.
 
 		public var targetedBy:Array = [];		// Can be targeted by multiple opposition entities.
 		
-		public function Entity(type:String, allyGrp:FlxGroup, oppGrp:FlxGroup, playState:FlxState, X:Number = 0, Y:Number = 0)
+		public function Entity(type:String, allyGrp:FlxGroup, oppGrp:FlxGroup, playState:PlayState, X:Number = 0, Y:Number = 0)
 		{
 			super(X, Y);
 			this.type = type;
@@ -72,8 +73,8 @@ package com.binaryscar.Summoner.Entity
 			entityExtras = new EntityExtras(this);
 			playState.add(entityExtras);
 			
-			entityExtras.addEntityExtra(EntityExtras.TYPE_HEALTH_BAR, -4, -14);
-			entityExtras.addEntityExtra(EntityExtras.TYPE_STATUS_EFFECT_CTRL, -4, -19);
+			entityExtras.addEntityExtra(EntityExtras.HEALTH_BAR, -4, -14);
+			entityExtras.addEntityExtra(EntityExtras.STATUS_EFFECT_CTRL, -4, -19);
 		}
 		
 		override public function update():void {

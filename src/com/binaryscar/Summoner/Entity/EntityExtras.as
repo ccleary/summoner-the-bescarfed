@@ -17,9 +17,8 @@ package com.binaryscar.Summoner.Entity
 		
 		protected var gibs_smoke:FlxEmitter;
 		
-		public static const TYPE_HEALTH_BAR:int = 0;
-		public static const TYPE_STATUS_EFFECT_CTRL:int = 1;
-		public static const TYPE_SPRITE:int = 2;
+		public static const HEALTH_BAR:int = 0;
+		public static const STATUS_EFFECT_CTRL:int = 1;
 		
 		public static const GIBS_SMOKE:int = 0;
 		
@@ -28,8 +27,10 @@ package com.binaryscar.Summoner.Entity
 		private var HB:HealthBar;
 		private var SEC:StatusEffectsController;
 		
-		private var hbOffset:Vector.<int> = new Vector.<int>();
 		private var secOffset:Vector.<int> = new Vector.<int>();
+		
+		private var extraSpriteArray:Array /* of ExtraSprites */ = [];
+		private var currExtraSprite:EntityExtraSprite; // Helper for adding new sprites.
 		
 		public function EntityExtras(attachedTo:Entity)
 		{
@@ -48,35 +49,39 @@ package com.binaryscar.Summoner.Entity
 		
 		override public function update():void {
 			super.update();
-			HB.updatePosition(attachedTo.x + hbOffset[0], attachedTo.y + hbOffset[1]);
+			HB.updatePosition(attachedTo.x, attachedTo.y);
+			SEC.updatePosition(attachedTo.x, attachedTo.y);
+			
+			for each (var sprite:EntityExtraSprite in extraSpriteArray) {
+				sprite.updatePosition(attachedTo.x, attachedTo.y);
+			}
 		}
 		
-		public function setHealthBarOffset(xOff:int, yOff:int):void {
-			hbOffset[0] = xOff;
-			hbOffset[1] = yOff;
+		public function setHealthBarOffset(xOffset:int, yOffset:int):void {
+			HB.offsetFromEntity[0] = xOffset;
+			HB.offsetFromEntity[1] = yOffset;
 		}
 		
-		public function addEntityExtra(ofType:int, xOffset:int, yOffset:int, ... restArgs):void {
-			switch (ofType) {
-				case TYPE_HEALTH_BAR :
-					hbOffset[0] = xOffset;
-					hbOffset[1] = yOffset;
-					HB = new HealthBar(attachedTo, attachedTo.x + hbOffset[0], attachedTo.y + hbOffset[1]);
+		public function addEntityExtra(type:int, xOffset:int, yOffset:int):void {
+			switch (type) {
+				case HEALTH_BAR :
+					HB = new HealthBar(attachedTo, xOffset, yOffset);
 					add(HB);
 					break;
-				case TYPE_STATUS_EFFECT_CTRL :
-					secOffset[0] = xOffset;
-					secOffset[1] = yOffset;
-					SEC = new StatusEffectsController(attachedTo, this, secOffset[0], secOffset[1]);
+				case STATUS_EFFECT_CTRL :
+					SEC = new StatusEffectsController(attachedTo, this, xOffset, yOffset);
 					add(SEC);
-					break;
-				case TYPE_SPRITE :
-					// Going to need some kind of tracking system 
-					// like *State* or something to track and update these.
 					break;
 				default :
 					break;
 			}
+		}
+		
+		public function addEntityExtraSprite(graphic:Class, xOffset:int, yOffset:int):EntityExtraSprite {
+			currExtraSprite = new EntityExtraSprite(attachedTo, (extraSpriteArray.length -1), graphic, xOffset, yOffset);
+			extraSpriteArray.push(currExtraSprite);
+			add(currExtraSprite);
+			return currExtraSprite; // Return a reference for adding things like animations from the insantiator.
 		}
 		
 		public function fireGibs(type:int):void {

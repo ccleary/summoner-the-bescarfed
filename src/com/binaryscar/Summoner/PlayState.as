@@ -232,11 +232,11 @@ package com.binaryscar.Summoner
 		
 		public function startFight(meNPC:NPC, oppNPC:NPC):void {
 			//TODO figure out how to make the NPCs handle this.
-			if (meNPC.target == null) {
-				meNPC.target = oppNPC;
+			if (meNPC._target == null) {
+				meNPC._target = oppNPC;
 			}
-			if (oppNPC.target == null) {
-				oppNPC.target = meNPC;
+			if (oppNPC._target == null) {
+				oppNPC._target = meNPC;
 			}
 			meNPC.addAttacker(oppNPC);
 			oppNPC.addAttacker(meNPC);
