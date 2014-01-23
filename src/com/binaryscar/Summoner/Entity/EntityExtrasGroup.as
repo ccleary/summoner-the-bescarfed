@@ -21,6 +21,8 @@ package com.binaryscar.Summoner.Entity
 		public static const TYPE_STATUS_EFFECT_CTRL:int = 1;
 		public static const TYPE_SPRITE:int = 2;
 		
+		public static const GIBS_SMOKE:int = 0;
+		
 		private var attachedTo:Entity;
 		
 		private var HB:HealthBar;
@@ -51,7 +53,7 @@ package com.binaryscar.Summoner.Entity
 		
 		public function setHealthBarOffset(xOff:int, yOff:int):void {
 			hbOffset[0] = xOff;
-			hbOffset[1] = yOff; 
+			hbOffset[1] = yOff;
 		}
 		
 		public function addEntityExtra(ofType:int, xOffset:int, yOffset:int, ... restArgs):void {
@@ -69,10 +71,25 @@ package com.binaryscar.Summoner.Entity
 					add(SEC);
 					break;
 				case TYPE_SPRITE :
+					// Going to need some kind of tracking system 
+					// like *State* or something to track and update these.
 					break;
 				default :
 					break;
 			}
+		}
+		
+		public function fireGibs(type:int):void {
+			var gibs:FlxEmitter;
+			switch (type) {
+				case GIBS_SMOKE:
+				default :
+					gibs = gibs_smoke;
+					break;
+			}
+			
+			gibs.at(attachedTo);
+			gibs.start();
 		}
 	}
 }

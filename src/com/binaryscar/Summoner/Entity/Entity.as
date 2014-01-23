@@ -77,17 +77,17 @@ package com.binaryscar.Summoner.Entity
 		}
 		
 		override public function update():void {
-			
+			if (curHP <= 0) {
+				//kill();
+				entityExtrasGrp.fireGibs(EntityExtrasGroup.GIBS_SMOKE);
+			}
 		}
 		
 		// HP Setters / Getters
 		public function set HP(value:int):void {
 			if (curHP == _HP) { // Reset current value if currently at max;
 				curHP = value;
-			} else { // Otherwise, add/subtract the difference;
-				// If (HP == 3 && curHP == 2 && 
-				// and setHP sets it to 5,
-				// new curHP = 2 + (5 - 3);
+			} else { // Otherwise, add/subtract the difference on buff/debuff
 				curHP = curHP + (value - _HP);
 			}
 			_HP = value;
