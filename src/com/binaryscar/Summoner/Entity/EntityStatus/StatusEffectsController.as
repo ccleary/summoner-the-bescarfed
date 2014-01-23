@@ -1,7 +1,7 @@
 package com.binaryscar.Summoner.Entity.EntityStatus 
 {
 	import com.binaryscar.Summoner.Entity.Entity;
-	import com.binaryscar.Summoner.Entity.EntityExtrasGroup;
+	import com.binaryscar.Summoner.Entity.EntityExtras;
 	import com.binaryscar.Summoner.Entity.NPC.NPC;
 
 	import flash.utils.Dictionary; // Basing this decision on the FiniteStateMachine I "borrowed"
@@ -21,11 +21,11 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 	
 	public class StatusEffectsController extends FlxGroup
 	{		
-		public static const POISON:String	= "poison";
-		public static const SLOW:String		= "slow";
+		public static const DEBUFF_POISON:String	= "poison";
+		public static const DEBUFF_SLOW:String		= "slow";
 		
 		private var attachedTo:Entity;
-		private var parentGroup:FlxGroup;
+		private var entityExtras:FlxGroup;
 		private var xOffset:int;
 		private var yOffset:int;
 		private var statusEffectWidth:int = 7;
@@ -33,17 +33,17 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		private var statusEffects:Dictionary;
 		
 		private var currentStatusEffect:StatusEffect; //Helper for instantiating new StatusEffects.
-		private var currentStatusCount:int = 0;
-		private var currentStatusIndex:int; // for knowing how many SEs are currently active
+		private var currentStatusCount:int = 0; // for knowing how many SEs are currently active
+		private var currentStatusIndex:int; 
 		
-		public function StatusEffectsController(AttachedTo:Entity, entityExtrasGroup:EntityExtrasGroup, XOffset:int, YOffset:int) // Need to be NPC? 
+		public function StatusEffectsController(attachedTo:Entity, entityExtras:EntityExtras, xOffset:int, yOffset:int) // Need to be NPC? 
 		{
 			super();
 			
-			attachedTo = AttachedTo;
-			parentGroup = entityExtrasGroup;
-			xOffset = XOffset;
-			yOffset = YOffset;
+			this.attachedTo = attachedTo;
+			entityExtras = entityExtras;
+			this.xOffset = xOffset;
+			this.yOffset = yOffset;
 			//_playState = PlayState;
 			statusEffects = new Dictionary(); // Contains all ACTIVE statuses.
 		}
@@ -70,8 +70,8 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 				//_initializeEmitter(newStatus.emitter, newStatus.name);
 				statusEffects[ofType] = newStatus;
 				
-				parentGroup.add(statusEffects[ofType].statusBox);
-				parentGroup.add(statusEffects[ofType].spiral);
+				entityExtras.add(statusEffects[ofType].statusBox);
+				entityExtras.add(statusEffects[ofType].spiral);
 				//newStatus = null; // gc?
 			} else {
 				trace("Status already exists. " + ofType);

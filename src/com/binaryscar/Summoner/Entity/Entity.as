@@ -30,7 +30,7 @@ package com.binaryscar.Summoner.Entity
 		
 		public var type:String = TYPE_DEFAULT;
 		
-		protected var entityExtrasGrp:EntityExtrasGroup; // This is where extras will be stores, i.e. HealthBar,
+		protected var entityExtras:EntityExtras; // This is where extras will be stores, i.e. HealthBar,
 													 // Status Effects, extra sprite pieces
 		
 		// TODO Off-screen-kill bounds.
@@ -69,17 +69,18 @@ package com.binaryscar.Summoner.Entity
 			this.playState = playState;
 			
 			loadGraphic(ph_redblock, false, false, 32, 32, false);
-			entityExtrasGrp = new EntityExtrasGroup(this);
-			playState.add(entityExtrasGrp);
+			entityExtras = new EntityExtras(this);
+			playState.add(entityExtras);
 			
-			entityExtrasGrp.addEntityExtra(EntityExtrasGroup.TYPE_HEALTH_BAR, -4, -14);
-			entityExtrasGrp.addEntityExtra(EntityExtrasGroup.TYPE_STATUS_EFFECT_CTRL, -4, -19);
+			entityExtras.addEntityExtra(EntityExtras.TYPE_HEALTH_BAR, -4, -14);
+			entityExtras.addEntityExtra(EntityExtras.TYPE_STATUS_EFFECT_CTRL, -4, -19);
 		}
 		
 		override public function update():void {
+			curHP = health;
 			if (curHP <= 0) {
 				//kill();
-				entityExtrasGrp.fireGibs(EntityExtrasGroup.GIBS_SMOKE);
+				entityExtras.fireGibs(EntityExtras.GIBS_SMOKE);
 			}
 		}
 		

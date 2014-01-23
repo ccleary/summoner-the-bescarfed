@@ -11,7 +11,7 @@ package com.binaryscar.Summoner.Entity
 	 * Entity extras
 	 * @author Connor Cleary
 	 */
-	public class EntityExtrasGroup extends FlxGroup 
+	public class EntityExtras extends FlxGroup 
 	{
 		[Embed(source = "../../../../../art/smokey-gibs1.png")]public var gibsImg_smoke:Class;
 		
@@ -31,7 +31,7 @@ package com.binaryscar.Summoner.Entity
 		private var hbOffset:Vector.<int> = new Vector.<int>();
 		private var secOffset:Vector.<int> = new Vector.<int>();
 		
-		public function EntityExtrasGroup(attachedTo:Entity)
+		public function EntityExtras(attachedTo:Entity)
 		{
 			super(); 
 			this.attachedTo = attachedTo;
