@@ -41,11 +41,11 @@ package com.binaryscar.Summoner.Entity.NPC
 		public var _target:NPC;					// Can only have one active fighting-target.
 		public var pursueTarget:NPC;			// Can only be pursuing one target.
 		
-		public function NPC(entityType:String, allyGrp:FlxGroup, oppGrp:FlxGroup, player:Player, playState:PlayState, X:Number=0, Y:Number=0, face:uint = RIGHT, initState:String = null)
+		public function NPC(entityType:String, allyGrp:FlxGroup, oppGrp:FlxGroup, player:Player, playState:PlayState, X:Number=0, Y:Number=0, facing:uint = RIGHT, initState:String = null)
 		{
 			super(entityType, allyGrp, oppGrp, playState, X, Y);
 			
-			facing = face;
+			this.facing = facing;
 			
 			this.allyGrp = allyGrp;
 			this.oppGrp = oppGrp;;
@@ -55,10 +55,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			_cooldownTimer = 0; 		// These reset to *null* when not in use.
 			avoidTimer = 0;			// " "
 			
-			drag.x = (MSPD_X) * 6;
-			drag.y = (MSPD_Y) * 4;
-			maxVelocity.x = MSPD_X;
-			maxVelocity.y = MSPD_Y;
+			MSPD = 40;
 			
 			height = 32;
 			offset.y = 0;

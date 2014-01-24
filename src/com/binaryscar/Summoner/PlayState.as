@@ -16,6 +16,7 @@ package com.binaryscar.Summoner
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
+	import org.flixel.FlxObject;
 	import org.flixel.FlxRect;
 	import org.flixel.FlxSprite;
 	import org.flixel.FlxState;
@@ -95,24 +96,24 @@ package com.binaryscar.Summoner
 			dots.makeParticles( particlePixel, 30, 0, false, 0.2);
 			
 			player = new Player(30, 50, this, dots);
-			add(player);
+			//add(player);
 			add(dots);
 			
 			//HealthBars = new HealthBarController();
 			//add(HealthBars);
 			
-			// TODO add getters for common _core properties like x, y, facing,
-			hBar_frame = new FlxSprite(player._core.x-2, player._core.y - 6);
-			hBar_frame.makeGraphic(24, 5, 0xFF000000); // Black frame
-			
+			// TODO add getters for common properties like x, y, facing,
+			//hBar_frame = new FlxSprite(player.x-2, player.y - 6);
+			//hBar_frame.makeGraphic(24, 5, 0xFF000000); // Black frame
+			//
 			// Make this a FlxGroup with an individually scaled "tick" for each HP.
-			hBar_health = new FlxSprite(player._core.x-1, player._core.y - 8);
-			hBar_health.makeGraphic(1,3, 0xFF00FF00);
-			hBar_health.setOriginToCorner();
-			hBar_health.scale.x = (hBar_frame.width-2)*(player.health / player.hitPoints);
+			//hBar_health = new FlxSprite(player.x-1, player.y - 8);
+			//hBar_health.makeGraphic(1,3, 0xFF00FF00);
+			//hBar_health.setOriginToCorner();
+			//hBar_health.scale.x = (hBar_frame.width-2)*(player.curHP / player.HP);
 			
-			add(hBar_frame);
-			add(hBar_health);
+			//add(hBar_frame);
+			//add(hBar_health);
 			
 			hud = new HUD(this);
 			add(hud);
@@ -163,35 +164,35 @@ package com.binaryscar.Summoner
 				return;
 			}
 			
-			if (!player._core.alive || livesCount <= 0) {
+			if (!player.alive || livesCount <= 0) {
 				lose();
 			}
 			
 			// TEMP TESTING HEALTH BARS
 			// TODO move this onto thep player's Entity when that is set up
-			hBar_frame.x = player._core.x - 2;
-			hBar_frame.y = player._core.y - 6;
-			hBar_health.x = player._core.x - 1;
-			hBar_health.y = player._core.y - 5;
-			hBar_health.scale.x = (hBar_frame.width-2)*(player.health / player.hitPoints);
-			if (hBar_health.scale.x == 0) {
-				hBar_frame.visible = hBar_health.visible = false;
+			//hBar_frame.x = player.x - 2;
+			//hBar_frame.y = player.y - 6;
+			//hBar_health.x = player.x - 1;
+			//hBar_health.y = player.y - 5;
+			//hBar_health.scale.x = (hBar_frame.width-2)*(player.health / player.hitPoints);
+			//if (hBar_health.scale.x == 0) {
+				//hBar_frame.visible = hBar_health.visible = false;
+			//}
+			
+			// move this: 
+			var maxX:int = FlxG.worldBounds.width - (player.width*3);
+			if (player.x < 0) {
+				player.x = 0;
+			} else if (player.x > maxX) {
+				player.x = maxX;
 			}
 			
 			// move this: 
-			var maxX:int = FlxG.worldBounds.width - (player._core.width*3);
-			if (player._core.x < 0) {
-				player._core.x = 0;
-			} else if (player._core.x > maxX) {
-				player._core.x = maxX;
-			}
-			
-			// move this: 
-			var maxY:int = FlxG.worldBounds.height - (player._core.height*1.5);
-			if (player._core.y < 0) {
-				player._core.y = 0;
-			} else if (player._core.y > maxY) {
-				player._core.y = maxY;
+			var maxY:int = FlxG.worldBounds.height - (player.height*1.5);
+			if (player.y < 0) {
+				player.y = 0;
+			} else if (player.y > maxY) {
+				player.y = maxY;
 			}
 			
 			enemySpawnTimer -= FlxG.elapsed;
@@ -241,29 +242,29 @@ package com.binaryscar.Summoner
 			  || (summonedGrp.countDead() > 0) ) {
 				if (summonedGrp.countDead() > 0) {
 					summoned = summonedGrp.getFirstDead() as Summoned;
-					if (player._core.facing === 0x0010) { // RIGHT
-						summoned.x = player._core.x + 20;
+					if (player.facing == FlxObject.RIGHT) { // RIGHT
+						summoned.x = player.x + 20;
 					} else {
-						summoned.x = player._core.x - 20;
+						summoned.x = player.x - 20;
 					}
-					summoned.y = player._core.y + 10;
-					summoned.facing = player._core.facing;
+					summoned.y = player.y + 10;
+					summoned.facing = player.facing;
 					//trace('attempt to revive summoned');
 					summoned.revive();
 				} else {
-					if (player._core.facing === 0x0010) { // RIGHT
-						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player._core.x + 20, player._core.y + 10, player._core.facing);
+					if (player.facing == FlxObject.RIGHT) { // RIGHT
+						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player.x + 20, player.y + 10, player.facing);
 						//HealthBars.addHealthBar(_summoned, -2, -14);
-					} else if (player._core.facing === 1) {
-						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player._core.x - 20, player._core.y + 10, player._core.facing);
+					} else if (player.facing == FlxObject.LEFT) {
+						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player.x - 20, player.y + 10, player.facing);
 						//HealthBars.addHealthBar(_summoned, -2, -14);
 					}
 					//trace('attempt to add summoned');
 					summonedGrp.add(summoned);
 				}
 			}
-			dots.at(player._arm);
-			dots.x += (player._core.facing == 0x0010) ? 20 : -10;
+			dots.at(player);
+			dots.x += (player.facing == FlxObject.LEFT) ? 20 : -10;
 			dots.start(true, 0.5);
 		}
 		

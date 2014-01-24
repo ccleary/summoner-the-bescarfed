@@ -56,6 +56,7 @@ package com.binaryscar.Summoner.Entity
 			
 			for each (var sprite:EntityExtraSprite in extraSpriteArray) {
 				sprite.updatePosition(attachedTo.x, attachedTo.y);
+				sprite.facing = attachedTo.facing;
 			}
 		}
 		
@@ -79,8 +80,8 @@ package com.binaryscar.Summoner.Entity
 			}
 		}
 		
-		public function addEntityExtraSprite(graphic:Class, xOffset:int, yOffset:int):EntityExtraSprite {
-			currExtraSprite = new EntityExtraSprite(attachedTo, (extraSpriteArray.length -1), graphic, xOffset, yOffset);
+		public function addEntityExtraSprite(graphic:Class, animated:Boolean, reverse:Boolean, xOffset:int, yOffset:int):EntityExtraSprite {
+			currExtraSprite = new EntityExtraSprite(attachedTo, (extraSpriteArray.length -1), graphic, animated, reverse, xOffset, yOffset);
 			extraSpriteArray.push(currExtraSprite);
 			add(currExtraSprite);
 			return currExtraSprite; // Return a reference for adding things like animations from the insantiator.

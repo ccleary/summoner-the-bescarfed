@@ -71,14 +71,18 @@ package com.binaryscar.Summoner.Entity
 			
 			loadGraphic(ph_redblock, false, false, 32, 32, false);
 			entityExtras = new EntityExtras(this);
+			playState.add(this);
 			playState.add(entityExtras);
 			
+			// Start doing these manually on a per-type basis? (i.e. for Summoned, for Player)
+			// to use different offsets?
 			entityExtras.addEntityExtra(EntityExtras.HEALTH_BAR, -4, -14);
 			entityExtras.addEntityExtra(EntityExtras.STATUS_EFFECT_CTRL, -4, -19);
 		}
 		
 		override public function update():void {
 			curHP = health;
+			super.update();
 		}
 		
 		override public function hurt(damage:Number):void {
@@ -143,8 +147,10 @@ package com.binaryscar.Summoner.Entity
 		// MSPD Setters / Getters
 		public function set MSPD(value:int):void {
 			_MSPD = value;
+			
 			drag.x = (MSPD_X) * 6;
 			drag.y = (MSPD_Y) * 4;
+			
 			maxVelocity.x = MSPD_X;
 			maxVelocity.y = MSPD_Y;
 		}

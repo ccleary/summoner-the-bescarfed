@@ -39,7 +39,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			STR = 1;
 			spellDelay = 3;
 			
-			MSPD = 50;
+			MSPD = 30;
 			// END STATS
 			
 			initX = X; // Save if needed for revival
@@ -54,6 +54,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			
 			loadGraphic(imgOrc, false, true, 32, 32);
 			addAnimation("walking", [0, 0, 0, 0], 8, true);
+			addAnimation("casting", [0, 0], 8, true);
 			addAnimation("attacking", [0, 0, 0, 0, 0, 0, 0], 16, false);
 			addAnimation("idle", [0]);
 			addAnimation("fightingIdle", [0]);
@@ -107,8 +108,10 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		override public function update():void {
 			if (this.targetedBy.length > 1 && !onSpellCooldown) { //FIXME
-				trace("POISON CLOUD!");
-				FSM.changeState("poisonCloud");
+				if(state.toString() != "poisonCloud") {
+					trace("POISON CLOUD!");
+					FSM.changeState("poisonCloud");
+				}
 			}
 			
 			super.update();

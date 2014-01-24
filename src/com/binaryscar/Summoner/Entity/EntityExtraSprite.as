@@ -15,9 +15,9 @@ package com.binaryscar.Summoner.Entity
 		
 		public var id:int;
 		
-		public var offsetFromEntity:Vector.<int>;
+		public var offsetFromEntity:Vector.<int> = new Vector.<int>();
 		
-		public function EntityExtraSprite(attachedTo:Entity, id:int, graphic:Class, xOffset:int, yOffset:int)
+		public function EntityExtraSprite(attachedTo:Entity, id:int, graphic:Class, animated:Boolean, reverse:Boolean, xOffset:int, yOffset:int)
 		{
 			super(attachedTo.x + xOffset, attachedTo.y + yOffset);
 			this.attachedTo = attachedTo;
@@ -26,7 +26,9 @@ package com.binaryscar.Summoner.Entity
 			this.id = id;
 			this.graphic = graphic;
 			
-			loadGraphic(graphic);
+			loadGraphic(graphic, animated, reverse);
+			width = 0; // No hitbox
+			height = 0; 
 		}
 		
 		public function updatePosition(x:int, y:int):void {

@@ -1,10 +1,14 @@
 package com.binaryscar.Summoner.Player 
 {
+	import com.binaryscar.Summoner.Entity.Entity;
+	import com.binaryscar.Summoner.Entity.EntityExtraSprite;
 	import com.binaryscar.Summoner.Entity.EntityStatus.HealthBar;
+	import com.binaryscar.Summoner.PlayState;
 	
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
+	import org.flixel.FlxObject;
 	import org.flixel.FlxSprite;
 	import org.flixel.FlxState;
 	
@@ -12,88 +16,93 @@ package com.binaryscar.Summoner.Player
 	 * ...
 	 * @author Connor Cleary
 	 */
-	public class Player extends FlxGroup {
+	public class Player extends Entity {
+		
 		[Embed(source = "../../../../../art/shittysummoner1.png")]public var shittysummoner:Class;
 		[Embed(source = "../../../../../art/Summoner4-NoArm.png")]public var summonerNoArm:Class;
 		[Embed(source = "../../../../../art/Summoner4-Arm.png")]public var summonerArm:Class;
 		
-		public var playState:FlxState;
+		protected var dots:FlxEmitter;
+		protected var arm:EntityExtraSprite;
 		
-		public var _core:Player_core;
-		public var _arm:Player_arm;
-		
-		private var _hBar:HealthBar;
-		
-		protected var _dots:FlxEmitter;
-		
-		
-		public function Player(X:int, Y:int, Parent:FlxState, dots:FlxEmitter) {
+		public function Player(X:int, Y:int, playState:PlayState, dots:FlxEmitter) {
 			
-			super(); // Create Group.
+			this.playState = playState;
 			
-			playState = Parent;
-			_core = new Player_core(X, X); // Most of the work happens here.
-			_arm = new Player_arm(X, Y, _core, _dots, playState);
-			_dots = dots;
-
-			add(_core);
-			add(_arm);
+			super(Entity.TYPE_PLAYER, null, null, playState, X, Y);
 			
-			//_hBar = new HealthBar();
-			//add(_hBar);
+			loadGraphic(summonerNoArm, true, true);
+			addAnimation("walking", [0, 1], 12, true);
+			addAnimation("idle", [0]);
+			
+			arm = entityExtras.addEntityExtraSprite(summonerArm, true, true, -4, 0);
+			
+			arm.addAnimation("casting", [0, 1, 2, 0], 8, false);
+			arm.addAnimation("idle", [0]);
+			
+			dots = dots;
+			
+			// Adjust hitbox
+			height = 32;
+			width = 14;
+			offset.x = 6;
+			
+			// Set Stats
+			MSPD = 80;
+			HP = 6;
+			
+			health = HP;
 		}
 		
 		override public function update():void {
 			super.update();
 			
-			if (!_core.alive) {
+			if (!alive) {
 				this.visible = false;
 				this.exists = false;
-				_arm.visible = false;
-				_arm.exists = false;
 			}
 			
-			_arm.x = _core.x + 4;
-			_arm.y = _core.y + _arm.offset.y;
-			_arm.facing = _core.facing;
-		}
-		
-		public function get stats():Object {
-			return {
-				HP: _core.HP,
-				health: _core.health
-			};
-		}
-		
-		public function set stats(obj:Object):void {
-			if (notNullAndOfType(obj.HP, "int")) {
-				_core.HP = obj.HP;
+			if (facing == FlxObject.RIGHT) {
+				offset.x = 6;
+				arm.offsetFromEntity[0] = -4;
+			} else if (facing == FlxObject.LEFT) {
+				offset.x = 12;
+				arm.offsetFromEntity[0] = -12;
 			}
-			if (notNullAndOfType(obj.health, "int")) {
-				_core.health = obj.health;
+			
+			acceleration.x = acceleration.y = 0;
+			
+			if (FlxG.keys.LEFT && facing != LEFT) {
+				facing = LEFT;
+			} else if (FlxG.keys.RIGHT && facing != RIGHT) {
+				facing = RIGHT;
+			}
+			
+			if (FlxG.keys.LEFT) {
+				acceleration.x = -drag.x;
+			} else if (FlxG.keys.RIGHT) {
+				acceleration.x = drag.x;
+			}
+			if (FlxG.keys.UP) {
+				acceleration.y = -drag.y;
+			} else if (FlxG.keys.DOWN) {
+				acceleration.y = drag.y;
+			}
+			
+			if (velocity.x > 0 || velocity.x < 0 
+			   || velocity.y > 0 || velocity.y < 0) {
+				play("walking");
+			} else if (!velocity.x || !velocity.y) {
+				play("idle");
 			}
 		}
 		
-		public function hurt(dam:int):void {
-			if (dam != 0) {
-				// Red flash not working yet.
-				// need to figure out how to reset it after no longer flickering.
-//				_core.color = 0xffdd0000;
-//				_arm.color = 0xffdd0000;
-				_core.flicker(0.25);
-				_arm.flicker(0.25);
-				_core.hurt(dam);
-//				_core.color = 0xffffffff;
-//				_arm.color = 0xffffffff;
+		override public function hurt(damage:Number):void {
+			if (damage != 0) {
+				flicker(0.25);
+				flicker(0.25);
 			}
-		}
-		
-		public function get hitPoints():int {
-			return _core.HP;
-		}
-		
-		public function get health():int {
-			return _core.health;
+			super.hurt(damage);
 		}
 		
 		private function notNullAndOfType(toCheck:*, t:String):Boolean {
