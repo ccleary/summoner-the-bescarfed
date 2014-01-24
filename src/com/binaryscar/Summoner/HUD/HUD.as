@@ -28,7 +28,7 @@ package com.binaryscar.Summoner.HUD
 			score = new FlxText(playState.gameWidth - 75, 0, 60, "Score: " + FlxG.score);
 			add(score);
 			
-			lives = new FlxText(0, 0, 60, "Lives: " + playState.livesCount);
+			lives = new FlxText(5, 0, 60, "Lives: " + playState.livesCount);
 			add(lives);
 			
 			summonedCounter = new SummonedCounter(playState.summonedGrp, 5, 220);

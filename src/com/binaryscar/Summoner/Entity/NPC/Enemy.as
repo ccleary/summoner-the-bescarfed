@@ -134,7 +134,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		public function get onSpellCooldown():Boolean {
-			if (spellTimer == NaN) {
+			if (isNaN(spellTimer)) {
 				return false;
 			}
 			if (spellTimer > 0) { // Timer needs to go longer than attackCooldown.
