@@ -1,4 +1,4 @@
-package com.binaryscar.Summoner.NPC 
+package com.binaryscar.Summoner.Entity.NPC 
 {
 	import com.binaryscar.Summoner.PlayState;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
@@ -19,35 +19,34 @@ package com.binaryscar.Summoner.NPC
 	public class Enemy extends NPC 
 	{
 		//[Embed(source = "../../../../art/shitty-redblock-enemy1.png")]public var shittyRedBlock:Class;
-		[Embed(source = "../../../../../art/enemy-orc-1.png")]public var imgOrc:Class;
-		[Embed(source = "../../../../../art/blackpx.png")]public var bkDot:Class;
+		[Embed(source = "../../../../../../art/enemy-orc-1.png")]public var imgOrc:Class;
+		[Embed(source = "../../../../../../art/blackpx.png")]public var bkDot:Class;
 
 		public var initX:int;
 		public var initY:int;
 		
-		private var SPELL_DELAY:Number;
-		private var _spellTimer:Number
-		private var _spellFX:FlxEmitter;
+		private var spellDelay:Number;
+		private var spellTimer:Number
+		private var spellFX:FlxEmitter;
 		
 		public function Enemy(enemGrp:FlxGroup, summGrp:FlxGroup, player:Player, playState:PlayState, X:int, Y:int, face:uint = LEFT, initState:String = "walking") { 
-			super(enemGrp, summGrp, player, playState, X, Y, face, initState);
+			super(TYPE_ENEMY, enemGrp, summGrp, player, playState, X, Y, face, initState);
 			
 			// ESTABLISH STATS
 			HP = 3;
 			
 			ATTACK_DELAY = 2.5;
 			STR = 1;
-			SPELL_DELAY = 3;
+			spellDelay = 3;
 			
-			SPEED_X = 50;
-			SPEED_Y = 30;
+			MSPD = 50;
 			// END STATS
 			
 			initX = X; // Save if needed for revival
 			initY = Y;
 			
-			_spellTimer = NaN;
-			_spellFX = new FlxEmitter(X, Y); // Set .at() before casting.
+			spellTimer = NaN;
+			spellFX = new FlxEmitter(X, Y); // Set .at() before casting.
 			// Figure out how to make simple square/cirlce graphic particles for now.
 			//_spellFX.makeParticles();
 			
@@ -60,12 +59,11 @@ package com.binaryscar.Summoner.NPC
 			offset.y = 6;
 			health = HP;
 			
-//			fsm = new StateMachine();
-			fsm.id = "[Enemy]";
-			addEnemyStates(fsm);
-			_initState = "walking";
-			if (fsm.state != _initState) {
-				fsm.changeState(_initState);
+			FSM.id = "[Enemy]";
+			addEnemyStates(FSM);
+
+			if (FSM.state != "walking") {
+				FSM.changeState("walking");
 			}
 		}
 		
@@ -79,22 +77,22 @@ package com.binaryscar.Summoner.NPC
 				{
 					parent: "fighting",
 					from: ["fighting"],
-					enter: function() {
+					enter: function():void {
 						trace(fsm.id + " CAST!");
 					}
 				});
 			fsm.addState("poisonCloud",
 				{
 					parent: "casting",
-					enter: function() {
-						for each (var attacker:NPC in _targetedBy) {
+					enter: function():void {
+						for each (var attacker:NPC in targetedBy) {
 							play("casting");
-							//trace('poisoned');
+							//trace('would cast poison');
 							// I put a spell on you.
-							attacker.addStatusEffect("poison");
+							//attacker.addStatusEffect("poison");
 						};
 					},
-					execute: function() {
+					execute: function():void {
 						if (finished) {
 							fsm.changeState("fighting");
 						}
@@ -103,9 +101,9 @@ package com.binaryscar.Summoner.NPC
 		}
 		
 		override public function update():void {
-			if (this._targetedBy.length > 1 && !onSpellCooldown) { //FIXME
+			if (this.targetedBy.length > 1 && !onSpellCooldown) { //FIXME
 				trace("POISON CLOUD!");
-				fsm.changeState("poisonCloud");
+				FSM.changeState("poisonCloud");
 			}
 			
 			super.update();
@@ -131,23 +129,23 @@ package com.binaryscar.Summoner.NPC
 		}
 		
 		public function get onSpellCooldown():Boolean {
-			if (_spellTimer == NaN) {
+			if (spellTimer == NaN) {
 				return false;
 			}
-			if (_spellTimer > 0) { // Timer needs to go longer than attackCooldown.
-				_spellTimer -= FlxG.elapsed;
+			if (spellTimer > 0) { // Timer needs to go longer than attackCooldown.
+				spellTimer -= FlxG.elapsed;
 				return true; // onCooldown, no attacking.
 			} else {
-				_spellTimer = SPELL_DELAY; // Attack and reset timer.
+				spellTimer = spellDelay; // Attack and reset timer.
 				return false; // !onCooldown, attack!
 			}
 		}
 		
 		public function set onSpellCooldown(bool:Boolean):void {
 			if (bool) {
-				_spellTimer = SPELL_DELAY;
+				spellTimer = spellDelay;
 			} else {
-				_spellTimer = NaN;
+				spellTimer = NaN;
 			}
 		}
 		
@@ -156,15 +154,15 @@ package com.binaryscar.Summoner.NPC
 			visible = true;
 			solid = true;
 			health = HP;
-			if (fsm.state != _initState) {
-				fsm.changeState(_initState);
+			if (FSM.state != "walking") {
+				FSM.changeState("walking");
 			}
 			super.revive();
 		}
 		
 		override public function kill():void {
 			if (x < FlxG.stage.x) { // Got past the Summoner
-				_playState.loseLife();
+				playState.loseLife();
 			} else {
 				FlxG.score++; // Killed by Summoned
 			}

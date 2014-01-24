@@ -5,34 +5,34 @@ package com.binaryscar.Summoner.HUD
 	
 	public class SummonedCounter extends FlxGroup
 	{
-		private var _watchGrp:FlxGroup;
-		private var _tickMark:SummonedCounterTickMark; // Helper.
-		private var _tickWidth:int = 16;
+		private var watchGrp:FlxGroup;
+		private var tickMark:SummonedCounterTickMark; // Helper.
+		private var tickWidth:int = 16;
 		
-		private var _prevActive:int = 0;
-		private var _numActive:int = 0;
+		private var prevActive:int = 0;
+		private var numActive:int = 0;
 		
 		public function SummonedCounter(watchGroup:FlxGroup, X:int, Y:int)
 		{
-			_watchGrp = watchGroup;
-			super(_watchGrp.maxSize); // Limit to number of allowed _summonedGrp members.
+			watchGrp = watchGroup;
+			super(watchGrp.maxSize); // Limit to number of allowed _summonedGrp members.
 			
-			for (var i:int = 0; i < _watchGrp.maxSize; i++) {
-				_tickMark = new SummonedCounterTickMark(i, X + (_tickWidth*i), Y);
-				add(_tickMark);
+			for (var i:int = 0; i < watchGrp.maxSize; i++) {
+				tickMark = new SummonedCounterTickMark(i, X + (tickWidth*i), Y);
+				add(tickMark);
 			}
 		}
 		
 		override public function update():void {
 			super.update();
-			_numActive = _watchGrp.countLiving();
-			if (_prevActive != _numActive) {
+			numActive = watchGrp.countLiving();
+			if (prevActive != numActive) {
 				 callAll("deactivate"); // 
-				for (var i:int = 0; i < _numActive; i++) {
+				for (var i:int = 0; i < numActive; i++) {
 					members[i].activated = true;
 				}
 			}
-			_prevActive = _numActive;
+			prevActive = numActive;
 		}
 	}
 }

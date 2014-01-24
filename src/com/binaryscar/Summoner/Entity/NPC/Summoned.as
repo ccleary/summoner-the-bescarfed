@@ -1,4 +1,4 @@
-package com.binaryscar.Summoner.NPC 
+package com.binaryscar.Summoner.Entity.NPC 
 {
 	import com.binaryscar.Summoner.PlayState;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
@@ -6,10 +6,6 @@ package com.binaryscar.Summoner.NPC
 	
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
-
-//	import org.flixel.FlxSprite;
-//	import org.flixel.FlxPoint;
-//	import com.binaryscar.Summoner.Enemy;
 	
 	/**
 	 * ...
@@ -17,11 +13,10 @@ package com.binaryscar.Summoner.NPC
 	 */
 	public class Summoned extends NPC 
 	{
-		//[Embed(source = "../../../../art/Summon-demon-1.png")]public var clawDemon:Class;
-		[Embed(source = "../../../../../art/Summon-demon-2.png")]public var clawDemon:Class;
+		[Embed(source = "../../../../../../art/Summon-demon-2.png")]public var clawDemon:Class;
 		
 		public function Summoned(summGrp:FlxGroup, enemGrp:FlxGroup, player:Player, playState:PlayState, X:int, Y:int, face:uint, initState:String = "walking") {
-			super(summGrp, enemGrp, player, playState, X, Y, face, initState);
+			super(TYPE_SUMMONED, summGrp, enemGrp, player, playState, X, Y, face, initState);
 			
 			// ESTABLISH STATS
 			HP = 4;
@@ -29,22 +24,17 @@ package com.binaryscar.Summoner.NPC
 			ATTACK_DELAY = 2;
 			STR = 1;
 			
-			SPEED_X = 65;
-			SPEED_Y = 45;
+			MSPD = 50;
+			
 			// END STATS
 			
 			facing = face;
-			 
+						
 			loadGraphic(clawDemon, true, true, 32, 32, false);
 			addAnimation("walking", [0, 1, 2, 3], 8, true);
 			addAnimation("attacking", [4, 5, 6, 7, 8, 5, 4], 16, false);
 			addAnimation("idle", [0]);
 			addAnimation("fightingIdle", [4]);
-			 
-			drag.x = SPEED_X * 6;
-			drag.y = SPEED_Y * 4;
-			maxVelocity.x = SPEED_X;
-			maxVelocity.y = SPEED_Y;
 		 
 			height = 8;
 			offset.y = 18;
@@ -55,23 +45,20 @@ package com.binaryscar.Summoner.NPC
 			elasticity = 1.5;
 			 
 //			fsm = new StateMachine();
-		 	fsm.id = "[Summoned]";
-			_initState = "walking";
-			addSummonedStates(fsm);
-			if (fsm.state != _initState) {
-				fsm.changeState(_initState);
-			}
+		 	FSM.id = "[Summoned]";
+			addSummonedStates(FSM);
+			FSM.changeState("walking");
 		}
 		
 		override public function update():void {
 			super.update();
 		}
 		
-		private function addSummonedStates(fsm:StateMachine):void {
-			fsm.addState("sprinting", 
+		private function addSummonedStates(FSM:StateMachine):void {
+			FSM.addState("sprinting", 
 				{
 					parent: "moving",
-					enter: function() {
+					enter: function():void {
 						trace('enter sprint!');
 					}
 				});
@@ -79,8 +66,8 @@ package com.binaryscar.Summoner.NPC
 		
 		override public function revive():void {
 			health = HP;
-			if (fsm.state != _initState) {
-				fsm.changeState(_initState);
+			if (FSM.state != "walking") {
+				FSM.changeState("walking");
 			}
 			super.revive();
 		}

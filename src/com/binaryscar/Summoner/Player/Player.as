@@ -1,12 +1,6 @@
 package com.binaryscar.Summoner.Player 
 {
-	import com.binaryscar.Summoner.HealthBar;
-	
-	import flash.accessibility.AccessibilityProperties;
-	import flash.display.SpreadMethod;
-	import flash.filters.GlowFilter;
-	
-	import avmplus.FLASH10_FLAGS;
+	import com.binaryscar.Summoner.Entity.EntityStatus.HealthBar;
 	
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxG;

@@ -1,11 +1,12 @@
 package com.binaryscar.Summoner 
 {
-	import com.binaryscar.Summoner.FiniteStateMachine.State;
-	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
+	//import com.binaryscar.Summoner.Entity.EntityStatus.HealthBarController; 
+	//import com.binaryscar.Summoner.Entity.EntityStatus.StatusEffectsController;
+	import com.binaryscar.Summoner.Entity.NPC.Enemy;
+	import com.binaryscar.Summoner.Entity.NPC.NPC;
+	import com.binaryscar.Summoner.Entity.NPC.Summoned;
+	import com.binaryscar.Summoner.FiniteStateMachine.*;
 	import com.binaryscar.Summoner.HUD.HUD;
-	import com.binaryscar.Summoner.NPC.Enemy;
-	import com.binaryscar.Summoner.NPC.NPC;
-	import com.binaryscar.Summoner.NPC.Summoned;
 	import com.binaryscar.Summoner.Player.Player;
 	import mx.core.FlexSprite;
 	
@@ -32,20 +33,20 @@ package com.binaryscar.Summoner
 		[Embed(source = "../../../../art/leveltest.csv", mimeType = "application/octet-stream")]public var testmap:Class;
 		[Embed(source = "../../../../art/white-blue-px.png")]public var particlePixel:Class;
 		
-		private var _tileblock:FlxTileblock;
-		private var _dots:FlxEmitter;
+		private var tileblock:FlxTileblock;
+		private var dots:FlxEmitter;
 		
-		private var _summoned:Summoned; // Helper.
-		public var _summonedGrp:FlxGroup;
+		private var summoned:Summoned; // Helper.
+		public var summonedGrp:FlxGroup;
 		
-		private var _enemy:Enemy; // Helper.
-		private var _enemyGrp:FlxGroup;
-		private var _enemySpawnTimer:Number;
+		private var enemy:Enemy; // Helper.
+		private var enemyGrp:FlxGroup;
+		private var enemySpawnTimer:Number;
 		
 		private var SPAWN_DELAY:Number;
 		
-		private var _lose:Boolean = false;
-		private var _win:Boolean = false;
+		private var lost:Boolean = false;
+		private var won:Boolean = false;
 		
 		private var hud:HUD;
 		private var pausedOverlay:FlxGroup;
@@ -59,7 +60,7 @@ package com.binaryscar.Summoner
 		
 		public var mapBoundaries:FlxRect;
 		
-		public var HealthBars:HealthBarController;
+		//public var HealthBars:HealthBarController;
 		
 		public var hBar_frame:FlxSprite;
 		public var hBar_health:FlxSprite;
@@ -71,32 +72,32 @@ package com.binaryscar.Summoner
 			map = new FlxTilemap();
 			add(map.loadMap(new testmap, shittygrass, 16, 16));
 			
-			HealthBars = new HealthBarController();
+			enemyGrp = new FlxGroup(2);
+			add(enemyGrp);
 			
-			_enemyGrp = new FlxGroup(10);
-			add(_enemyGrp);
+			summonedGrp = new FlxGroup(10);
+			add(summonedGrp);
 			
-			_summonedGrp = new FlxGroup(10);
-			add(_summonedGrp);
+			createEnemy(300, 30);
 			
-			createEnemy(200, 30);
+			SPAWN_DELAY = 2; // TEMP
+			enemySpawnTimer = SPAWN_DELAY;
 			
-			SPAWN_DELAY = 1;
-			_enemySpawnTimer = SPAWN_DELAY;
+			dots = new FlxEmitter(0, 0, 30);
+			dots.setXSpeed( -20, 20);
+			dots.setYSpeed( -20, 20);
+			dots.setRotation( 0, 0);
+			dots.gravity = 30;
+			dots.makeParticles( particlePixel, 30, 0, false, 0.2);
 			
-			_dots = new FlxEmitter(0, 0, 30);
-			_dots.setXSpeed( -20, 20);
-			_dots.setYSpeed( -20, 20);
-			_dots.setRotation( 0, 0);
-			_dots.gravity = 30;
-			_dots.makeParticles( particlePixel, 30, 0, false, 0.2);
-			
-			player = new Player(30, 50, this, _dots);
+			player = new Player(30, 50, this, dots);
 			add(player);
-			add(_dots);
+			add(dots);
 			
-			add(HealthBars);
+			//HealthBars = new HealthBarController();
+			//add(HealthBars);
 			
+			// TODO add getters for common _core properties like x, y, facing,
 			hBar_frame = new FlxSprite(player._core.x-2, player._core.y - 6);
 			hBar_frame.makeGraphic(24, 5, 0xFF000000); // Black frame
 			
@@ -150,11 +151,11 @@ package com.binaryscar.Summoner
 			
 			super.update();
 			
-			if (_lose && FlxG.keys.justPressed("R")) {
+			if (lost && FlxG.keys.justPressed("R")) {
 				FlxG.resetState();
 			}
 			
-			if (_lose) {
+			if (lost) {
 				return;
 			}
 			
@@ -172,9 +173,9 @@ package com.binaryscar.Summoner
 				hBar_frame.visible = hBar_health.visible = false;
 			}
 			
-			_enemySpawnTimer -= FlxG.elapsed;
-			if (_enemySpawnTimer < 0 && !_lose) {
-				_enemySpawnTimer = SPAWN_DELAY;
+			enemySpawnTimer -= FlxG.elapsed;
+			if (enemySpawnTimer < 0 && !lost) {
+				enemySpawnTimer = SPAWN_DELAY;
 				createEnemy();
 			}
 			
@@ -193,8 +194,8 @@ package com.binaryscar.Summoner
 				createEnemy();
 			}
 
-			FlxG.collide(_summonedGrp, _enemyGrp, startFight);
-			FlxG.collide(_enemyGrp, player, hitPlayer);
+			FlxG.collide(summonedGrp, enemyGrp, startFight);
+			FlxG.collide(enemyGrp, player, hitPlayer);
 		}
 		
 		public function win():void {
@@ -202,10 +203,10 @@ package com.binaryscar.Summoner
 		}
 		
 		public function lose():void {
-			_lose = true;
+			lost = true;
 			hud.lose();
-			_summonedGrp.callAll("lose");
-			_enemyGrp.callAll("lose");
+			summonedGrp.callAll("lose");
+			enemyGrp.callAll("lose");
 			FlxG.paused = true;
 		}
 		
@@ -215,33 +216,34 @@ package com.binaryscar.Summoner
 		}
 		
 		public function summon():void {
-			if ( (_summonedGrp.length < _summonedGrp.maxSize)
-			  || (_summonedGrp.countDead() > 0) ) {
-				if (_summonedGrp.countDead() > 0) {
-					_summoned = _summonedGrp.getFirstDead() as Summoned;
+			if ( (summonedGrp.length < summonedGrp.maxSize)
+			  || (summonedGrp.countDead() > 0) ) {
+				if (summonedGrp.countDead() > 0) {
+					summoned = summonedGrp.getFirstDead() as Summoned;
 					if (player._core.facing === 0x0010) { // RIGHT
-						_summoned.x = player._core.x + 20;
+						summoned.x = player._core.x + 20;
 					} else {
-						_summoned.x = player._core.x - 20;
+						summoned.x = player._core.x - 20;
 					}
-					_summoned.y = player._core.y + 10;
-					_summoned.facing = player._core.facing;
+					summoned.y = player._core.y + 10;
+					summoned.facing = player._core.facing;
 					//trace('attempt to revive summoned');
-					_summoned.revive();
+					summoned.revive();
 				} else {
 					if (player._core.facing === 0x0010) { // RIGHT
-						_summoned = new Summoned(_summonedGrp, _enemyGrp, player, this, player._core.x + 20, player._core.y + 10, player._core.facing);
-						HealthBars.addHealthBar(_summoned, -2, -14);
+						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player._core.x + 20, player._core.y + 10, player._core.facing);
+						//HealthBars.addHealthBar(_summoned, -2, -14);
 					} else if (player._core.facing === 1) {
-						_summoned = new Summoned(_summonedGrp, _enemyGrp, player, this, player._core.x - 20, player._core.y + 10, player._core.facing);
-						HealthBars.addHealthBar(_summoned, -2, -14);
+						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player._core.x - 20, player._core.y + 10, player._core.facing);
+						//HealthBars.addHealthBar(_summoned, -2, -14);
 					}
-					trace('attempt to add summoned');
-					_summonedGrp.add(_summoned);
+					//trace('attempt to add summoned');
+					summonedGrp.add(summoned);
 				}
 			}
-			_dots.at(player._arm);
-			_dots.start(true, 0.5);
+			dots.at(player._arm);
+			dots.x += (player._core.facing == 0x0010) ? 20 : -10;
+			dots.start(true, 0.5);
 		}
 		
 		public function createEnemy(X:Number = 0, Y:Number = 0):void {
@@ -252,19 +254,19 @@ package com.binaryscar.Summoner
 				Y = (Y < gameHeight - 32) ? Y : Y - 32;
 				//Y = (Y > 32) ? Y : Y + 32;
 			}
-			if (_enemyGrp.length == _enemyGrp.maxSize && _enemyGrp.getFirstDead() == null) {
-				_enemyGrp.getRandom().kill();
-			}
-			if (_enemyGrp.countDead() > 0) {
-				_enemy = _enemyGrp.getFirstDead() as Enemy;
-				_enemy.x = X;
-				_enemy.y = Y;
+			//if (_enemyGrp.length == _enemyGrp.maxSize && _enemyGrp.getFirstDead() == null) {
+				//_enemyGrp.getRandom().kill();
+			//}
+			if (enemyGrp.countDead() > 0) {
+				enemy = enemyGrp.getFirstDead() as Enemy;
+				enemy.x = X;
+				enemy.y = Y;
 				//trace('attempt to revive enemy');
-				_enemy.revive();
+				enemy.revive();
 			} else {
-				_enemy = new Enemy(_enemyGrp, _summonedGrp, player, this, X, Y);
-				HealthBars.addHealthBar(_enemy, -4, -14);
-				_enemyGrp.add(_enemy);
+				enemy = new Enemy(enemyGrp, summonedGrp, player, this, X, Y);
+				//HealthBars.addHealthBar(_enemy, -4, -14);
+				enemyGrp.add(enemy);
 			}
 		}
 		
