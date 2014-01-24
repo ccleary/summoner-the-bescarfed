@@ -5,6 +5,7 @@ package com.binaryscar.Summoner
 	import com.binaryscar.Summoner.Entity.NPC.Enemy;
 	import com.binaryscar.Summoner.Entity.NPC.NPC;
 	import com.binaryscar.Summoner.Entity.NPC.Summoned;
+	import com.binaryscar.Summoner.Entity.EntityExtras;
 	import com.binaryscar.Summoner.FiniteStateMachine.*;
 	import com.binaryscar.Summoner.HUD.HUD;
 	import com.binaryscar.Summoner.Player.Player;
@@ -270,7 +271,7 @@ package com.binaryscar.Summoner
 			if (X == 0 || Y == 0) { // No specific position provided.
 				X = gameWidth + (Math.round(Math.random() * 32));
 				Y = gameHeight - (Math.round(Math.random() * gameHeight));
-				Y = (Y < gameHeight - 32) ? Y : Y - 32;
+				Y = (Y < gameHeight - 64) ? Y : Y - 64;
 			}
 			//if (_enemyGrp.length == _enemyGrp.maxSize && _enemyGrp.getFirstDead() == null) {
 				//_enemyGrp.getRandom().kill();
@@ -302,7 +303,8 @@ package com.binaryscar.Summoner
 		
 		public function hitPlayer(enem:Enemy, playerPart:*):void {
 			player.hurt(1);
-			enem.kill();
+			//enem.fireGibs(EntityExtras.GIBS_SMOKE);
+			enem.hurt(enem.HP);
 		}
 		
 		public function loseLife():void {

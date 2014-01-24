@@ -79,11 +79,22 @@ package com.binaryscar.Summoner.Entity
 		
 		override public function update():void {
 			curHP = health;
-			if (curHP <= 0) {
-				//kill();
+		}
+		
+		override public function hurt(damage:Number):void {
+			if ((curHP - damage) <= 0) {
 				entityExtras.fireGibs(EntityExtras.GIBS_SMOKE);
 			}
+			super.hurt(damage);
 		}
+		
+		override public function kill():void {
+			super.kill();
+		}
+		
+		//public function fireGibs(kind:int):void {
+			//entityExtras.fireGibs(kind);
+		//}
 		
 		// HP Setters / Getters
 		public function set HP(value:int):void {

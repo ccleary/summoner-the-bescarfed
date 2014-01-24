@@ -43,12 +43,14 @@ package com.binaryscar.Summoner.Entity
 			gibs_smoke.setYSpeed(-30,30);
 			gibs_smoke.setRotation(0, 360);
 			gibs_smoke.gravity = 1.5;
-			gibs_smoke.makeParticles(gibsImg_smoke, 10, 8, true, 0);
+			gibs_smoke.makeParticles(gibsImg_smoke, 30, 8, true, 0);
+			gibs_smoke.setSize(attachedTo.width * 0.6, attachedTo.height * 0.6);
 			add(gibs_smoke);
 		}
 		
 		override public function update():void {
 			super.update();
+			
 			HB.updatePosition(attachedTo.x, attachedTo.y);
 			SEC.updatePosition(attachedTo.x, attachedTo.y);
 			
@@ -94,7 +96,7 @@ package com.binaryscar.Summoner.Entity
 			}
 			
 			gibs.at(attachedTo);
-			gibs.start();
+			gibs.start(true, 0.35);
 		}
 	}
 }
