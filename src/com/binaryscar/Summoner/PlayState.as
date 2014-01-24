@@ -164,6 +164,7 @@ package com.binaryscar.Summoner
 			}
 			
 			// TEMP TESTING HEALTH BARS
+			// TODO move this onto thep player's Entity when that is set up
 			hBar_frame.x = player._core.x - 2;
 			hBar_frame.y = player._core.y - 6;
 			hBar_health.x = player._core.x - 1;
@@ -171,6 +172,24 @@ package com.binaryscar.Summoner
 			hBar_health.scale.x = (hBar_frame.width-2)*(player.health / player.hitPoints);
 			if (hBar_health.scale.x == 0) {
 				hBar_frame.visible = hBar_health.visible = false;
+			}
+			
+			// move this: 
+			var maxX:int = FlxG.worldBounds.width - (player._core.width*3);
+			if (player._core.x < 0) {
+				player._core.x = 0;
+				trace(FlxG.worldBounds.width);
+			} else if (player._core.x > maxX) {
+				player._core.x = maxX;
+			}
+			
+			// move this: 
+			var maxY:int = FlxG.worldBounds.height - (player._core.height*1.5);
+			if (player._core.y < 0) {
+				player._core.y = 0;
+				trace(FlxG.worldBounds.height);
+			} else if (player._core.y > maxY) {
+				player._core.y = maxY;
 			}
 			
 			enemySpawnTimer -= FlxG.elapsed;
@@ -210,9 +229,9 @@ package com.binaryscar.Summoner
 			FlxG.paused = true;
 		}
 		
-		function pause():void {
-			_summonedGrp.callAll("pause");
-			_enemyGrp.callAll("pause");
+		public function pause():void {
+			summonedGrp.callAll("pause");
+			enemyGrp.callAll("pause");
 		}
 		
 		public function summon():void {

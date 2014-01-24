@@ -5,8 +5,10 @@ package com.binaryscar.Summoner.Entity.NPC
 	import com.binaryscar.Summoner.Entity.EntityStatus.StatusEffectsController;
 	import com.binaryscar.Summoner.FiniteStateMachine.State;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
+	import com.binaryscar.Summoner.FiniteStateMachine.StateMachineEvent;
 	import com.binaryscar.Summoner.PlayState;
 	import com.binaryscar.Summoner.Player.Player;
+	import flash.events.StatusEvent;
 	
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxG;
@@ -28,10 +30,12 @@ package com.binaryscar.Summoner.Entity.NPC
 		protected var FSM:StateMachine;
 		protected var defaultInitState:String;
 		protected var state:State;
+		protected var prevStateStorage:String;    // For pausing.
 
 		protected var player:Player;
 		
-		protected var AVOID_DELAY:Number = 0.15;	// _avoidTimer resets to this number
+		protected var avoidDelay:Number = 0.15;	// _avoidTimer resets to this number
+	
 		private var avoidTimer:Number;			    // When this reaches 0: Stops "avoiding" state.
 		
 		public var _target:NPC;					// Can only have one active fighting-target.
@@ -70,7 +74,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			if (initState != null && FSM.getStateByName(initState)) {
 				defaultInitState = initState;
 			} else {
-				_initState = "idle";
+				defaultInitState = "idle";
 			}
 			// This is necessary so the Subclass can
 			// create and run animations properly.
@@ -157,8 +161,8 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		public function pause():void {
-			if (fsm.state != "paused") {
-				fsm.changeState("paused");
+			if (FSM.state != "paused") {
+				FSM.changeState("paused");
 			}
 		}
 		
@@ -223,13 +227,13 @@ package com.binaryscar.Summoner.Entity.NPC
 			{
 				enter: function(evt:StateMachineEvent = null):void {
 					if (evt != null) {
-						_prevStateStorage = evt.fromState;
+						prevStateStorage = evt.fromState;
 					}
 					stopMoving();
 				},
 				execute: function():void {
 					if (!FlxG.paused) {
-						fsm.changeState(_prevStateStorage);
+						FSM.changeState(prevStateStorage);
 					}
 				}
 			});
@@ -282,7 +286,7 @@ package com.binaryscar.Summoner.Entity.NPC
 					from: ["moving", "walking", "sprinting", "idle", "paused"], // Not fighting.
 					enter: function():void {
 						trace(FSM.id + ' Enter avoid!');
-						avoidTimer = AVOID_DELAY;
+						avoidTimer = avoidDelay;
 					},
 					execute: function():void {
 					}
