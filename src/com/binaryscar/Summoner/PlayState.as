@@ -43,7 +43,7 @@ package com.binaryscar.Summoner
 		private var enemyGrp:FlxGroup;
 		private var enemySpawnTimer:Number;
 		
-		private var SPAWN_DELAY:Number;
+		private var spawnDelay:Number;
 		
 		private var lost:Boolean = false;
 		private var won:Boolean = false;
@@ -55,8 +55,8 @@ package com.binaryscar.Summoner
 		
 		public var player:Player;
 		public var map:FlxTilemap = new FlxTilemap;
-		public var gameWidth:Number = 320;
-		public var gameHeight:Number = 240;
+		public var gameWidth:Number;
+		public var gameHeight:Number;
 		
 		public var mapBoundaries:FlxRect;
 		
@@ -68,6 +68,9 @@ package com.binaryscar.Summoner
 		override public function create():void {
 			FlxG.score = 0;
 			
+			gameWidth = FlxG.worldBounds.width;
+			gameHeight = FlxG.worldBounds.height;
+			
 //			map = new FlxTileblock(0, 0, gameWidth, gameHeight);
 			map = new FlxTilemap();
 			add(map.loadMap(new testmap, shittygrass, 16, 16));
@@ -78,10 +81,10 @@ package com.binaryscar.Summoner
 			summonedGrp = new FlxGroup(10);
 			add(summonedGrp);
 			
-			createEnemy(300, 30);
+			createEnemy(380, 30);
 			
-			SPAWN_DELAY = 2; // TEMP
-			enemySpawnTimer = SPAWN_DELAY;
+			spawnDelay = 2; // TEMP
+			enemySpawnTimer = spawnDelay;
 			
 			dots = new FlxEmitter(0, 0, 30);
 			dots.setXSpeed( -20, 20);
@@ -178,7 +181,6 @@ package com.binaryscar.Summoner
 			var maxX:int = FlxG.worldBounds.width - (player._core.width*3);
 			if (player._core.x < 0) {
 				player._core.x = 0;
-				trace(FlxG.worldBounds.width);
 			} else if (player._core.x > maxX) {
 				player._core.x = maxX;
 			}
@@ -187,14 +189,13 @@ package com.binaryscar.Summoner
 			var maxY:int = FlxG.worldBounds.height - (player._core.height*1.5);
 			if (player._core.y < 0) {
 				player._core.y = 0;
-				trace(FlxG.worldBounds.height);
 			} else if (player._core.y > maxY) {
 				player._core.y = maxY;
 			}
 			
 			enemySpawnTimer -= FlxG.elapsed;
 			if (enemySpawnTimer < 0 && !lost) {
-				enemySpawnTimer = SPAWN_DELAY;
+				enemySpawnTimer = spawnDelay;
 				createEnemy();
 			}
 			
@@ -266,12 +267,10 @@ package com.binaryscar.Summoner
 		}
 		
 		public function createEnemy(X:Number = 0, Y:Number = 0):void {
-			if (X == 0 || Y == 0) {
-				X = Math.round(Math.random() * (64) + gameWidth);
-				Y = Math.round(Math.random() * (gameHeight - 32) + 32);
-				X = (X > 32) ? X : X + 64;
+			if (X == 0 || Y == 0) { // No specific position provided.
+				X = gameWidth + (Math.round(Math.random() * 32));
+				Y = gameHeight - (Math.round(Math.random() * gameHeight));
 				Y = (Y < gameHeight - 32) ? Y : Y - 32;
-				//Y = (Y > 32) ? Y : Y + 32;
 			}
 			//if (_enemyGrp.length == _enemyGrp.maxSize && _enemyGrp.getFirstDead() == null) {
 				//_enemyGrp.getRandom().kill();

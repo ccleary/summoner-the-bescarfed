@@ -25,7 +25,7 @@ package com.binaryscar.Summoner.HUD
 			playState = ps;
 			
 			
-			score = new FlxText(playState.gameWidth - 50, 0, 60, "Score: " + FlxG.score);
+			score = new FlxText(playState.gameWidth - 75, 0, 60, "Score: " + FlxG.score);
 			add(score);
 			
 			lives = new FlxText(0, 0, 60, "Lives: " + playState.livesCount);

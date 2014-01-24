@@ -390,12 +390,16 @@ package com.binaryscar.Summoner.Entity.NPC
 							return;
 						}
 						play("attacking");
-						attack();
-						if(_target == null) {
-							FSM.changeState("walking");
-							return;
+					},
+					execute: function():void {
+						if (finished) {
+							attack();
+							if(_target == null) {
+								FSM.changeState("walking");
+								return;
+							}
+							FSM.changeState("cooldown");
 						}
-						FSM.changeState("cooldown");
 					}
 				});
 			

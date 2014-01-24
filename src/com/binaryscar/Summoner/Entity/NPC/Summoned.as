@@ -21,7 +21,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			// ESTABLISH STATS
 			HP = 4;
 			
-			ATTACK_DELAY = 2;
+			ASPD = 8;
 			STR = 1;
 			
 			MSPD = 50;

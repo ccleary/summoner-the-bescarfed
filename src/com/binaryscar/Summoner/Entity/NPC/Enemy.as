@@ -35,7 +35,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			// ESTABLISH STATS
 			HP = 3;
 			
-			ATTACK_DELAY = 2.5;
+			ASPD = 7.5;
 			STR = 1;
 			spellDelay = 3;
 			
@@ -53,6 +53,11 @@ package com.binaryscar.Summoner.Entity.NPC
 			addAnimation("casting", [0, 0, 0, 0], 8, false);
 			
 			loadGraphic(imgOrc, false, true, 32, 32);
+			addAnimation("walking", [0, 0, 0, 0], 8, true);
+			addAnimation("attacking", [0, 0, 0, 0, 0, 0, 0], 16, false);
+			addAnimation("idle", [0]);
+			addAnimation("fightingIdle", [0]);
+			
 			width = 16;
 			height = 24;
 			offset.x = 8;
