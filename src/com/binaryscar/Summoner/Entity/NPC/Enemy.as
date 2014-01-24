@@ -25,9 +25,9 @@ package com.binaryscar.Summoner.Entity.NPC
 		public var initX:int;
 		public var initY:int;
 		
-		private var SPELL_DELAY:Number;
-		private var _spellTimer:Number
-		private var _spellFX:FlxEmitter;
+		private var spellDelay:Number;
+		private var spellTimer:Number
+		private var spellFX:FlxEmitter;
 		
 		public function Enemy(enemGrp:FlxGroup, summGrp:FlxGroup, player:Player, playState:PlayState, X:int, Y:int, face:uint = LEFT, initState:String = "walking") { 
 			super(TYPE_ENEMY, enemGrp, summGrp, player, playState, X, Y, face, initState);
@@ -37,7 +37,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			
 			ATTACK_DELAY = 2.5;
 			STR = 1;
-			SPELL_DELAY = 3;
+			spellDelay = 3;
 			
 			MSPD = 50;
 			// END STATS
@@ -45,8 +45,8 @@ package com.binaryscar.Summoner.Entity.NPC
 			initX = X; // Save if needed for revival
 			initY = Y;
 			
-			_spellTimer = NaN;
-			_spellFX = new FlxEmitter(X, Y); // Set .at() before casting.
+			spellTimer = NaN;
+			spellFX = new FlxEmitter(X, Y); // Set .at() before casting.
 			// Figure out how to make simple square/cirlce graphic particles for now.
 			//_spellFX.makeParticles();
 			
@@ -132,23 +132,23 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		public function get onSpellCooldown():Boolean {
-			if (_spellTimer == NaN) {
+			if (spellTimer == NaN) {
 				return false;
 			}
-			if (_spellTimer > 0) { // Timer needs to go longer than attackCooldown.
-				_spellTimer -= FlxG.elapsed;
+			if (spellTimer > 0) { // Timer needs to go longer than attackCooldown.
+				spellTimer -= FlxG.elapsed;
 				return true; // onCooldown, no attacking.
 			} else {
-				_spellTimer = SPELL_DELAY; // Attack and reset timer.
+				spellTimer = spellDelay; // Attack and reset timer.
 				return false; // !onCooldown, attack!
 			}
 		}
 		
 		public function set onSpellCooldown(bool:Boolean):void {
 			if (bool) {
-				_spellTimer = SPELL_DELAY;
+				spellTimer = spellDelay;
 			} else {
-				_spellTimer = NaN;
+				spellTimer = NaN;
 			}
 		}
 		

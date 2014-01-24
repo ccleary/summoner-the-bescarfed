@@ -207,15 +207,15 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		public function attack():void { //en:Enemy):void {
-			if (_target == null) {
+			if (target == null) {
 				return;
 			}
 			
-			_target.hurt(STR);
+			target.hurt(STR);
 			onCooldown = true;
 			
-			if (_target.health <= 0) {
-				_target = null;
+			if (target.health <= 0) {
+				target = null;
 			}
 		}
 		

@@ -10,43 +10,42 @@ package com.binaryscar.Summoner.HUD
 	public class HUD extends FlxGroup
 	{
 		
-		private var _score:FlxText;
-		private var _lives:FlxText;
-		private var _winLoseText:FlxText;
+		private var score:FlxText;
+		private var lives:FlxText;
+		private var winLoseText:FlxText;
 		
-		private var _playState:PlayState;
+		private var playState:PlayState;
 		
-		private var _summonedCounter:SummonedCounter;
+		private var summonedCounter:SummonedCounter;
 		
 		public function HUD(ps:PlayState)
 		{
 			super();
 			
-			_playState = ps;
+			playState = ps;
 			
 			
-			_score = new FlxText(_playState.gameWidth - 50, 0, 60, "Score: " + FlxG.score);
-			add(_score);
+			score = new FlxText(playState.gameWidth - 50, 0, 60, "Score: " + FlxG.score);
+			add(score);
 			
-			_lives = new FlxText(0, 0, 60, "Lives: " + _playState.livesCount);
-			add(_lives);
+			lives = new FlxText(0, 0, 60, "Lives: " + playState.livesCount);
+			add(lives);
 			
-			_summonedCounter = new SummonedCounter(_playState._summonedGrp, 5, 220);
-			add(_summonedCounter);
+			summonedCounter = new SummonedCounter(playState.summonedGrp, 5, 220);
+			add(summonedCounter);
 			
-			_winLoseText = new FlxText(_playState.gameWidth/2 - 50, _playState.gameHeight/2 - 30, 120);
+			winLoseText = new FlxText(playState.gameWidth/2 - 50, playState.gameHeight/2 - 30, 120);
 		}
 		
 		override public function update():void {
 			super.update();
-			_score.text = "Score: " + FlxG.score;
-			_lives.text = "Lives: " + _playState.livesCount;
+			score.text = "Score: " + FlxG.score;
+			lives.text = "Lives: " + playState.livesCount;
 		}
 		
 		public function lose():void {
-			
-			_winLoseText.text = "        You lost!\n        Score: "+ FlxG.score + "\nPress 'R' to restart.  ";
-			add(_winLoseText);
+			winLoseText.text = "        You lost!\n        Score: "+ FlxG.score + "\nPress 'R' to restart.  ";
+			add(winLoseText);
 		}
 	}
 }
