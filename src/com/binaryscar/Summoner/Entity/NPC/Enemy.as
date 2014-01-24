@@ -59,11 +59,8 @@ package com.binaryscar.Summoner.Entity.NPC
 			offset.y = 6;
 			health = HP;
 			
-//			FSM = new StateMachine();
 			FSM.id = "[Enemy]";
 			addEnemyStates(FSM);
-//			initializeStates(FSM);
-//			FSM.initialState("idle");
 
 			if (FSM.state != "walking") {
 				FSM.changeState("walking");

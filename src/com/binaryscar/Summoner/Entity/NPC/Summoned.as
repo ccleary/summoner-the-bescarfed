@@ -6,10 +6,6 @@ package com.binaryscar.Summoner.Entity.NPC
 	
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
-
-//	import org.flixel.FlxSprite;
-//	import org.flixel.FlxPoint;
-//	import com.binaryscar.Summoner.Enemy;
 	
 	/**
 	 * ...
@@ -17,7 +13,6 @@ package com.binaryscar.Summoner.Entity.NPC
 	 */
 	public class Summoned extends NPC 
 	{
-		//[Embed(source = "../../../../art/Summon-demon-1.png")]public var clawDemon:Class;
 		[Embed(source = "../../../../../../art/Summon-demon-2.png")]public var clawDemon:Class;
 		
 		public function Summoned(summGrp:FlxGroup, enemGrp:FlxGroup, player:Player, playState:PlayState, X:int, Y:int, face:uint, initState:String = "walking") {
@@ -52,11 +47,7 @@ package com.binaryscar.Summoner.Entity.NPC
 //			fsm = new StateMachine();
 		 	FSM.id = "[Summoned]";
 			addSummonedStates(FSM);
-			
-			//trace(fsm.state);
-			//if (fsm.state != "walking") {
-				FSM.changeState("walking");
-			//}
+			FSM.changeState("walking");
 		}
 		
 		override public function update():void {

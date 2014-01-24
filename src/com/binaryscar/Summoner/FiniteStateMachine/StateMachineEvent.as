@@ -17,5 +17,9 @@ package com.binaryscar.Summoner.FiniteStateMachine
 		public function StateMachineEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
 		}
+		
+		override public function toString():String {
+			return "[Event " + type + " " + bubbles + " " + cancelable + " " + fromState + " " + toState + "]";
+		}
 	}
 }

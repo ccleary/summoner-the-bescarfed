@@ -64,29 +64,17 @@ package com.binaryscar.Summoner.Entity.NPC
 			health = HP;
 			elasticity = 1.5;
 			
-			//hBar = new HealthBar(this, -4, -8);
-			
 			FSM = new StateMachine();
 			FSM.id = "[NPC]";
 			initializeStates(FSM);
 			if (initState != null && FSM.getStateByName(initState)) {
 				defaultInitState = initState;
 			} else {
-				defaultInitState = "idle";
+				_initState = "idle";
 			}
 			// This is necessary so the Subclass can
 			// create and run animations properly.
-			FSM.initialState = "idle";
-			
-			//TODO CLEANUP
-			//sem = new Object;
-			//_initializeStatusEffectMachine(sem, _semExecute);
-			
-			//sec = new StatusEffectsController(this, playState);
-			//sec.addStatusEffect("poison");
-			
-			//statusEffectsCount = 0;
-			
+			FSM.initialState = "idle";			
 		}
 		
 		override public function update():void {
@@ -103,14 +91,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			FlxG.collide(this, allyGrp, avoidAlly);
 			FlxG.overlap(this, allyGrp, bounceAgaintAlly);
 			
-			//FlxG.collide(this, _player, hurtPlayer);
-			
 			FSM.update(); // Finite State Machine Update
-			//sec.update();
-			
-			//if (sem.statusEffects.length > 0) {
-			//	sem.update(); // Status Effect Machine Update
-			//}
 			
 			if (getScreenXY().x < -64 || getScreenXY().x > (FlxG.width + 64)) { // It's off-screen.
 				trace('Kill off-screen :: ' + this.toString());
@@ -175,6 +156,11 @@ package com.binaryscar.Summoner.Entity.NPC
 			HP = newHP;
 		}
 		
+		public function pause():void {
+			if (fsm.state != "paused") {
+				fsm.changeState("paused");
+			}
+		}
 		
 		public function stopMoving():void {
 			velocity.x = velocity.y = acceleration.x = acceleration.y = 0;
@@ -233,6 +219,21 @@ package com.binaryscar.Summoner.Entity.NPC
 					}
 				});
 			
+			FSM.addState("paused",
+			{
+				enter: function(evt:StateMachineEvent = null):void {
+					if (evt != null) {
+						_prevStateStorage = evt.fromState;
+					}
+					stopMoving();
+				},
+				execute: function():void {
+					if (!FlxG.paused) {
+						fsm.changeState(_prevStateStorage);
+					}
+				}
+			});
+			
 			
 			FSM.addState("moving", 
 				{
@@ -259,11 +260,6 @@ package com.binaryscar.Summoner.Entity.NPC
 			FSM.addState("pursuing",
 				{
 					parent: "moving",
-					enter: function():void {
-						//if (_pursueTarget == null) {
-							//FSM.changeState("walking");
-						//}
-					},
 					execute: function():void {
 						if (pursueTarget == null) {
 							//FSM.changeState("walking");
@@ -283,7 +279,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			FSM.addState("avoiding",
 				{
 					parent: "moving",
-					from: ["moving", "walking", "sprinting", "idle"], // Not fighting.
+					from: ["moving", "walking", "sprinting", "idle", "paused"], // Not fighting.
 					enter: function():void {
 						trace(FSM.id + ' Enter avoid!');
 						avoidTimer = AVOID_DELAY;
@@ -357,7 +353,7 @@ package com.binaryscar.Summoner.Entity.NPC
 				});
 			FSM.addState("cooldown", 
 				{
-					from: ["fighting", "attacking"],
+					from: ["fighting", "attacking", "paused"],
 					parent: "fighting",
 					enter: function():void  {
 						if (finished) {
@@ -382,7 +378,7 @@ package com.binaryscar.Summoner.Entity.NPC
 				});
 			FSM.addState("attacking", 
 				{
-					from: ["fighting", "cooldown"],
+					from: ["fighting", "cooldown", "paused"],
 					parent: "fighting",
 					enter: function():void {
 						if (_target == null) {
@@ -403,8 +399,6 @@ package com.binaryscar.Summoner.Entity.NPC
 			FSM.addState("dead", 
 				{
 					enter: function():void  {
-						//gibs_smoke.at(this);
-						//gibs_smoke.start(true, 0.25, 0.1, 20);
 						exists = false;
 						solid = false;
 						
@@ -479,18 +473,7 @@ package com.binaryscar.Summoner.Entity.NPC
 				pursueTarget = null;
 			}
 		}
-		
-		private function _initializeStatusEffectMachine(sem:Object, executeFunc:Function = null):void {
-			
-			sem.statusEffects = [];	//
-			//sem.statusEmitters = []; // TODO ? Figure out how to link these three
-									// Add them all together inside .statuseffects?
-									// [{ effect: "poison", emitter: new FlxEmitter, timer: new Number}]
-			//sem.statusTimers = [];	//
-			sem.update = executeFunc;
-			// TODO add sem.emitters, FlxEmitter[]
-		}
-		
+
 		private function updatePursueTarget():void {
 			if (pursueTarget == null || !pursueTarget.alive) {
 				pursueTarget = null; // In case it just died.
@@ -547,8 +530,6 @@ package com.binaryscar.Summoner.Entity.NPC
 				velocity.x -= Math.random()*10;
 			}
 		}
-		
-		
 	}
 }
 

@@ -13,3 +13,6 @@ obj/pmd.old
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
 # should NOT be excluded as they contain compiler settings and other important
 # information for Eclipse / Flash Builder.
+#obj/summoner-the-bescarfedConfig.old
+#obh/summoner-the-bescarfedConfig.xml
+#obj/pmd.old
