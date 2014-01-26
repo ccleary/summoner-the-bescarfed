@@ -3,6 +3,7 @@ package com.binaryscar.Summoner.Entity.NPC
 	import com.binaryscar.Summoner.PlayState;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
 	import com.binaryscar.Summoner.Player.Player;
+	import org.flixel.FlxParticle;
 	
 	import flash.geom.Rectangle;
 	
@@ -29,26 +30,31 @@ package com.binaryscar.Summoner.Entity.NPC
 		private var spellTimer:Number
 		private var spellFX:FlxEmitter;
 		
+		//TODO There is something very wrong in the Enemy class.
+		
+		static var counter:int = 0;
+		
 		public function Enemy(enemGrp:FlxGroup, summGrp:FlxGroup, player:Player, playState:PlayState, X:int, Y:int, face:uint = LEFT, initState:String = "walking") { 
-			super(TYPE_ENEMY, enemGrp, summGrp, player, playState, X, Y, face, initState);
+			super(KIND_ENEMY, enemGrp, summGrp, player, playState, X, Y, face, initState);
 			
 			// ESTABLISH STATS
 			HP = 3;
 			
-			ASPD = 7.5;
+			ASPD = 7;
 			STR = 1;
 			spellDelay = 3;
 			
-			MSPD = 30;
+			MSPD = 90;
 			// END STATS
 			
 			initX = X; // Save if needed for revival
 			initY = Y;
 			
 			spellTimer = NaN;
-			spellFX = new FlxEmitter(X, Y); // Set .at() before casting.
+			//spellFX = new FlxEmitter(X, Y); // Set .at() before casting.
 			// Figure out how to make simple square/cirlce graphic particles for now.
-			//_spellFX.makeParticles();
+			//spellFX.at(this);
+			//spellFX.start(true, 40, 0.2);
 			
 			addAnimation("casting", [0, 0, 0, 0], 8, false);
 			
@@ -71,6 +77,41 @@ package com.binaryscar.Summoner.Entity.NPC
 			if (FSM.state != "walking") {
 				FSM.changeState("walking");
 			}
+			
+			counter++;
+			if (counter > 3) {
+				throw new Error();
+			}
+		}
+		
+		override public function update():void {
+			//if (this.targetedBy.length > 1 && !onSpellCooldown) { //FIXME
+				//if(state.toString() != "poisonCloud") {
+					//trace("POISON CLOUD!");
+					//FSM.changeState("poisonCloud");
+				//}
+			//}
+			
+			super.update();
+			
+//			FlxG.collide(this, _player, hitPlayer);
+//			FlxG.overlap(this, _player, hitPlayer); 
+			
+			//trace("ENEMY :: " + fsm.state, _target, _targetedBy);
+			
+//			if (health <= 0 && exists) {
+//				flicker(1);
+//				//solid = false;
+//				velocity.x = 10;
+//				velocity.y = -30;
+//				if (alpha > 0) {
+//					alpha -= 0.03;
+//				} else {
+//					alpha = 0;
+//					kill();
+//				}
+//				kill();
+//			}
 		}
 		
 		private function addEnemyStates(fsm:StateMachine):void 
@@ -106,36 +147,6 @@ package com.binaryscar.Summoner.Entity.NPC
 				});
 		}
 		
-		override public function update():void {
-			if (this.targetedBy.length > 1 && !onSpellCooldown) { //FIXME
-				if(state.toString() != "poisonCloud") {
-					trace("POISON CLOUD!");
-					FSM.changeState("poisonCloud");
-				}
-			}
-			
-			super.update();
-			
-//			FlxG.collide(this, _player, hitPlayer);
-//			FlxG.overlap(this, _player, hitPlayer); 
-			
-			//trace("ENEMY :: " + fsm.state, _target, _targetedBy);
-			
-//			if (health <= 0 && exists) {
-//				flicker(1);
-//				//solid = false;
-//				velocity.x = 10;
-//				velocity.y = -30;
-//				if (alpha > 0) {
-//					alpha -= 0.03;
-//				} else {
-//					alpha = 0;
-//					kill();
-//				}
-//				kill();
-//			}
-		}
-		
 		public function get onSpellCooldown():Boolean {
 			if (isNaN(spellTimer)) {
 				return false;
@@ -157,16 +168,17 @@ package com.binaryscar.Summoner.Entity.NPC
 			}
 		}
 		
-		override public function revive():void {
-			alpha = 1;
-			visible = true;
-			solid = true;
-			health = HP;
-			if (FSM.state != "walking") {
-				FSM.changeState("walking");
-			}
-			super.revive();
-		}
+		//override public function revive():void {
+			//alpha = 1;
+			//visible = true;
+			//exists = true;
+			//solid = true;
+			//health = HP;
+			//if (FSM.state != "walking") {
+				//FSM.changeState("walking");
+			//}
+			//super.revive();
+		//}
 		
 		override public function kill():void {
 			if (x < FlxG.stage.x) { // Got past the Summoner

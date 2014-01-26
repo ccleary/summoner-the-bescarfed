@@ -23,13 +23,13 @@ package com.binaryscar.Summoner.Entity
 	{
 		[Embed(source = "../../../../../art/shitty-redblock-enemy1.png")]public var ph_redblock:Class; //Placeholder
 		
-		public static const TYPE_DEFAULT:String = "default";
-		public static const TYPE_ENEMY:String = "enemy";
-		public static const TYPE_NEUTRAL:String = "neutral";
-		public static const TYPE_PLAYER:String = "player";
-		public static const TYPE_SUMMONED:String = "summoned";
+		public static const KIND_DEFAULT:String = "default";
+		public static const KIND_ENEMY:String = "enemy";
+		public static const KIND_NEUTRAL:String = "neutral";
+		public static const KIND_PLAYER:String = "player";
+		public static const KIND_SUMMONED:String = "summoned";
 		
-		public var type:String = TYPE_DEFAULT;
+		public var kind:String = KIND_DEFAULT;
 		
 		protected var entityExtras:EntityExtras; // This is where extras will be stores, i.e. HealthBar,
 													 // Status Effects, extra sprite pieces
@@ -61,10 +61,10 @@ package com.binaryscar.Summoner.Entity
 
 		public var targetedBy:Array = [];		// Can be targeted by multiple opposition entities.
 		
-		public function Entity(type:String, allyGrp:FlxGroup, oppGrp:FlxGroup, playState:PlayState, X:Number = 0, Y:Number = 0)
+		public function Entity(kind:String, allyGrp:FlxGroup, oppGrp:FlxGroup, playState:PlayState, X:Number = 0, Y:Number = 0)
 		{
 			super(X, Y);
-			this.type = type;
+			this.kind = kind;
 			this.allyGrp = allyGrp;
 			this.oppGrp = oppGrp;
 			this.playState = playState;
@@ -157,11 +157,11 @@ package com.binaryscar.Summoner.Entity
 		public function get MSPD():int {
 			return _MSPD;
 		}
-		public function get MSPD_X():Number {
-			return _MSPD * 1.2;
+		public function get MSPD_X():int {
+			return _MSPD * 1.1;
 		}
-		public function get MSPD_Y():Number {
-			return _MSPD * 0.8;
+		public function get MSPD_Y():int {
+			return _MSPD * 0.9;
 		}
 		
 	}

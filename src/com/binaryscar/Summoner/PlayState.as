@@ -119,6 +119,7 @@ package com.binaryscar.Summoner
 			add(hud);
 			
 			// PAUSE STUFF
+			//  TODO Add to HUD.
 			var pausedGreyOut:FlxSprite = new FlxSprite().makeGraphic(FlxG.worldBounds.width, FlxG.worldBounds.height, 0x33000000);
 			var pausedIcon:FlxGroup = new FlxGroup(2);
 			var pausedLeftBar:FlxSprite = new FlxSprite().makeGraphic(20, 50, 0xFFFFFFFF);
@@ -156,6 +157,9 @@ package com.binaryscar.Summoner
 			
 			super.update();
 			
+			FlxG.collide(summonedGrp, enemyGrp, startFight);
+			FlxG.collide(enemyGrp, player, hitPlayer);
+			
 			if (lost && FlxG.keys.justPressed("R")) {
 				FlxG.resetState();
 			}
@@ -168,37 +172,10 @@ package com.binaryscar.Summoner
 				lose();
 			}
 			
-			// TEMP TESTING HEALTH BARS
-			// TODO move this onto thep player's Entity when that is set up
-			//hBar_frame.x = player.x - 2;
-			//hBar_frame.y = player.y - 6;
-			//hBar_health.x = player.x - 1;
-			//hBar_health.y = player.y - 5;
-			//hBar_health.scale.x = (hBar_frame.width-2)*(player.health / player.hitPoints);
-			//if (hBar_health.scale.x == 0) {
-				//hBar_frame.visible = hBar_health.visible = false;
-			//}
-			
-			// move this: 
-			var maxX:int = FlxG.worldBounds.width - (player.width*3);
-			if (player.x < 0) {
-				player.x = 0;
-			} else if (player.x > maxX) {
-				player.x = maxX;
-			}
-			
-			// move this: 
-			var maxY:int = FlxG.worldBounds.height - (player.height*1.5);
-			if (player.y < 0) {
-				player.y = 0;
-			} else if (player.y > maxY) {
-				player.y = maxY;
-			}
-			
 			enemySpawnTimer -= FlxG.elapsed;
 			if (enemySpawnTimer < 0 && !lost) {
 				enemySpawnTimer = spawnDelay;
-				createEnemy();
+				//createEnemy();
 			}
 			
 			if (FlxG.keys.justPressed("B")) {
@@ -215,9 +192,6 @@ package com.binaryscar.Summoner
 				//trace('r pressed');
 				createEnemy();
 			}
-
-			FlxG.collide(summonedGrp, enemyGrp, startFight);
-			FlxG.collide(enemyGrp, player, hitPlayer);
 		}
 		
 		public function win():void {
@@ -277,17 +251,17 @@ package com.binaryscar.Summoner
 			//if (_enemyGrp.length == _enemyGrp.maxSize && _enemyGrp.getFirstDead() == null) {
 				//_enemyGrp.getRandom().kill();
 			//}
-			if (enemyGrp.countDead() > 0) {
-				enemy = enemyGrp.getFirstDead() as Enemy;
-				enemy.x = X;
-				enemy.y = Y;
+			//if (enemyGrp.countDead() > 0) {
+				//enemy = enemyGrp.getFirstDead() as Enemy;
+				//enemy.x = X;
+				//enemy.y = Y;
 				//trace('attempt to revive enemy');
-				enemy.revive();
-			} else {
+				//enemy.revive();
+			//} else {
 				enemy = new Enemy(enemyGrp, summonedGrp, player, this, X, Y);
 				//HealthBars.addHealthBar(_enemy, -4, -14);
 				enemyGrp.add(enemy);
-			}
+			//}
 		}
 		
 		public function startFight(meNPC:NPC, oppNPC:NPC):void {
@@ -302,7 +276,7 @@ package com.binaryscar.Summoner
 			oppNPC.addAttacker(meNPC);
 		}
 		
-		public function hitPlayer(enem:Enemy, playerPart:*):void {
+		public function hitPlayer(enem:Enemy, player:Player):void {
 			player.hurt(1);
 			//enem.fireGibs(EntityExtras.GIBS_SMOKE);
 			enem.hurt(enem.HP);

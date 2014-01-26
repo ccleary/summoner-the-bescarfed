@@ -25,11 +25,14 @@ package com.binaryscar.Summoner.Player
 		protected var dots:FlxEmitter;
 		protected var arm:EntityExtraSprite;
 		
+		protected var playerBounds_maxX:int;
+		protected var playerBounds_maxY:int;
+		
 		public function Player(X:int, Y:int, playState:PlayState, dots:FlxEmitter) {
 			
 			this.playState = playState;
 			
-			super(Entity.TYPE_PLAYER, null, null, playState, X, Y);
+			super(Entity.KIND_PLAYER, null, null, playState, X, Y);
 			
 			loadGraphic(summonerNoArm, true, true);
 			addAnimation("walking", [0, 1], 12, true);
@@ -47,8 +50,12 @@ package com.binaryscar.Summoner.Player
 			width = 14;
 			offset.x = 6;
 			
+			// Adjust world bounds for player
+			playerBounds_maxX = FlxG.worldBounds.width - (this.width * 3);
+			playerBounds_maxY = FlxG.worldBounds.height - (this.height * 1.5);
+			
 			// Set Stats
-			MSPD = 80;
+			MSPD = 100;
 			HP = 6;
 			
 			health = HP;
@@ -89,6 +96,19 @@ package com.binaryscar.Summoner.Player
 				acceleration.y = drag.y;
 			}
 			
+			// Box player inside window:
+			//if (this.x < 0) {
+				//this.x = 0;
+			//} else if (this.x > playerBounds_maxX) {
+				//this.x = playerBounds_maxX;
+			//}
+//
+			//if (this.y < 0) {
+				//this.y = 0;
+			//} else if (this.y > playerBounds_maxY) {
+				//this.y = playerBounds_maxY;
+			//}
+			
 			if (velocity.x > 0 || velocity.x < 0 
 			   || velocity.y > 0 || velocity.y < 0) {
 				play("walking");
@@ -103,13 +123,6 @@ package com.binaryscar.Summoner.Player
 				flicker(0.25);
 			}
 			super.hurt(damage);
-		}
-		
-		private function notNullAndOfType(toCheck:*, t:String):Boolean {
-			if (toCheck != null && typeof toCheck == t) {
-				return true;
-			}
-			return false
 		}
 	}
 }

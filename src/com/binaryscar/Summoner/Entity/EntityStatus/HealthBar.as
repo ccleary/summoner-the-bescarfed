@@ -27,9 +27,9 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 			offsetFromEntity[0] = xOffset;
 			offsetFromEntity[1] = yOffset;
 			
-			if (attachedTo.type == Entity.TYPE_SUMMONED || attachedTo.type == Entity.TYPE_PLAYER) {
+			if (attachedTo.kind == Entity.KIND_SUMMONED || attachedTo.kind == Entity.KIND_PLAYER) {
 				barColor = 0xFF00FF00; // Green for allies.
-			} else if (attachedTo.type == Entity.TYPE_NEUTRAL) {
+			} else if (attachedTo.kind == Entity.KIND_NEUTRAL) {
 				barColor = 0xFF00FF00; // Blue for neutrals.
 			} else {
 				barColor = 0xFFFF0000; // Red for enemies.
