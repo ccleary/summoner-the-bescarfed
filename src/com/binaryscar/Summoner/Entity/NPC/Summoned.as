@@ -16,7 +16,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		[Embed(source = "../../../../../../art/Summon-demon-2.png")]public var clawDemon:Class;
 		
 		public function Summoned(summGrp:FlxGroup, enemGrp:FlxGroup, player:Player, playState:PlayState, X:int, Y:int, face:uint, initState:String = "walking") {
-			super(TYPE_SUMMONED, summGrp, enemGrp, player, playState, X, Y, face, initState);
+			super(KIND_SUMMONED, summGrp, enemGrp, player, playState, X, Y, face, initState);
 			
 			// ESTABLISH STATS
 			HP = 4;
@@ -24,7 +24,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			ASPD = 8;
 			STR = 1;
 			
-			MSPD = 50;
+			MSPD = 40;
 			
 			// END STATS
 			

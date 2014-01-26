@@ -23,13 +23,13 @@ package com.binaryscar.Summoner.Entity
 	{
 		[Embed(source = "../../../../../art/shitty-redblock-enemy1.png")]public var ph_redblock:Class; //Placeholder
 		
-		public static const TYPE_DEFAULT:String = "default";
-		public static const TYPE_ENEMY:String = "enemy";
-		public static const TYPE_NEUTRAL:String = "neutral";
-		public static const TYPE_PLAYER:String = "player";
-		public static const TYPE_SUMMONED:String = "summoned";
+		public static const KIND_DEFAULT:String = "default";
+		public static const KIND_ENEMY:String = "enemy";
+		public static const KIND_NEUTRAL:String = "neutral";
+		public static const KIND_PLAYER:String = "player";
+		public static const KIND_SUMMONED:String = "summoned";
 		
-		public var type:String = TYPE_DEFAULT;
+		public var kind:String = KIND_DEFAULT;
 		
 		protected var entityExtras:EntityExtras; // This is where extras will be stores, i.e. HealthBar,
 													 // Status Effects, extra sprite pieces
@@ -54,31 +54,39 @@ package com.binaryscar.Summoner.Entity
 		
 		protected var allyGrp:FlxGroup;
 		protected var oppGrp:FlxGroup;			// "_opp" for "Opposition"
-		protected var neutralGrp:FlxGroup;  // is this needed for walls and obstacles and hazards?
+		protected var neutralGrp:FlxGroup; 	 // is this needed for walls and obstacles and hazards?
 		protected var playState:PlayState;
 		
 		protected var _cooldownTimer:Number;			// When this reaches 0: Can attack.
 
 		public var targetedBy:Array = [];		// Can be targeted by multiple opposition entities.
 		
-		public function Entity(type:String, allyGrp:FlxGroup, oppGrp:FlxGroup, playState:PlayState, X:Number = 0, Y:Number = 0)
+		public function Entity(kind:String, allyGrp:FlxGroup, oppGrp:FlxGroup, playState:PlayState, X:Number = 0, Y:Number = 0)
 		{
 			super(X, Y);
-			this.type = type;
+			this.kind = kind;
 			this.allyGrp = allyGrp;
 			this.oppGrp = oppGrp;
 			this.playState = playState;
 			
-			loadGraphic(ph_redblock, false, false, 32, 32, false);
+			this.makeGraphic(32, 32, 0xFFFF7777, false);
+			//loadGraphic(ph_redblock, false, false, 32, 32, false);
 			entityExtras = new EntityExtras(this);
+			playState.add(this);
 			playState.add(entityExtras);
 			
+			// Start doing these manually on a per-type basis? (i.e. for Summoned, for Player)
+			// so that we can use different offsets?
 			entityExtras.addEntityExtra(EntityExtras.HEALTH_BAR, -4, -14);
 			entityExtras.addEntityExtra(EntityExtras.STATUS_EFFECT_CTRL, -4, -19);
 		}
 		
 		override public function update():void {
 			curHP = health;
+			super.update();
+			if (health <= 0) {
+				kill(); 
+			}
 		}
 		
 		override public function hurt(damage:Number):void {
@@ -143,20 +151,32 @@ package com.binaryscar.Summoner.Entity
 		// MSPD Setters / Getters
 		public function set MSPD(value:int):void {
 			_MSPD = value;
+			
 			drag.x = (MSPD_X) * 6;
 			drag.y = (MSPD_Y) * 4;
+			
 			maxVelocity.x = MSPD_X;
-			maxVelocity.y = MSPD_Y;
+			maxVelocity.y = MSPD_Y;	
 		}
 		public function get MSPD():int {
 			return _MSPD;
 		}
-		public function get MSPD_X():Number {
-			return _MSPD * 1.2;
+		public function get MSPD_X():int {
+			return _MSPD * 1.1;
 		}
-		public function get MSPD_Y():Number {
-			return _MSPD * 0.8;
+		public function get MSPD_Y():int {
+			return _MSPD * 0.9;
 		}
+		public function get ACCEL_X():int {
+			return _MSPD * 2;
+		}
+		public function get ACCEL_Y():int {
+			return _MSPD * 2;
+		}
+		
+		//override public function toString():String {
+			//return this.kind;
+		//}
 		
 	}
 

@@ -29,8 +29,11 @@ package com.binaryscar.Summoner.Entity
 		
 		private var secOffset:Vector.<int> = new Vector.<int>();
 		
-		private var extraSpriteArray:Array /* of ExtraSprites */ = [];
+		private var extraSpriteArray:Array /* of EntityExtraSprite */ = [];
 		private var currExtraSprite:EntityExtraSprite; // Helper for adding new sprites.
+		
+		private var extraEmitterArray:Array/* of EntityExtraEmitter */ = [];
+		private var currExtraEmitter:EntityExtraEmitter; // Helper for adding new sprites.
 		
 		public function EntityExtras(attachedTo:Entity)
 		{
@@ -54,14 +57,25 @@ package com.binaryscar.Summoner.Entity
 			HB.updatePosition(attachedTo.x, attachedTo.y);
 			SEC.updatePosition(attachedTo.x, attachedTo.y);
 			
-			for each (var sprite:EntityExtraSprite in extraSpriteArray) {
-				sprite.updatePosition(attachedTo.x, attachedTo.y);
+			var i:int = 0;
+			//for each (var sprite:EntityExtraSprite in extraSpriteArray) {
+			for (i = 0; i < extraSpriteArray.length; i++) {
+				extraSpriteArray[i].updatePosition();
+			}
+			//for each (var emitter:EntityExtraEmitter in extraEmitterArray) {
+			for (i = 0; i < extraEmitterArray.length; i++) {
+				extraEmitterArray[i].updatePosition();
 			}
 		}
 		
 		public function setHealthBarOffset(xOffset:int, yOffset:int):void {
 			HB.offsetFromEntity[0] = xOffset;
 			HB.offsetFromEntity[1] = yOffset;
+		}
+		
+		public function setStatusEffectsControllerOffset(xOffset:int, yOffset:int):void {
+			secOffset[0] = xOffset;
+			secOffset[1] = yOffset;
 		}
 		
 		public function addEntityExtra(type:int, xOffset:int, yOffset:int):void {
@@ -79,11 +93,18 @@ package com.binaryscar.Summoner.Entity
 			}
 		}
 		
-		public function addEntityExtraSprite(graphic:Class, xOffset:int, yOffset:int):EntityExtraSprite {
-			currExtraSprite = new EntityExtraSprite(attachedTo, (extraSpriteArray.length -1), graphic, xOffset, yOffset);
+		public function addEntityExtraSprite(graphic:Class, animated:Boolean, reverse:Boolean, xOffset:int, yOffset:int, useDynamicPosition:Boolean=false, xOffset_left:int=0, yOffset_left:int=0):EntityExtraSprite {
+			currExtraSprite = new EntityExtraSprite(attachedTo, (extraSpriteArray.length -1), graphic, animated, reverse, xOffset, yOffset, useDynamicPosition, xOffset_left, yOffset_left);
 			extraSpriteArray.push(currExtraSprite);
 			add(currExtraSprite);
 			return currExtraSprite; // Return a reference for adding things like animations from the insantiator.
+		}
+		
+		public function addEntityExtraEmitter(width:int, height:int,  xOffset:int, yOffset:int, useDynamicPosition:Boolean=false, xOffset_left:int=0, yOffset_left:int=0):EntityExtraEmitter {
+			currExtraEmitter = new EntityExtraEmitter(attachedTo, (extraEmitterArray.length - 1), width, height, xOffset, yOffset, useDynamicPosition, xOffset_left, yOffset_left);
+			extraEmitterArray.push(currExtraEmitter);
+			add(currExtraEmitter);
+			return currExtraEmitter;
 		}
 		
 		public function fireGibs(type:int):void {

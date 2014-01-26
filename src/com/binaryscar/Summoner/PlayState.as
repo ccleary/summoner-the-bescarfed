@@ -16,6 +16,7 @@ package com.binaryscar.Summoner
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
+	import org.flixel.FlxObject;
 	import org.flixel.FlxRect;
 	import org.flixel.FlxSprite;
 	import org.flixel.FlxState;
@@ -30,9 +31,7 @@ package com.binaryscar.Summoner
 	public class PlayState extends FlxState 
 	{
 		[Embed(source = "../../../../art/shittygrass1.png")]public var shittygrass:Class;
-		[Embed(source = "../../../../art/shitty-redblock-enemy1.png")]public var redBlock:Class;
 		[Embed(source = "../../../../art/leveltest.csv", mimeType = "application/octet-stream")]public var testmap:Class;
-		[Embed(source = "../../../../art/white-blue-px.png")]public var particlePixel:Class;
 		
 		private var tileblock:FlxTileblock;
 		private var dots:FlxEmitter;
@@ -72,52 +71,28 @@ package com.binaryscar.Summoner
 			gameWidth = FlxG.worldBounds.width;
 			gameHeight = FlxG.worldBounds.height;
 			
-//			map = new FlxTileblock(0, 0, gameWidth, gameHeight);
 			map = new FlxTilemap();
 			add(map.loadMap(new testmap, shittygrass, 16, 16));
 			
-			enemyGrp = new FlxGroup(2);
+			enemyGrp = new FlxGroup();
 			add(enemyGrp);
 			
 			summonedGrp = new FlxGroup(10);
 			add(summonedGrp);
 			
-			createEnemy(380, 30);
+			createEnemy(420, 30);
 			
 			spawnDelay = 2; // TEMP
 			enemySpawnTimer = spawnDelay;
 			
-			dots = new FlxEmitter(0, 0, 30);
-			dots.setXSpeed( -20, 20);
-			dots.setYSpeed( -20, 20);
-			dots.setRotation( 0, 0);
-			dots.gravity = 30;
-			dots.makeParticles( particlePixel, 30, 0, false, 0.2);
 			
-			player = new Player(30, 50, this, dots);
-			add(player);
-			add(dots);
-			
-			//HealthBars = new HealthBarController();
-			//add(HealthBars);
-			
-			// TODO add getters for common _core properties like x, y, facing,
-			hBar_frame = new FlxSprite(player._core.x-2, player._core.y - 6);
-			hBar_frame.makeGraphic(24, 5, 0xFF000000); // Black frame
-			
-			// Make this a FlxGroup with an individually scaled "tick" for each HP.
-			hBar_health = new FlxSprite(player._core.x-1, player._core.y - 8);
-			hBar_health.makeGraphic(1,3, 0xFF00FF00);
-			hBar_health.setOriginToCorner();
-			hBar_health.scale.x = (hBar_frame.width-2)*(player.health / player.hitPoints);
-			
-			add(hBar_frame);
-			add(hBar_health);
+			player = new Player(30, 50, this);
 			
 			hud = new HUD(this);
 			add(hud);
 			
 			// PAUSE STUFF
+			//  TODO Add to HUD.
 			var pausedGreyOut:FlxSprite = new FlxSprite().makeGraphic(FlxG.worldBounds.width, FlxG.worldBounds.height, 0x33000000);
 			var pausedIcon:FlxGroup = new FlxGroup(2);
 			var pausedLeftBar:FlxSprite = new FlxSprite().makeGraphic(20, 50, 0xFFFFFFFF);
@@ -163,35 +138,8 @@ package com.binaryscar.Summoner
 				return;
 			}
 			
-			if (!player._core.alive || livesCount <= 0) {
+			if (!player.alive || livesCount <= 0) {
 				lose();
-			}
-			
-			// TEMP TESTING HEALTH BARS
-			// TODO move this onto thep player's Entity when that is set up
-			hBar_frame.x = player._core.x - 2;
-			hBar_frame.y = player._core.y - 6;
-			hBar_health.x = player._core.x - 1;
-			hBar_health.y = player._core.y - 5;
-			hBar_health.scale.x = (hBar_frame.width-2)*(player.health / player.hitPoints);
-			if (hBar_health.scale.x == 0) {
-				hBar_frame.visible = hBar_health.visible = false;
-			}
-			
-			// move this: 
-			var maxX:int = FlxG.worldBounds.width - (player._core.width*3);
-			if (player._core.x < 0) {
-				player._core.x = 0;
-			} else if (player._core.x > maxX) {
-				player._core.x = maxX;
-			}
-			
-			// move this: 
-			var maxY:int = FlxG.worldBounds.height - (player._core.height*1.5);
-			if (player._core.y < 0) {
-				player._core.y = 0;
-			} else if (player._core.y > maxY) {
-				player._core.y = maxY;
 			}
 			
 			enemySpawnTimer -= FlxG.elapsed;
@@ -207,14 +155,16 @@ package com.binaryscar.Summoner
 			}
 			
 			if (FlxG.keys.justPressed("Z")) {
+				player.cast();
 				summon();
 			}
 			
-			if (FlxG.keys.justPressed("R")) {
+			if (!lost && FlxG.keys.justPressed("R")) {
 				//trace('r pressed');
 				createEnemy();
 			}
-
+			
+			FlxG.collide(summonedGrp, player);
 			FlxG.collide(summonedGrp, enemyGrp, startFight);
 			FlxG.collide(enemyGrp, player, hitPlayer);
 		}
@@ -241,30 +191,27 @@ package com.binaryscar.Summoner
 			  || (summonedGrp.countDead() > 0) ) {
 				if (summonedGrp.countDead() > 0) {
 					summoned = summonedGrp.getFirstDead() as Summoned;
-					if (player._core.facing === 0x0010) { // RIGHT
-						summoned.x = player._core.x + 20;
+					if (player.facing == FlxObject.RIGHT) { // RIGHT
+						summoned.x = player.x + 20;
 					} else {
-						summoned.x = player._core.x - 20;
+						summoned.x = player.x - 20;
 					}
-					summoned.y = player._core.y + 10;
-					summoned.facing = player._core.facing;
+					summoned.y = player.y + 10;
+					summoned.facing = player.facing;
 					//trace('attempt to revive summoned');
 					summoned.revive();
 				} else {
-					if (player._core.facing === 0x0010) { // RIGHT
-						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player._core.x + 20, player._core.y + 10, player._core.facing);
+					if (player.facing == FlxObject.RIGHT) { // RIGHT
+						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player.x + 20, player.y + 10, player.facing);
 						//HealthBars.addHealthBar(_summoned, -2, -14);
-					} else if (player._core.facing === 1) {
-						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player._core.x - 20, player._core.y + 10, player._core.facing);
+					} else if (player.facing == FlxObject.LEFT) {
+						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player.x - 20, player.y + 10, player.facing);
 						//HealthBars.addHealthBar(_summoned, -2, -14);
 					}
 					//trace('attempt to add summoned');
 					summonedGrp.add(summoned);
 				}
 			}
-			dots.at(player._arm);
-			dots.x += (player._core.facing == 0x0010) ? 20 : -10;
-			dots.start(true, 0.5);
 		}
 		
 		public function createEnemy(X:Number = 0, Y:Number = 0):void {
@@ -273,20 +220,14 @@ package com.binaryscar.Summoner
 				Y = gameHeight - (Math.round(Math.random() * gameHeight));
 				Y = (Y < gameHeight - 64) ? Y : Y - 64;
 			}
-			//if (_enemyGrp.length == _enemyGrp.maxSize && _enemyGrp.getFirstDead() == null) {
-				//_enemyGrp.getRandom().kill();
-			//}
-			if (enemyGrp.countDead() > 0) {
-				enemy = enemyGrp.getFirstDead() as Enemy;
-				enemy.x = X;
-				enemy.y = Y;
-				//trace('attempt to revive enemy');
-				enemy.revive();
-			} else {
-				enemy = new Enemy(enemyGrp, summonedGrp, player, this, X, Y);
-				//HealthBars.addHealthBar(_enemy, -4, -14);
+			
+			//if (enemyGrp.countDead() > 0) {
+				//enemy = enemyGrp.getFirstDead() as Enemy;
+				//enemy.revive();
+			//} else {
+				enemy = new Enemy(enemyGrp, summonedGrp, player, this, X, Y, FlxObject.LEFT, "walking");
 				enemyGrp.add(enemy);
-			}
+			//}
 		}
 		
 		public function startFight(meNPC:NPC, oppNPC:NPC):void {
@@ -301,7 +242,7 @@ package com.binaryscar.Summoner
 			oppNPC.addAttacker(meNPC);
 		}
 		
-		public function hitPlayer(enem:Enemy, playerPart:*):void {
+		public function hitPlayer(enem:Enemy, player:Player):void {
 			player.hurt(1);
 			//enem.fireGibs(EntityExtras.GIBS_SMOKE);
 			enem.hurt(enem.HP);
