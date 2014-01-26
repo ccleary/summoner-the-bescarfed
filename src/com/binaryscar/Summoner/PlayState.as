@@ -221,13 +221,13 @@ package com.binaryscar.Summoner
 				Y = (Y < gameHeight - 64) ? Y : Y - 64;
 			}
 			
-			if (enemyGrp.countDead() > 0) {
-				enemy = enemyGrp.getFirstDead() as Enemy;
-				enemy.revive();
-			} else {
+			//if (enemyGrp.countDead() > 0) {
+				//enemy = enemyGrp.getFirstDead() as Enemy;
+				//enemy.revive();
+			//} else {
 				enemy = new Enemy(enemyGrp, summonedGrp, player, this, X, Y, FlxObject.LEFT, "walking");
 				enemyGrp.add(enemy);
-			}
+			//}
 		}
 		
 		public function startFight(meNPC:NPC, oppNPC:NPC):void {

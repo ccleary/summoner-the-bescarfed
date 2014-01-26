@@ -60,6 +60,12 @@ package com.binaryscar.Summoner.Entity.NPC
 			_cooldownTimer = 0; 		// These reset to *null* when not in use.
 			avoidTimer = 0;			// " "
 			
+			// Set up placeholder animations.
+			addAnimation("walking", [0]);
+			addAnimation("attacking", [0]);
+			addAnimation("idle", [0]);
+			addAnimation("fightingIdle", [0]);
+			
 			MSPD = 40; // Base MSPD.
 			
 			height = 32;
@@ -83,17 +89,14 @@ package com.binaryscar.Summoner.Entity.NPC
 			FSM.initialState = "idle";			
 		}
 		
-		override public function update():void {		
-			state = FSM.getStateByName(FSM.state); // Actual obj:State, not name:String.
-
+		override public function update():void {
+			super.update();
+			
 			if (!alive) {
-				exists = false;
-				x = y = -20;
 				return;
 			}
+			state = FSM.getStateByName(FSM.state); // Actual obj:State, not name:String.
 			
-			super.update();
-
 			FlxG.collide(this, allyGrp, avoidAlly);
 			FlxG.overlap(this, allyGrp, bounceAgaintAlly);
 			
@@ -115,6 +118,7 @@ package com.binaryscar.Summoner.Entity.NPC
 				targetedBy = [];
 			}
 			super.kill();
+			destroy();
 		}
 		
 		public function get target():NPC {
@@ -179,7 +183,6 @@ package com.binaryscar.Summoner.Entity.NPC
 		public function startFight(me:NPC, oppNPC:NPC):void {
 //			if (target == null) {
 				
-//				trace(this.toString() + " START FIGHT WITH " + oppNPC.toString());
 //				
 //				target = oppNPC;
 //				oppNPC.addAttacker(me);
@@ -426,7 +429,7 @@ package com.binaryscar.Summoner.Entity.NPC
 						}
 						
 						stopMoving();
-						x = -20; // Move off screen;
+						x = 20; // Move off screen;
 						y = -20; 
 					},
 					execute: function():void {
@@ -437,43 +440,48 @@ package com.binaryscar.Summoner.Entity.NPC
 					exit: function():void {
 						exists = true;
 						solid = true;
-						
 					}
 				});
 		}
 		
 		// TODO Figure out why this is so inconsistent.
 		private function searchForPursueTargets():void {
-			trace(this.kind + " searchForPursueTargets");
+			//trace(this.kind + " searchForPursueTargets");
 			var pursueOptions:Array = [];
 			var distanceLimit:int = 4500;
 			
 			if (pursueTarget == null && oppGrp != null && oppGrp.members.length > 0) { // Look for a new target if I don't have one already.
-				for each (var curr:NPC in oppGrp.members) {
-					if ((facing == RIGHT && curr.x < x) || (facing == LEFT && curr.x > x)) { // Skip processing if oppNPC is behind me. 
-						return;
-					}
-					// Enemy center point.
-					// TODO optimize, this is a lot of math to be doing a ton.
-					var centerPoint:FlxPoint = new FlxPoint( (Math.round(curr.x + (curr.width/2))), (Math.round(curr.y + (curr.height/2))) );
-					
-					var xDist:Number = centerPoint.x - x;
-					
-					var yDist:Number = centerPoint.y - y;
-					var sqDist:Number = yDist * yDist + xDist * xDist;
-					if ( sqDist < distanceLimit ) {
+				// TODO FIXME
+				//for each (var curr:NPC in oppGrp.members) {
+					//if (!curr.alive) {
+						//return;
+					//}
+					//if ((facing == RIGHT && curr.x < x) || (facing == LEFT && curr.x > x)) { // Skip processing if oppNPC is behind me. 
+						//return;
+					//}
+					 //Enemy center point.
+					//var centerPoint:FlxPoint = curr.origin;
+					//
+					//if (centerPoint == null) {
+						//trace(curr.kind + " Center point is null");
+						//return;
+					//}
+					//var xDist:Number = curr.x - x;
+					//var yDist:Number = curr.y - y;
+					//
+					//var sqDist:Number = yDist * yDist + xDist * xDist;
+					//if ( sqDist < distanceLimit ) {
 						//pursueOptions.push({oppNPC: curr as NPC, dist: sqDist}); // Add an entity if it's within range.
 						//distanceLimit = sqDist; // Set a new limit on search range
-						pursueTarget = curr;
-						trace(this.kind + " new pursure target " + curr.kind);
-						FSM.changeState("pursuing");
-						break;
-					}
-				}
+						//pursueTarget = curr;
+						//trace(this.kind + " new pursure target " + curr.kind);
+						//FSM.changeState("pursuing");
+						//break;
+					//}
+				//}
 				
 				// TODO Figure out why the performance is inconsistent.
 //				if (pursueOptions.length > 0) {
-//					trace(pursueOptions.toString());
 //					if (pursueOptions.length == 1) {
 //						_pursueTarget = pursueOptions[0].oppNPC;
 //						FSM.changeState("pursuing");
@@ -546,9 +554,8 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		private function bounceAgaintAlly(thisNPC:NPC, otherNPC:NPC):void {
-			
+			velocity.y += (thisNPC.y <= otherNPC.y) ? 20 : 20;
 			var compareX:Boolean = thisNPC.x <= otherNPC.x;
-			
 			if (compareX) {
 				velocity.x -= Math.random()*10;
 			}

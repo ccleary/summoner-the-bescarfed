@@ -84,6 +84,9 @@ package com.binaryscar.Summoner.Entity
 		override public function update():void {
 			curHP = health;
 			super.update();
+			if (health <= 0) {
+				kill(); 
+			}
 		}
 		
 		override public function hurt(damage:Number):void {

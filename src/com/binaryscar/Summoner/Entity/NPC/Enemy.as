@@ -139,23 +139,24 @@ package com.binaryscar.Summoner.Entity.NPC
 			}
 		}
 		
-		//override public function revive():void {
-			//alpha = 1;
-			//visible = true;
-			//exists = true;
-			//solid = true;
-			//health = HP;
-			//if (FSM.state != "walking") {
-				//FSM.changeState("walking");
-			//}
-			//super.revive();
-		//}
+		override public function revive():void {
+			alpha = 1;
+			visible = true;
+			exists = true;
+			solid = true;
+			health = HP;
+			if (FSM.state != "walking") {
+				FSM.changeState("walking");
+			}
+			super.revive();
+		}
 		
 		override public function kill():void {
 			if (x < FlxG.stage.x) { // Got past the Summoner
+				trace("Got past the summoner!");
 				playState.loseLife();
 			} else {
-				FlxG.score++; // Killed by Summoned
+				FlxG.score++; // Killed by Summoned / Summoner
 			}
 			super.kill();
 		}

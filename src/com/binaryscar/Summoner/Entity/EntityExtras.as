@@ -57,12 +57,13 @@ package com.binaryscar.Summoner.Entity
 			HB.updatePosition(attachedTo.x, attachedTo.y);
 			SEC.updatePosition(attachedTo.x, attachedTo.y);
 			
+			var i:int = 0;
 			//for each (var sprite:EntityExtraSprite in extraSpriteArray) {
-			for (var i:int = 0; i < extraSpriteArray.length; i++) {
+			for (i = 0; i < extraSpriteArray.length; i++) {
 				extraSpriteArray[i].updatePosition();
 			}
 			//for each (var emitter:EntityExtraEmitter in extraEmitterArray) {
-			for (var i:int = 0; i < extraEmitterArray.length; i++) {
+			for (i = 0; i < extraEmitterArray.length; i++) {
 				extraEmitterArray[i].updatePosition();
 			}
 		}
