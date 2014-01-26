@@ -153,6 +153,8 @@ package com.binaryscar.Summoner.Entity
 			
 			maxVelocity.x = MSPD_X;
 			maxVelocity.y = MSPD_Y;
+			
+			trace(this.kind + " :: drag.x : " + drag.x + " // drag.y : " + drag.y + " // maxVelocity.x : " + maxVelocity.x + " //  maxVelocity.y : " + maxVelocity.y);
 		}
 		public function get MSPD():int {
 			return _MSPD;
@@ -163,6 +165,16 @@ package com.binaryscar.Summoner.Entity
 		public function get MSPD_Y():int {
 			return _MSPD * 0.9;
 		}
+		public function get ACCEL_X():int {
+			return _MSPD * 0.8;
+		}
+		public function get ACCEL_Y():int {
+			return _MSPD * 0.8;
+		}
+		
+		//override public function toString():String {
+			//return this.kind;
+		//}
 		
 	}
 

@@ -44,7 +44,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			STR = 1;
 			spellDelay = 3;
 			
-			MSPD = 90;
+			MSPD = 60;
 			// END STATS
 			
 			initX = X; // Save if needed for revival
@@ -80,7 +80,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			
 			counter++;
 			if (counter > 3) {
-				throw new Error();
+				//throw new Error();
 			}
 		}
 		

@@ -157,8 +157,8 @@ package com.binaryscar.Summoner
 			
 			super.update();
 			
-			FlxG.collide(summonedGrp, enemyGrp, startFight);
-			FlxG.collide(enemyGrp, player, hitPlayer);
+			//FlxG.collide(summonedGrp, enemyGrp, startFight);
+			//FlxG.collide(enemyGrp, player, hitPlayer);
 			
 			if (lost && FlxG.keys.justPressed("R")) {
 				FlxG.resetState();
@@ -258,7 +258,7 @@ package com.binaryscar.Summoner
 				//trace('attempt to revive enemy');
 				//enemy.revive();
 			//} else {
-				enemy = new Enemy(enemyGrp, summonedGrp, player, this, X, Y);
+				enemy = new Enemy(enemyGrp, summonedGrp, player, this, X, Y, FlxObject.LEFT, "walking");
 				//HealthBars.addHealthBar(_enemy, -4, -14);
 				enemyGrp.add(enemy);
 			//}

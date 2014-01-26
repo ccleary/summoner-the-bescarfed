@@ -229,7 +229,7 @@ package com.binaryscar.Summoner.FiniteStateMachine
 				}
 			}
 			
-			//trace("[StateMachine]", id, "State changed from " + oldState + " => " + _state );
+			trace("[StateMachine]", id, "State changed from " + oldState + " => " + _state );
 			
 			// Transition complete, dispatch complete event.
 			_outEvent = new StateMachineEvent(StateMachineEvent.TRANSITION_COMPLETE);
