@@ -31,9 +31,7 @@ package com.binaryscar.Summoner
 	public class PlayState extends FlxState 
 	{
 		[Embed(source = "../../../../art/shittygrass1.png")]public var shittygrass:Class;
-		[Embed(source = "../../../../art/shitty-redblock-enemy1.png")]public var redBlock:Class;
 		[Embed(source = "../../../../art/leveltest.csv", mimeType = "application/octet-stream")]public var testmap:Class;
-		[Embed(source = "../../../../art/white-blue-px.png")]public var particlePixel:Class;
 		
 		private var tileblock:FlxTileblock;
 		private var dots:FlxEmitter;
@@ -87,15 +85,8 @@ package com.binaryscar.Summoner
 			spawnDelay = 2; // TEMP
 			enemySpawnTimer = spawnDelay;
 			
-			dots = new FlxEmitter(0, 0, 30);
-			dots.setXSpeed( -20, 20);
-			dots.setYSpeed( -20, 20);
-			dots.setRotation( 0, 0);
-			dots.gravity = 30;
-			dots.makeParticles( particlePixel, 30, 0, false, 0.2);
 			
-			player = new Player(30, 50, this, dots);
-			add(dots);
+			player = new Player(30, 50, this);
 			
 			hud = new HUD(this);
 			add(hud);
@@ -173,6 +164,7 @@ package com.binaryscar.Summoner
 				createEnemy();
 			}
 			
+			FlxG.collide(summonedGrp, player);
 			FlxG.collide(summonedGrp, enemyGrp, startFight);
 			FlxG.collide(enemyGrp, player, hitPlayer);
 		}

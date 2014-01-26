@@ -21,6 +21,7 @@ package com.binaryscar.Summoner.Player
 		[Embed(source = "../../../../../art/shittysummoner1.png")]public var shittysummoner:Class;
 		[Embed(source = "../../../../../art/Summoner4-NoArm.png")]public var summonerNoArm:Class;
 		[Embed(source = "../../../../../art/Summoner4-Arm.png")]public var summonerArm:Class;
+		[Embed(source = "../../../../../art/white-blue-px.png")]public var particlePixel:Class;
 		
 		protected var dots:FlxEmitter;
 		protected var arm:EntityExtraSprite;
@@ -28,7 +29,7 @@ package com.binaryscar.Summoner.Player
 		protected var playerBounds_maxX:int;
 		protected var playerBounds_maxY:int;
 		
-		public function Player(X:int, Y:int, playState:PlayState, dots:FlxEmitter) {
+		public function Player(X:int, Y:int, playState:PlayState) {
 			
 			this.playState = playState;
 			
@@ -38,14 +39,21 @@ package com.binaryscar.Summoner.Player
 			addAnimation("walking", [0, 1], 12, true);
 			addAnimation("idle", [0]);
 			
-			arm = entityExtras.addEntityExtraSprite(summonerArm, true, true, -4, 0);
+			// -- start Set up EntityExtras
+			arm = entityExtras.addEntityExtraSprite(summonerArm, true, true, -4, 0, true, -12, 0);
 			
 			arm.addAnimation("casting", [0, 1, 2, 0], 8, false);
 			arm.addAnimation("idle", [0]);
 			
 			entityExtras.setHealthBarOffset( -2, -6);
 			
-			dots = dots;
+			dots = entityExtras.addEntityExtraEmitter(8, 8, 20, 8, true, -20, 8);
+			dots.setXSpeed( -20, 20);
+			dots.setYSpeed( -20, 20);
+			dots.setRotation( 0, 0);
+			dots.gravity = 30;
+			dots.makeParticles( particlePixel, 30, 0, false, 0.2);
+			// -- end Set up Entity Extras
 			
 			// Adjust hitbox
 			height = 32;
@@ -71,22 +79,11 @@ package com.binaryscar.Summoner.Player
 				this.exists = false;
 			}
 			
-			if (facing == FlxObject.RIGHT) {
-				offset.x = 6;
-				arm.offsetFromEntity[0] = -4;
-			} else if (facing == FlxObject.LEFT) {
-				offset.x = 12;
-				arm.offsetFromEntity[0] = -12;
+			if (!FlxG.keys.any()) {
+				acceleration.x = acceleration.y = 0;
 			}
 			
-			acceleration.x = acceleration.y = 0;
-			
-			if (FlxG.keys.LEFT && facing != LEFT) {
-				facing = LEFT;
-			} else if (FlxG.keys.RIGHT && facing != RIGHT) {
-				facing = RIGHT;
-			}
-			
+			// Control movement
 			if (FlxG.keys.LEFT) {
 				acceleration.x = -MSPD_X*4;
 			} else if (FlxG.keys.RIGHT) {
@@ -96,6 +93,20 @@ package com.binaryscar.Summoner.Player
 				acceleration.y = -MSPD_Y*4;
 			} else if (FlxG.keys.DOWN) {
 				acceleration.y = MSPD_Y*4;
+			}
+			
+			// Flip facing
+			if (FlxG.keys.LEFT && facing != LEFT) {
+				facing = LEFT;
+			} else if (FlxG.keys.RIGHT && facing != RIGHT) {
+				facing = RIGHT;
+			}
+			
+			// Adjust graphic offset based on facing
+			if (facing == FlxObject.RIGHT) {
+				offset.x = 6;
+			} else if (facing == FlxObject.LEFT) {
+				offset.x = 12;
 			}
 			
 			// Box player inside window:
@@ -129,8 +140,8 @@ package com.binaryscar.Summoner.Player
 		
 		public function cast():void {
 			arm.play("casting");
-			dots.at(player);
-			dots.x += (player.facing == FlxObject.LEFT) ? 20 : -10;
+			//dots.at(this);
+			//dots.x += (this.facing == LEFT) ? 20 : -10;
 			dots.start(true, 0.5);
 		}
 	}

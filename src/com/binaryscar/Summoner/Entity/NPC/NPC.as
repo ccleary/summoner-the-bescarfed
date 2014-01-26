@@ -444,6 +444,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		// TODO Figure out why this is so inconsistent.
 		private function searchForPursueTargets():void {
+			trace(this.kind + " searchForPursueTargets");
 			var pursueOptions:Array = [];
 			var distanceLimit:int = 4500;
 			
@@ -464,7 +465,7 @@ package com.binaryscar.Summoner.Entity.NPC
 						//pursueOptions.push({oppNPC: curr as NPC, dist: sqDist}); // Add an entity if it's within range.
 						//distanceLimit = sqDist; // Set a new limit on search range
 						pursueTarget = curr;
-						trace("new pursure target");
+						trace(this.kind + " new pursure target " + curr.kind);
 						FSM.changeState("pursuing");
 						break;
 					}
