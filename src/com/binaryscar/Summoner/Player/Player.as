@@ -51,8 +51,8 @@ package com.binaryscar.Summoner.Player
 			offset.x = 6;
 			
 			// Adjust world bounds for player
-			playerBounds_maxX = FlxG.worldBounds.width - (this.width * 3);
-			playerBounds_maxY = FlxG.worldBounds.height - (this.height * 1.5);
+			playerBounds_maxX = FlxG.camera.width - (this.width * 3);
+			playerBounds_maxY = FlxG.camera.height - (this.height * 1.5);
 			
 			// Set Stats
 			MSPD = 100;
@@ -86,14 +86,18 @@ package com.binaryscar.Summoner.Player
 			}
 			
 			if (FlxG.keys.LEFT) {
-				acceleration.x = -ACCEL_X;
+				//velocity.x = (-MSPD_X * 0.5);
+				acceleration.x -= ACCEL_X;// -MSPD_X * 0.5;
 			} else if (FlxG.keys.RIGHT) {
-				acceleration.x = drag.x;
+				//velocity.x = (MSPD_X * 0.5);
+				acceleration.x += ACCEL_X; // MSPD_X * 0.5;
 			}
 			if (FlxG.keys.UP) {
-				acceleration.y = -drag.y;
+				//velocity.y = (-MSPD_Y * 0.5);
+				acceleration.y -= ACCEL_Y;// -MSPD_Y * 0.5;
 			} else if (FlxG.keys.DOWN) {
-				acceleration.y = drag.y;
+				//velocity.y = (MSPD_Y * 0.5);
+				acceleration.y += ACCEL_Y;// MSPD_Y * 0.5;
 			}
 			
 			// Box player inside window:

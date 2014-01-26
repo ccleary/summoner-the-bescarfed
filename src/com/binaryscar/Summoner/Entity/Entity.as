@@ -167,10 +167,10 @@ package com.binaryscar.Summoner.Entity
 			return _MSPD * 0.9;
 		}
 		public function get ACCEL_X():int {
-			return _MSPD * 0.8;
+			return _MSPD * 2;
 		}
 		public function get ACCEL_Y():int {
-			return _MSPD * 0.8;
+			return _MSPD * 2;
 		}
 		
 		//override public function toString():String {

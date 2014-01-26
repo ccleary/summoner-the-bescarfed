@@ -443,12 +443,13 @@ package com.binaryscar.Summoner.Entity.NPC
 			var pursueOptions:Array = [];
 			var distanceLimit:int = 4500;
 			
-			if (pursueTarget == null && oppGrp != null && oppGrp.members.length > 0) {
+			if (pursueTarget == null && oppGrp != null && oppGrp.members.length > 0) { // Look for a new target if I don't have one already.
 				for each (var curr:NPC in oppGrp.members) {
 					if ((facing == RIGHT && curr.x < x) || (facing == LEFT && curr.x > x)) { // Skip processing if oppNPC is behind me. 
 						return;
 					}
 					// Enemy center point.
+					// TODO optimize, this is a lot of math to be doing a ton.
 					var centerPoint:FlxPoint = new FlxPoint( (Math.round(curr.x + (curr.width/2))), (Math.round(curr.y + (curr.height/2))) );
 					
 					var xDist:Number = centerPoint.x - x;
