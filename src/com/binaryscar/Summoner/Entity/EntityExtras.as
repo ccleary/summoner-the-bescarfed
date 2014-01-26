@@ -32,6 +32,9 @@ package com.binaryscar.Summoner.Entity
 		private var extraSpriteArray:Array /* of ExtraSprites */ = [];
 		private var currExtraSprite:EntityExtraSprite; // Helper for adding new sprites.
 		
+		private var extraEmitterArray:Array; // Helper for adding new sprites.
+		private var currExtraEmitter:EntityExtraEmitter; // Helper for adding new sprites.
+		
 		public function EntityExtras(attachedTo:Entity)
 		{
 			super(); 
@@ -65,6 +68,11 @@ package com.binaryscar.Summoner.Entity
 			HB.offsetFromEntity[1] = yOffset;
 		}
 		
+		public function setStatusEffectsControllerOffset(xOffset:int, yOffset:int):void {
+			secOffset[0] = xOffset;
+			secOffset[1] = yOffset;
+		}
+		
 		public function addEntityExtra(type:int, xOffset:int, yOffset:int):void {
 			switch (type) {
 				case HEALTH_BAR :
@@ -85,6 +93,13 @@ package com.binaryscar.Summoner.Entity
 			extraSpriteArray.push(currExtraSprite);
 			add(currExtraSprite);
 			return currExtraSprite; // Return a reference for adding things like animations from the insantiator.
+		}
+		
+		public function addEntityExtraEmitter():EntityExtraEmitter {
+			currExtraEmitter = new EntityExtraEmitter(attachedTo, (extraEmitterArray.length - 1), width, height, xOffset, yOffset);
+			extraEmitterArray.add(currExtraEmitter);
+			add(currExtraEmitter);
+			return currExtraEmitter;
 		}
 		
 		public function fireGibs(type:int):void {

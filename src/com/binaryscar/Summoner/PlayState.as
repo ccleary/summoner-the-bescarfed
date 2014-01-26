@@ -164,10 +164,11 @@ package com.binaryscar.Summoner
 			}
 			
 			if (FlxG.keys.justPressed("Z")) {
+				player.cast();
 				summon();
 			}
 			
-			if (FlxG.keys.justPressed("R")) {
+			if (!lost && FlxG.keys.justPressed("R")) {
 				//trace('r pressed');
 				createEnemy();
 			}
@@ -219,9 +220,6 @@ package com.binaryscar.Summoner
 					summonedGrp.add(summoned);
 				}
 			}
-			dots.at(player);
-			dots.x += (player.facing == FlxObject.LEFT) ? 20 : -10;
-			dots.start(true, 0.5);
 		}
 		
 		public function createEnemy(X:Number = 0, Y:Number = 0):void {
@@ -230,21 +228,14 @@ package com.binaryscar.Summoner
 				Y = gameHeight - (Math.round(Math.random() * gameHeight));
 				Y = (Y < gameHeight - 64) ? Y : Y - 64;
 			}
-			//if (_enemyGrp.length == _enemyGrp.maxSize && _enemyGrp.getFirstDead() == null) {
-				//_enemyGrp.getRandom().kill();
-			//}
-			//if (enemyGrp.countDead() > 0) {
-				//enemy = enemyGrp.getFirstDead() as Enemy;
-				//enemy.x = X;
-				//enemy.y = Y;
-				//trace('attempt to revive enemy');
-				//enemy.revive();
-			//} else {
+			
+			if (enemyGrp.countDead() > 0) {
+				enemy = enemyGrp.getFirstDead() as Enemy;
+				enemy.revive();
+			} else {
 				enemy = new Enemy(enemyGrp, summonedGrp, player, this, X, Y, FlxObject.LEFT, "walking");
-				//HealthBars.addHealthBar(_enemy, -4, -14);
-				trace("add enemy to enemy group: count " + enemyGrp.length);
 				enemyGrp.add(enemy);
-			//}
+			}
 		}
 		
 		public function startFight(meNPC:NPC, oppNPC:NPC):void {

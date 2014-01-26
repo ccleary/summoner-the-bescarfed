@@ -43,6 +43,8 @@ package com.binaryscar.Summoner.Player
 			arm.addAnimation("casting", [0, 1, 2, 0], 8, false);
 			arm.addAnimation("idle", [0]);
 			
+			entityExtras.setHealthBarOffset( -2, -6);
+			
 			dots = dots;
 			
 			// Adjust hitbox
@@ -51,8 +53,8 @@ package com.binaryscar.Summoner.Player
 			offset.x = 6;
 			
 			// Adjust world bounds for player
-			playerBounds_maxX = FlxG.camera.width - (this.width * 3);
-			playerBounds_maxY = FlxG.camera.height - (this.height * 1.5);
+			playerBounds_maxX = FlxG.camera.width - (this.width);
+			playerBounds_maxY = FlxG.camera.height - (this.height);
 			
 			// Set Stats
 			MSPD = 100;
@@ -86,18 +88,14 @@ package com.binaryscar.Summoner.Player
 			}
 			
 			if (FlxG.keys.LEFT) {
-				//velocity.x = (-MSPD_X * 0.5);
-				acceleration.x -= ACCEL_X;// -MSPD_X * 0.5;
+				acceleration.x = -MSPD_X*4;
 			} else if (FlxG.keys.RIGHT) {
-				//velocity.x = (MSPD_X * 0.5);
-				acceleration.x += ACCEL_X; // MSPD_X * 0.5;
+				acceleration.x = MSPD_X*4;
 			}
 			if (FlxG.keys.UP) {
-				//velocity.y = (-MSPD_Y * 0.5);
-				acceleration.y -= ACCEL_Y;// -MSPD_Y * 0.5;
+				acceleration.y = -MSPD_Y*4;
 			} else if (FlxG.keys.DOWN) {
-				//velocity.y = (MSPD_Y * 0.5);
-				acceleration.y += ACCEL_Y;// MSPD_Y * 0.5;
+				acceleration.y = MSPD_Y*4;
 			}
 			
 			// Box player inside window:
@@ -127,6 +125,13 @@ package com.binaryscar.Summoner.Player
 				flicker(0.25);
 			}
 			super.hurt(damage);
+		}
+		
+		public function cast():void {
+			arm.play("casting");
+			dots.at(player);
+			dots.x += (player.facing == FlxObject.LEFT) ? 20 : -10;
+			dots.start(true, 0.5);
 		}
 	}
 }

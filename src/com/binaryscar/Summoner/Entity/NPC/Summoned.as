@@ -24,7 +24,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			ASPD = 8;
 			STR = 1;
 			
-			MSPD = 30;
+			MSPD = 40;
 			
 			// END STATS
 			

@@ -39,7 +39,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			STR = 1;
 			spellDelay = 3;
 			
-			MSPD = 45;
+			MSPD = 30;
 			// END STATS
 			
 			initX = X; // Save if needed for revival

@@ -271,6 +271,9 @@ package com.binaryscar.Summoner.Entity.NPC
 			FSM.addState("pursuing",
 				{
 					parent: "moving",
+					enter: function():void {
+						MSPD = MSPD * 1.2;
+					},
 					execute: function():void {
 						if (pursueTarget == null) {
 							//FSM.changeState("walking");
@@ -281,6 +284,7 @@ package com.binaryscar.Summoner.Entity.NPC
 					},
 					exit: function():void {
 						angle = 0;
+						MSPD = MSPD * 0.8;
 						acceleration.y = 0;
 						pursueTarget = null;
 					}
@@ -438,8 +442,8 @@ package com.binaryscar.Summoner.Entity.NPC
 				});
 		}
 		
+		// TODO Figure out why this is so inconsistent.
 		private function searchForPursueTargets():void {
-			trace("searchForPursueTargets");
 			var pursueOptions:Array = [];
 			var distanceLimit:int = 4500;
 			
@@ -460,6 +464,7 @@ package com.binaryscar.Summoner.Entity.NPC
 						//pursueOptions.push({oppNPC: curr as NPC, dist: sqDist}); // Add an entity if it's within range.
 						//distanceLimit = sqDist; // Set a new limit on search range
 						pursueTarget = curr;
+						trace("new pursure target");
 						FSM.changeState("pursuing");
 						break;
 					}
@@ -492,7 +497,6 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 
 		private function updatePursueTarget():void {
-			trace("updatePursueTarget");
 			if (pursueTarget == null || !pursueTarget.alive) {
 				pursueTarget = null; // In case it just died.
 				if (FSM.state != "walking") {
