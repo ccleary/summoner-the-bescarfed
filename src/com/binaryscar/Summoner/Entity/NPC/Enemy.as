@@ -19,7 +19,6 @@ package com.binaryscar.Summoner.Entity.NPC
 	 */
 	public class Enemy extends NPC 
 	{
-		//[Embed(source = "../../../../art/shitty-redblock-enemy1.png")]public var shittyRedBlock:Class;
 		[Embed(source = "../../../../../../art/enemy-orc-1.png")]public var imgOrc:Class;
 		[Embed(source = "../../../../../../art/blackpx.png")]public var bkDot:Class;
 
@@ -29,10 +28,6 @@ package com.binaryscar.Summoner.Entity.NPC
 		private var spellDelay:Number;
 		private var spellTimer:Number
 		private var spellFX:FlxEmitter;
-		
-		//TODO There is something very wrong in the Enemy class.
-		
-		static var counter:int = 0;
 		
 		public function Enemy(enemGrp:FlxGroup, summGrp:FlxGroup, player:Player, playState:PlayState, X:int, Y:int, face:uint = LEFT, initState:String = "walking") { 
 			super(KIND_ENEMY, enemGrp, summGrp, player, playState, X, Y, face, initState);
@@ -44,7 +39,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			STR = 1;
 			spellDelay = 3;
 			
-			MSPD = 60;
+			MSPD = 45;
 			// END STATS
 			
 			initX = X; // Save if needed for revival
@@ -60,7 +55,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			
 			loadGraphic(imgOrc, false, true, 32, 32);
 			addAnimation("walking", [0, 0, 0, 0], 8, true);
-			addAnimation("casting", [0, 0], 8, true);
+			addAnimation("casting", [0, 0, 0, 0], 8, true);
 			addAnimation("attacking", [0, 0, 0, 0, 0, 0, 0], 16, false);
 			addAnimation("idle", [0]);
 			addAnimation("fightingIdle", [0]);
@@ -77,41 +72,17 @@ package com.binaryscar.Summoner.Entity.NPC
 			if (FSM.state != "walking") {
 				FSM.changeState("walking");
 			}
-			
-			counter++;
-			if (counter > 3) {
-				//throw new Error();
-			}
 		}
 		
 		override public function update():void {
-			//if (this.targetedBy.length > 1 && !onSpellCooldown) { //FIXME
-				//if(state.toString() != "poisonCloud") {
-					//trace("POISON CLOUD!");
-					//FSM.changeState("poisonCloud");
-				//}
-			//}
+			if (this.targetedBy.length > 1 && !onSpellCooldown) { //FIXME
+				if(state.toString() != "poisonCloud") {
+					trace("POISON CLOUD!");
+					FSM.changeState("poisonCloud");
+				}
+			}
 			
 			super.update();
-			
-//			FlxG.collide(this, _player, hitPlayer);
-//			FlxG.overlap(this, _player, hitPlayer); 
-			
-			//trace("ENEMY :: " + fsm.state, _target, _targetedBy);
-			
-//			if (health <= 0 && exists) {
-//				flicker(1);
-//				//solid = false;
-//				velocity.x = 10;
-//				velocity.y = -30;
-//				if (alpha > 0) {
-//					alpha -= 0.03;
-//				} else {
-//					alpha = 0;
-//					kill();
-//				}
-//				kill();
-//			}
 		}
 		
 		private function addEnemyStates(fsm:StateMachine):void 

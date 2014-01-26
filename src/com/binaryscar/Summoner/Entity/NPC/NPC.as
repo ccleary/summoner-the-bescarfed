@@ -43,8 +43,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		public var pursueTarget:NPC;			// Can only be pursuing one target.
 		
 		public var _target:NPC;					// Can only have one active fighting-target.
-		
-		
+				
 		private var tempTimer:Number = 1;
 		
 		public function NPC(entityType:String, allyGrp:FlxGroup, oppGrp:FlxGroup, player:Player, playState:PlayState, X:Number=0, Y:Number=0, facing:uint = RIGHT, initState:String = null)
@@ -61,7 +60,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			_cooldownTimer = 0; 		// These reset to *null* when not in use.
 			avoidTimer = 0;			// " "
 			
-			//MSPD = 40;
+			MSPD = 40; // Base MSPD.
 			
 			height = 32;
 			offset.y = 0;
@@ -86,15 +85,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		override public function update():void {		
 			state = FSM.getStateByName(FSM.state); // Actual obj:State, not name:String.
-			
-			tempTimer -= FlxG.elapsed;
-			if (tempTimer < 0) {
-				trace("Elapsed : " + FlxG.elapsed);
-				trace(this.state);
-				trace(this.velocity.x + " / " + this.maxVelocity.x);
-				tempTimer = 1;
-			}
-			
+
 			if (!alive) {
 				exists = false;
 				x = y = -20;

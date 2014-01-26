@@ -54,7 +54,7 @@ package com.binaryscar.Summoner.Entity
 		
 		protected var allyGrp:FlxGroup;
 		protected var oppGrp:FlxGroup;			// "_opp" for "Opposition"
-		protected var neutralGrp:FlxGroup;  // is this needed for walls and obstacles and hazards?
+		protected var neutralGrp:FlxGroup; 	 // is this needed for walls and obstacles and hazards?
 		protected var playState:PlayState;
 		
 		protected var _cooldownTimer:Number;			// When this reaches 0: Can attack.
@@ -69,13 +69,14 @@ package com.binaryscar.Summoner.Entity
 			this.oppGrp = oppGrp;
 			this.playState = playState;
 			
-			loadGraphic(ph_redblock, false, false, 32, 32, false);
+			this.makeGraphic(32, 32, 0xFFFF7777, false);
+			//loadGraphic(ph_redblock, false, false, 32, 32, false);
 			entityExtras = new EntityExtras(this);
 			playState.add(this);
 			playState.add(entityExtras);
 			
 			// Start doing these manually on a per-type basis? (i.e. for Summoned, for Player)
-			// to use different offsets?
+			// so that we can use different offsets?
 			entityExtras.addEntityExtra(EntityExtras.HEALTH_BAR, -4, -14);
 			entityExtras.addEntityExtra(EntityExtras.STATUS_EFFECT_CTRL, -4, -19);
 		}
