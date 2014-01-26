@@ -82,7 +82,7 @@ package com.binaryscar.Summoner
 			summonedGrp = new FlxGroup(10);
 			add(summonedGrp);
 			
-			//createEnemy(380, 30);
+			createEnemy(420, 30);
 			
 			spawnDelay = 2; // TEMP
 			enemySpawnTimer = spawnDelay;
@@ -95,24 +95,7 @@ package com.binaryscar.Summoner
 			dots.makeParticles( particlePixel, 30, 0, false, 0.2);
 			
 			player = new Player(30, 50, this, dots);
-			//add(player);
 			add(dots);
-			
-			//HealthBars = new HealthBarController();
-			//add(HealthBars);
-			
-			// TODO add getters for common properties like x, y, facing,
-			//hBar_frame = new FlxSprite(player.x-2, player.y - 6);
-			//hBar_frame.makeGraphic(24, 5, 0xFF000000); // Black frame
-			//
-			// Make this a FlxGroup with an individually scaled "tick" for each HP.
-			//hBar_health = new FlxSprite(player.x-1, player.y - 8);
-			//hBar_health.makeGraphic(1,3, 0xFF00FF00);
-			//hBar_health.setOriginToCorner();
-			//hBar_health.scale.x = (hBar_frame.width-2)*(player.curHP / player.HP);
-			
-			//add(hBar_frame);
-			//add(hBar_health);
 			
 			hud = new HUD(this);
 			add(hud);
@@ -156,9 +139,6 @@ package com.binaryscar.Summoner
 			
 			super.update();
 			
-			FlxG.collide(summonedGrp, enemyGrp, startFight);
-			FlxG.collide(enemyGrp, player, hitPlayer);
-			
 			if (lost && FlxG.keys.justPressed("R")) {
 				FlxG.resetState();
 			}
@@ -174,7 +154,7 @@ package com.binaryscar.Summoner
 			enemySpawnTimer -= FlxG.elapsed;
 			if (enemySpawnTimer < 0 && !lost) {
 				enemySpawnTimer = spawnDelay;
-				//createEnemy();
+				createEnemy();
 			}
 			
 			if (FlxG.keys.justPressed("B")) {
@@ -191,6 +171,9 @@ package com.binaryscar.Summoner
 				//trace('r pressed');
 				createEnemy();
 			}
+			
+			FlxG.collide(summonedGrp, enemyGrp, startFight);
+			FlxG.collide(enemyGrp, player, hitPlayer);
 		}
 		
 		public function win():void {

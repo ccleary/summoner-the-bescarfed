@@ -86,7 +86,7 @@ package com.binaryscar.Summoner.Player
 			}
 			
 			if (FlxG.keys.LEFT) {
-				acceleration.x = -drag.x;
+				acceleration.x = -ACCEL_X;
 			} else if (FlxG.keys.RIGHT) {
 				acceleration.x = drag.x;
 			}
@@ -97,17 +97,17 @@ package com.binaryscar.Summoner.Player
 			}
 			
 			// Box player inside window:
-			//if (this.x < 0) {
-				//this.x = 0;
-			//} else if (this.x > playerBounds_maxX) {
-				//this.x = playerBounds_maxX;
-			//}
-//
-			//if (this.y < 0) {
-				//this.y = 0;
-			//} else if (this.y > playerBounds_maxY) {
-				//this.y = playerBounds_maxY;
-			//}
+			if (this.x < 0) {
+				this.x = 0;
+			} else if (this.x > playerBounds_maxX) {
+				this.x = playerBounds_maxX;
+			}
+
+			if (this.y < 0) {
+				this.y = 0;
+			} else if (this.y > playerBounds_maxY) {
+				this.y = playerBounds_maxY;
+			}
 			
 			if (velocity.x > 0 || velocity.x < 0 
 			   || velocity.y > 0 || velocity.y < 0) {

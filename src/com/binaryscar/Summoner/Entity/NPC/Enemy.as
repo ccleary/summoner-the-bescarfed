@@ -29,10 +29,6 @@ package com.binaryscar.Summoner.Entity.NPC
 		private var spellTimer:Number
 		private var spellFX:FlxEmitter;
 		
-		//TODO There is something very wrong in the Enemy class.
-		
-		static var counter:int = 0;
-		
 		public function Enemy(enemGrp:FlxGroup, summGrp:FlxGroup, player:Player, playState:PlayState, X:int, Y:int, face:uint = LEFT, initState:String = "walking") { 
 			super(KIND_ENEMY, enemGrp, summGrp, player, playState, X, Y, face, initState);
 			
@@ -43,7 +39,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			STR = 1;
 			spellDelay = 3;
 			
-			MSPD = 90;
+			MSPD = 45;
 			// END STATS
 			
 			initX = X; // Save if needed for revival
@@ -76,11 +72,6 @@ package com.binaryscar.Summoner.Entity.NPC
 			if (FSM.state != "walking") {
 				FSM.changeState("walking");
 			}
-			
-			counter++;
-			if (counter > 5) {
-				throw new Error();
-			}
 		}
 		
 		override public function update():void {
@@ -92,25 +83,6 @@ package com.binaryscar.Summoner.Entity.NPC
 			}
 			
 			super.update();
-			
-			FlxG.collide(this, player, hitPlayer);
-//			FlxG.overlap(this, _player, hitPlayer); 
-			
-			//trace("ENEMY :: " + fsm.state, _target, _targetedBy);
-			
-//			if (health <= 0 && exists) {
-//				flicker(1);
-//				//solid = false;
-//				velocity.x = 10;
-//				velocity.y = -30;
-//				if (alpha > 0) {
-//					alpha -= 0.03;
-//				} else {
-//					alpha = 0;
-//					kill();
-//				}
-//				kill();
-//			}
 		}
 		
 		private function addEnemyStates(fsm:StateMachine):void 
