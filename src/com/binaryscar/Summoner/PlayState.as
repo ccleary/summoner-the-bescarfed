@@ -73,17 +73,16 @@ package com.binaryscar.Summoner
 			gameWidth = FlxG.worldBounds.width;
 			gameHeight = FlxG.worldBounds.height;
 			
-//			map = new FlxTileblock(0, 0, gameWidth, gameHeight);
 			map = new FlxTilemap();
 			add(map.loadMap(new testmap, shittygrass, 16, 16));
 			
-			enemyGrp = new FlxGroup(2);
+			enemyGrp = new FlxGroup();
 			add(enemyGrp);
 			
 			summonedGrp = new FlxGroup(10);
 			add(summonedGrp);
 			
-			createEnemy(380, 30);
+			//createEnemy(380, 30);
 			
 			spawnDelay = 2; // TEMP
 			enemySpawnTimer = spawnDelay;
@@ -260,6 +259,7 @@ package com.binaryscar.Summoner
 			//} else {
 				enemy = new Enemy(enemyGrp, summonedGrp, player, this, X, Y);
 				//HealthBars.addHealthBar(_enemy, -4, -14);
+				trace("add enemy to enemy group: count " + enemyGrp.length);
 				enemyGrp.add(enemy);
 			//}
 		}

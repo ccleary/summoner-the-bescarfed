@@ -19,7 +19,6 @@ package com.binaryscar.Summoner.Entity.NPC
 	 */
 	public class Enemy extends NPC 
 	{
-		//[Embed(source = "../../../../art/shitty-redblock-enemy1.png")]public var shittyRedBlock:Class;
 		[Embed(source = "../../../../../../art/enemy-orc-1.png")]public var imgOrc:Class;
 		[Embed(source = "../../../../../../art/blackpx.png")]public var bkDot:Class;
 
@@ -60,7 +59,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			
 			loadGraphic(imgOrc, false, true, 32, 32);
 			addAnimation("walking", [0, 0, 0, 0], 8, true);
-			addAnimation("casting", [0, 0], 8, true);
+			addAnimation("casting", [0, 0, 0, 0], 8, true);
 			addAnimation("attacking", [0, 0, 0, 0, 0, 0, 0], 16, false);
 			addAnimation("idle", [0]);
 			addAnimation("fightingIdle", [0]);
@@ -79,22 +78,22 @@ package com.binaryscar.Summoner.Entity.NPC
 			}
 			
 			counter++;
-			if (counter > 3) {
+			if (counter > 5) {
 				throw new Error();
 			}
 		}
 		
 		override public function update():void {
-			//if (this.targetedBy.length > 1 && !onSpellCooldown) { //FIXME
-				//if(state.toString() != "poisonCloud") {
-					//trace("POISON CLOUD!");
-					//FSM.changeState("poisonCloud");
-				//}
-			//}
+			if (this.targetedBy.length > 1 && !onSpellCooldown) { //FIXME
+				if(state.toString() != "poisonCloud") {
+					trace("POISON CLOUD!");
+					FSM.changeState("poisonCloud");
+				}
+			}
 			
 			super.update();
 			
-//			FlxG.collide(this, _player, hitPlayer);
+			FlxG.collide(this, player, hitPlayer);
 //			FlxG.overlap(this, _player, hitPlayer); 
 			
 			//trace("ENEMY :: " + fsm.state, _target, _targetedBy);

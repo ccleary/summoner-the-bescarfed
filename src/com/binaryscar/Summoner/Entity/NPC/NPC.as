@@ -57,7 +57,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			_cooldownTimer = 0; 		// These reset to *null* when not in use.
 			avoidTimer = 0;			// " "
 			
-			MSPD = 40;
+			//MSPD = 40;
 			
 			height = 32;
 			offset.y = 0;
