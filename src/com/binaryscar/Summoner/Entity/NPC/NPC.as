@@ -61,10 +61,10 @@ package com.binaryscar.Summoner.Entity.NPC
 			avoidTimer = 0;			// " "
 			
 			// Set up placeholder animations.
-			addAnimation("walking", [0]);
-			addAnimation("attacking", [0]);
-			addAnimation("idle", [0]);
-			addAnimation("fightingIdle", [0]);
+			//addAnimation("walking", [0]);
+			//addAnimation("attacking", [0]);
+			//addAnimation("idle", [0]);
+			//addAnimation("fightingIdle", [0]);
 			
 			MSPD = 40; // Base MSPD.
 			
@@ -118,7 +118,7 @@ package com.binaryscar.Summoner.Entity.NPC
 				targetedBy = [];
 			}
 			super.kill();
-			destroy();
+			//destroy();
 		}
 		
 		public function get target():NPC {

@@ -66,10 +66,10 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		override public function revive():void {
 			health = HP;
+			super.revive();
 			if (FSM.state != "walking") {
 				FSM.changeState("walking");
 			}
-			super.revive();
 		}
 	}
 }

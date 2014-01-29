@@ -189,18 +189,23 @@ package com.binaryscar.Summoner
 		public function summon():void {
 			if ( (summonedGrp.length < summonedGrp.maxSize)
 			  || (summonedGrp.countDead() > 0) ) {
-				if (summonedGrp.countDead() > 0) {
-					summoned = summonedGrp.getFirstDead() as Summoned;
-					if (player.facing == FlxObject.RIGHT) { // RIGHT
-						summoned.x = player.x + 20;
-					} else {
-						summoned.x = player.x - 20;
-					}
-					summoned.y = player.y + 10;
-					summoned.facing = player.facing;
+				  
+				  // TODO FIXME : There's a bug with .revive()'d summons
+				  //	not having animations defined where they should be.
+				  
+				//if (summonedGrp.countDead() > 0) {
+					//summoned = summonedGrp.getFirstDead() as Summoned;
+					//summoned.destroy();
+					//if (player.facing == FlxObject.RIGHT) { // RIGHT
+						//summoned.x = player.x + 20;
+					//} else {
+						//summoned.x = player.x - 20;
+					//}
+					//summoned.y = player.y + 10;
+					//summoned.facing = player.facing;
 					//trace('attempt to revive summoned');
-					summoned.revive();
-				} else {
+					//summoned.revive();
+				//} else {
 					if (player.facing == FlxObject.RIGHT) { // RIGHT
 						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player.x + 20, player.y + 10, player.facing);
 						//HealthBars.addHealthBar(_summoned, -2, -14);
@@ -210,7 +215,7 @@ package com.binaryscar.Summoner
 					}
 					//trace('attempt to add summoned');
 					summonedGrp.add(summoned);
-				}
+				//}
 			}
 		}
 		
