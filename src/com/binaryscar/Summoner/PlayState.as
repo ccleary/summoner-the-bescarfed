@@ -192,6 +192,7 @@ package com.binaryscar.Summoner
 				  
 				  // TODO FIXME : There's a bug with .revive()'d summons
 				  //	not having animations defined where they should be.
+				  //	TODO : check _animations.length()
 				  
 				//if (summonedGrp.countDead() > 0) {
 					//summoned = summonedGrp.getFirstDead() as Summoned;
