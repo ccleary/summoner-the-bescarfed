@@ -39,6 +39,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		private var pursueSearchTimer:Number = 1; 	// Resets to ..Delay
 		private var pursueSearchDelay:Number = 1;
+		private var pursueDistance:int = 45000;
 		
 		public var pursueTarget:NPC;			// Can only be pursuing one target.
 		
@@ -57,8 +58,8 @@ package com.binaryscar.Summoner.Entity.NPC
 			this.player = player;
 			this.playState = playState;
 			
-			_cooldownTimer = 0; 		// These reset to *null* when not in use.
-			avoidTimer = 0;			// " "
+			cooldownTimer = 0; 		// These reset to *null* when not in use.
+			avoidTimer = 0;				// " "
 			
 			// Set up placeholder animations.
 			//addAnimation("walking", [0]);
@@ -138,23 +139,23 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		public function get onCooldown():Boolean {
-			if (_cooldownTimer == 0 || _cooldownTimer <= 0) {
+			if (cooldownTimer == 0 || cooldownTimer <= 0) {
 				return false;
 			}
-			if (_cooldownTimer > 0) { // Timer needs to go longer than attackCooldown.
-				_cooldownTimer -= FlxG.elapsed;
+			if (cooldownTimer > 0) { // Timer needs to go longer than attackCooldown.
+				cooldownTimer -= FlxG.elapsed;
 				return true; // onCooldown, no attacking.
 			} else {
-				_cooldownTimer = ATTACK_DELAY; // Attack and reset timer.
+				cooldownTimer = ATTACK_DELAY; // Attack and reset timer.
 				return false; // !onCooldown, attack!
 			}
 		}
 		
 		public function set onCooldown(bool:Boolean):void {
 			if (bool) {
-				_cooldownTimer = ATTACK_DELAY;
+				cooldownTimer = ATTACK_DELAY;
 			} else {
-				_cooldownTimer = 0;
+				cooldownTimer = 0;
 			}
 		}
 		
@@ -248,7 +249,7 @@ package com.binaryscar.Summoner.Entity.NPC
 				{
 					enter: function():void {
 						play("walking");
-						_cooldownTimer = 0;
+						cooldownTimer = 0;
 						target = null;
 					}
 				});
@@ -279,7 +280,7 @@ package com.binaryscar.Summoner.Entity.NPC
 					},
 					execute: function():void {
 						if (pursueTarget == null) {
-							//FSM.changeState("walking");
+							FSM.changeState("walking");
 							return;
 						}
 						
@@ -318,7 +319,7 @@ package com.binaryscar.Summoner.Entity.NPC
 						
 						avoidTimer -= FlxG.elapsed;
 						if (avoidTimer <= 0) {
-							avoidTimer = 0;
+							avoidTimer = 0; // Reset to 0 so NPC starts avoiding immediately on next changeState to "avoiding"
 							FSM.changeState("walking");
 						}
 					},
@@ -354,7 +355,7 @@ package com.binaryscar.Summoner.Entity.NPC
 					enter: function():void {
 						stopMoving();
 						immovable = true;
-						_cooldownTimer = 0;
+						cooldownTimer = 0;
 					},
 					execute: function():void {
 						//trace('fighting execute');
@@ -365,7 +366,7 @@ package com.binaryscar.Summoner.Entity.NPC
 						}
 					},
 					exit: function():void {
-						_cooldownTimer = 0;
+						cooldownTimer = 0;
 						immovable = false;
 					}
 				});
@@ -421,7 +422,6 @@ package com.binaryscar.Summoner.Entity.NPC
 			FSM.addState("dead", 
 				{
 					enter: function():void  {
-						exists = false;
 						solid = false;
 						
 						if (flickering) {
@@ -438,7 +438,6 @@ package com.binaryscar.Summoner.Entity.NPC
 						}
 					},
 					exit: function():void {
-						exists = true;
 						solid = true;
 					}
 				});
@@ -446,63 +445,74 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		// TODO Figure out why this is so inconsistent.
 		private function searchForPursueTargets():void {
+			if (pursueTarget != null) {
+				trace("already has pursue target, return");
+				return;
+			}
+			
 			//trace(this.kind + " searchForPursueTargets");
 			var pursueOptions:Array = [];
-			var distanceLimit:int = 4500;
+			var distanceLimit:int = pursueDistance; // Start with the widest search net.
 			
 			if (pursueTarget == null && oppGrp != null && oppGrp.members.length > 0) { // Look for a new target if I don't have one already.
-				// TODO FIXME
-				//for each (var curr:NPC in oppGrp.members) {
-					//if (!curr.alive) {
-						//return;
-					//}
-					//if ((facing == RIGHT && curr.x < x) || (facing == LEFT && curr.x > x)) { // Skip processing if oppNPC is behind me. 
-						//return;
-					//}
+				for each (var curr:NPC in oppGrp.members) {
+					if (!curr.alive) {
+						continue;
+					}
+					if ((facing == RIGHT && curr.x < x) || (facing == LEFT && curr.x > x)) { // Skip processing if oppNPC is behind me. 
+						continue;
+					}
 					 //Enemy center point.
-					//var centerPoint:FlxPoint = curr.origin;
-					//
-					//if (centerPoint == null) {
-						//trace(curr.kind + " Center point is null");
-						//return;
-					//}
-					//var xDist:Number = curr.x - x;
-					//var yDist:Number = curr.y - y;
-					//
-					//var sqDist:Number = yDist * yDist + xDist * xDist;
-					//if ( sqDist < distanceLimit ) {
-						//pursueOptions.push({oppNPC: curr as NPC, dist: sqDist}); // Add an entity if it's within range.
-						//distanceLimit = sqDist; // Set a new limit on search range
+					var centerPoint:FlxPoint = curr.origin;
+					
+					var xDist:Number = centerPoint.x - x;
+					var yDist:Number = centerPoint.y - y;
+					
+					var sqDist:Number = (yDist * yDist) + (xDist * xDist);
+					if ( sqDist < distanceLimit ) {
+						// // GO AFTER FIRST FOUND TARGET
 						//pursueTarget = curr;
-						//trace(this.kind + " new pursure target " + curr.kind);
 						//FSM.changeState("pursuing");
 						//break;
-					//}
-				//}
+						
+						// // CONSIDER ALL OPTIONS
+						pursueOptions.push(new Array([sqDist, curr as NPC])); // Add an entity if it's within range.
+						distanceLimit = sqDist; // Set a new limit on search range, must be closer than this one
+						continue;
+					}
+				}
 				
+				// Now that we've populated hte pursueOptions array, check for closest one.
 				// TODO Figure out why the performance is inconsistent.
-//				if (pursueOptions.length > 0) {
-//					if (pursueOptions.length == 1) {
-//						_pursueTarget = pursueOptions[0].oppNPC;
-//						FSM.changeState("pursuing");
-//					} else if (pursueOptions.length > 1) {
-//						pursueOptions.sort(function(A, B) {
-//							if (A.dist < B.dist) {
-//								return -1;
-//							} else if (A.dist == B.dist) {
-//								return 0;
-//							} else {
-//								return 1;
-//							}
-//						});
-//						// Choose closest target.
-//						_pursueTarget = pursueOptions[0].oppNPC;
-//						FSM.changeState("pursuing");
-//					}
-//				}
-			} else {
-				pursueTarget = null;
+				if (pursueOptions.length > 0) {
+					if (pursueOptions.length == 1) {
+						trace(" --- only one option");
+						pursueTarget = pursueOptions[0][1];
+						FSM.changeState("pursuing");
+						return;
+						
+					} else if (pursueOptions.length > 1) {
+						trace(" --- a bunch of options");
+						pursueOptions.sort(function(A:Array, B:Array) {
+							trace("Options : " + A[0] + " " + B[0]);
+							if (A[0] < B[0]) {
+								return -1;
+							} else if (A[0]  == B[0]) {
+								return 0;
+							} else {
+								return 1;
+							}
+						});
+						// Choose closest target.
+						pursueTarget = pursueOptions[0][1]
+						FSM.changeState("pursuing");
+						return;
+					}
+				}
 			}
+			
+			// Fall through.
+			pursueTarget = null;
 		}
 
 		private function updatePursueTarget():void {
@@ -537,7 +547,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			var compareX:Boolean = thisNPC.x == otherNPC.x;
 			
 			if (thisNPC.FSM.state != "avoidingDown" && thisNPC.FSM.state != "avoidingUp" && !thisNPC.immovable) {
-				//trace("this is what happens when summons collide :: THIS :: " + thisSumm.FSM.state);
+				trace("this is what happens when NPCs collide!! :: THIS :: " + thisNPC.kind);
 				if (compareY) {
 					thisNPC.FSM.changeState("avoidingUp");
 				} else {

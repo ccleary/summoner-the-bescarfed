@@ -57,7 +57,7 @@ package com.binaryscar.Summoner.Entity
 		protected var neutralGrp:FlxGroup; 	 // is this needed for walls and obstacles and hazards?
 		protected var playState:PlayState;
 		
-		protected var _cooldownTimer:Number;			// When this reaches 0: Can attack.
+		protected var cooldownTimer:Number;			// When this reaches 0: Can attack.
 
 		public var targetedBy:Array = [];		// Can be targeted by multiple opposition entities.
 		
