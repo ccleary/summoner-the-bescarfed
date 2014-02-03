@@ -194,19 +194,18 @@ package com.binaryscar.Summoner
 				  //	not having animations defined where they should be.
 				  //	TODO : check _animations.length()
 				  
-				//if (summonedGrp.countDead() > 0) {
-					//summoned = summonedGrp.getFirstDead() as Summoned;
-					//summoned.destroy();
-					//if (player.facing == FlxObject.RIGHT) { // RIGHT
-						//summoned.x = player.x + 20;
-					//} else {
-						//summoned.x = player.x - 20;
-					//}
-					//summoned.y = player.y + 10;
-					//summoned.facing = player.facing;
-					//trace('attempt to revive summoned');
-					//summoned.revive();
-				//} else {
+				if (summonedGrp.countDead() > 0) {
+					summoned = summonedGrp.getFirstDead() as Summoned;
+					if (player.facing == FlxObject.RIGHT) { // RIGHT
+						summoned.x = player.x + 20;
+					} else {
+						summoned.x = player.x - 20;
+					}
+					summoned.y = player.y + 10;
+					summoned.facing = player.facing;
+					trace('attempt to revive summoned');
+					summoned.revive();
+				} else {
 					if (player.facing == FlxObject.RIGHT) { // RIGHT
 						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player.x + 20, player.y + 10, player.facing);
 						//HealthBars.addHealthBar(_summoned, -2, -14);
@@ -216,7 +215,7 @@ package com.binaryscar.Summoner
 					}
 					//trace('attempt to add summoned');
 					summonedGrp.add(summoned);
-				//}
+				}
 			}
 		}
 		
