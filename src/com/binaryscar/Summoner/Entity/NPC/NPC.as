@@ -491,7 +491,7 @@ package com.binaryscar.Summoner.Entity.NPC
 						return;
 						
 					} else if (pursueOptions.length > 1) {
-						trace(" --- a bunch of options");
+						trace(" --- a bunch of options --- ");
 						pursueOptions.sort(function(A:Array, B:Array) {
 							trace("Options : " + A[0] + " " + B[0]);
 							if (A[0] < B[0]) {
