@@ -486,7 +486,6 @@ package com.binaryscar.Summoner.Entity.NPC
 				// TODO Figure out why the performance is inconsistent.
 				if (pursueOptions.length > 0) {
 					if (pursueOptions.length == 1) {
-						trace(" --- only one option");
 						pursueTarget = pursueOptions[0][1];
 						FSM.changeState("pursuing");
 						return;
