@@ -180,7 +180,6 @@ package com.binaryscar.Summoner.Entity
 			return (_MSPD * 1.1) * MSPD_Mod;
 		}
 		public function get MSPD_Y():int {
-			// test commit
 			return (_MSPD * 0.9) * MSPD_Mod;
 		}
 		public function get ACCEL_X():int {
