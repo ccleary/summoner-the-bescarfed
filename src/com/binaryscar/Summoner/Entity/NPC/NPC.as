@@ -39,7 +39,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		private var pursueSearchTimer:Number = 1; 	// Resets to ..Delay
 		private var pursueSearchDelay:Number = 1;
-		private var pursueDistance:int = 45000;
+		private var pursueDistance:int = 10000;
 		
 		public var pursueTarget:NPC;			// Can only be pursuing one target.
 		
@@ -276,7 +276,7 @@ package com.binaryscar.Summoner.Entity.NPC
 				{
 					parent: "moving",
 					enter: function():void {
-						MSPD = MSPD * 1.2;
+						//MSPD = MSPD * 1.2; // TODO find less invasive way to do this.
 					},
 					execute: function():void {
 						if (pursueTarget == null) {
@@ -288,7 +288,7 @@ package com.binaryscar.Summoner.Entity.NPC
 					},
 					exit: function():void {
 						angle = 0;
-						MSPD = MSPD * 0.8;
+						//MSPD = MSPD * 0.8;  // TODO find less invasive way to do this.
 						acceleration.y = 0;
 						pursueTarget = null;
 					}
@@ -450,9 +450,14 @@ package com.binaryscar.Summoner.Entity.NPC
 				return;
 			}
 			
-			//trace(this.kind + " searchForPursueTargets");
+			var newPursueTarget:NPC = null;
 			var pursueOptions:Array = [];
+			
 			var distanceLimit:int = pursueDistance; // Start with the widest search net.
+			var centerPoint:FlxPoint = null;
+			var xDist:Number = null;
+			var yDist:Number = null;
+			var sqDist:Number = null;
 			
 			if (pursueTarget == null && oppGrp != null && oppGrp.members.length > 0) { // Look for a new target if I don't have one already.
 				for each (var curr:NPC in oppGrp.members) {
@@ -462,56 +467,43 @@ package com.binaryscar.Summoner.Entity.NPC
 					if ((facing == RIGHT && curr.x < x) || (facing == LEFT && curr.x > x)) { // Skip processing if oppNPC is behind me. 
 						continue;
 					}
+					
 					 //Enemy center point.
-					var centerPoint:FlxPoint = curr.origin;
+					centerPoint = curr.origin;
 					
-					var xDist:Number = centerPoint.x - x;
-					var yDist:Number = centerPoint.y - y;
+					xDist = (curr.x + centerPoint.x) - this.x;
+					yDist = (curr.y + centerPoint.y) - this.y;
 					
-					var sqDist:Number = (yDist * yDist) + (xDist * xDist);
+					//if (isSummoned) {
+						// FIXME its being run on the same enemy over and over
+						//trace(this.toString(), this.ID);
+						//trace(curr.toString(), curr.ID);
+						//trace("centerPoint", centerPoint.x, " ", centerPoint.y);
+						//trace("xDist", xDist);
+						//trace("yDist", yDist);
+					//}
+					
+					sqDist = Math.round((yDist * yDist) + (xDist * xDist));
+					
 					if ( sqDist < distanceLimit ) {
-						// // GO AFTER FIRST FOUND TARGET
-						//pursueTarget = curr;
-						//FSM.changeState("pursuing");
-						//break;
+						// Set a new limit on search range.
+						// The next enemy to reach this point must be closer than this one
+						distanceLimit = sqDist;
 						
-						// // CONSIDER ALL OPTIONS
-						pursueOptions.push(new Array([sqDist, curr as NPC])); // Add an entity if it's within range.
-						distanceLimit = sqDist; // Set a new limit on search range, must be closer than this one
+						// This may be re-assigned multiple times while the loop
+						// widdles down to the closest enemy.
+						newPursueTarget = curr as NPC;
 						continue;
-					}
-				}
-				
-				// Now that we've populated hte pursueOptions array, check for closest one.
-				// TODO Figure out why the performance is inconsistent.
-				if (pursueOptions.length > 0) {
-					if (pursueOptions.length == 1) {
-						pursueTarget = pursueOptions[0][1];
-						FSM.changeState("pursuing");
-						return;
-						
-					} else if (pursueOptions.length > 1) {
-						trace(" --- a bunch of options --- ");
-						pursueOptions.sort(function(A:Array, B:Array) {
-							trace("Options : " + A[0] + " " + B[0]);
-							if (A[0] < B[0]) {
-								return -1;
-							} else if (A[0]  == B[0]) {
-								return 0;
-							} else {
-								return 1;
-							}
-						});
-						// Choose closest target.
-						pursueTarget = pursueOptions[0][1]
-						FSM.changeState("pursuing");
-						return;
 					}
 				}
 			}
 			
-			// Fall through.
-			pursueTarget = null;
+			if (newPursueTarget) {
+				pursueTarget = newPursueTarget;
+				FSM.changeState("pursuing");
+			} else {
+				pursueTarget = null;
+			}
 		}
 
 		private function updatePursueTarget():void {
@@ -533,7 +525,7 @@ package com.binaryscar.Summoner.Entity.NPC
 				var yDiff:int = (pursueTarget.y + (pursueTarget.height/2)) - (this.y + (this.height/2));
 				if ( (acceleration.y > 0 && yDiff <= 0) // Moving downward && pursueTarget is above 
 					|| (acceleration.y < 0 && yDiff >= 0) ) { // Moving upward && pursueTarget is below
-					//yDiff += yDiff;
+					yDiff += yDiff;
 					acceleration.y = 0;
 				}
 				acceleration.y += yDiff;

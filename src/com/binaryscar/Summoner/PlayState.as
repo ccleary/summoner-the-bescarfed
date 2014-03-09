@@ -203,17 +203,13 @@ package com.binaryscar.Summoner
 					}
 					summoned.y = player.y + 10;
 					summoned.facing = player.facing;
-					trace('attempt to revive summoned');
 					summoned.revive();
 				} else {
 					if (player.facing == FlxObject.RIGHT) { // RIGHT
 						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player.x + 20, player.y + 10, player.facing);
-						//HealthBars.addHealthBar(_summoned, -2, -14);
 					} else if (player.facing == FlxObject.LEFT) {
 						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player.x - 20, player.y + 10, player.facing);
-						//HealthBars.addHealthBar(_summoned, -2, -14);
 					}
-					//trace('attempt to add summoned');
 					summonedGrp.add(summoned);
 				}
 			}
@@ -226,13 +222,16 @@ package com.binaryscar.Summoner
 				Y = (Y < gameHeight - 64) ? Y : Y - 64;
 			}
 			
-			//if (enemyGrp.countDead() > 0) {
-				//enemy = enemyGrp.getFirstDead() as Enemy;
-				//enemy.revive();
-			//} else {
+			if (enemyGrp.countDead() > 0) {
+				enemy = enemyGrp.getFirstDead() as Enemy;
+				enemy.x = X;
+				enemy.y = Y;
+				enemy.revive();
+			} else {
 				enemy = new Enemy(enemyGrp, summonedGrp, player, this, X, Y, FlxObject.LEFT, "walking");
 				enemyGrp.add(enemy);
-			//}
+			}
+			trace("enemyGrp.members.length", enemyGrp.members.length);
 		}
 		
 		public function startFight(meNPC:NPC, oppNPC:NPC):void {
