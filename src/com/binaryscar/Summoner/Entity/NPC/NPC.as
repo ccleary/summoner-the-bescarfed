@@ -276,7 +276,7 @@ package com.binaryscar.Summoner.Entity.NPC
 				{
 					parent: "moving",
 					enter: function():void {
-						//MSPD = MSPD * 1.2; // TODO find less invasive way to do this.
+						MSPD_Mod = 1.2; // TODO find less invasive way to do this.
 					},
 					execute: function():void {
 						if (pursueTarget == null) {
@@ -288,7 +288,7 @@ package com.binaryscar.Summoner.Entity.NPC
 					},
 					exit: function():void {
 						angle = 0;
-						//MSPD = MSPD * 0.8;  // TODO find less invasive way to do this.
+						MSPD_Mod = 1;  // TODO find less invasive way to do this.
 						acceleration.y = 0;
 						pursueTarget = null;
 					}

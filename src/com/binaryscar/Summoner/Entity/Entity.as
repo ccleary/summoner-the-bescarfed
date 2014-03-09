@@ -43,6 +43,8 @@ package com.binaryscar.Summoner.Entity
 		protected var _MSPD:int = 50;			// Base Speed, (this*1.2 for X) (this*0.8 for Y)
 		protected var _ASPD:int = 5;			// Figure out equation for this.
 		
+		protected var _MSPD_Mod = 1;			// Modifer starts by doing nothing.
+		
 		// Current status (affected by Status Effects, hurt, etc)
 		public var curHP:int = HP;
 		public var curMP:int = MP;
@@ -149,11 +151,24 @@ package com.binaryscar.Summoner.Entity
 		}
 		
 		// MSPD Setters / Getters
+		public function set MSPD_Mod(modifier:Number):void {
+			_MSPD_Mod = modifier;
+			
+			drag.x = MSPD_X * 6;
+			drag.y = MSPD_Y * 4;
+			
+			maxVelocity.x = MSPD_X;
+			maxVelocity.y = MSPD_Y;	
+		}
+		public function get MSPD_Mod():Number {
+			return _MSPD_Mod;
+		}
+		
 		public function set MSPD(value:int):void {
 			_MSPD = value;
 			
-			drag.x = (MSPD_X) * 6;
-			drag.y = (MSPD_Y) * 4;
+			drag.x = MSPD_X * 6;
+			drag.y = MSPD_Y * 4;
 			
 			maxVelocity.x = MSPD_X;
 			maxVelocity.y = MSPD_Y;	
@@ -162,16 +177,16 @@ package com.binaryscar.Summoner.Entity
 			return _MSPD;
 		}
 		public function get MSPD_X():int {
-			return _MSPD * 1.1;
+			return (_MSPD * 1.1) * MSPD_Mod;
 		}
 		public function get MSPD_Y():int {
-			return _MSPD * 0.9;
+			return (_MSPD * 0.9) * MSPD_Mod;
 		}
 		public function get ACCEL_X():int {
-			return _MSPD * 2;
+			return (_MSPD * 2) * MSPD_Mod;
 		}
 		public function get ACCEL_Y():int {
-			return _MSPD * 2;
+			return (_MSPD * 2) * MSPD_Mod;
 		}
 		
 		//override public function toString():String {
