@@ -1,5 +1,7 @@
 package com.binaryscar.Summoner.Entity.NPC 
 {
+	import com.binaryscar.Summoner.Entity.EntityStatus.StatusEffectKinds;
+	import com.binaryscar.Summoner.Entity.EntityStatus.StatusEffectsController;
 	import com.binaryscar.Summoner.PlayState;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
 	import com.binaryscar.Summoner.Player.Player;
@@ -104,10 +106,10 @@ package com.binaryscar.Summoner.Entity.NPC
 					parent: "casting",
 					enter: function():void {
 						for each (var attacker:NPC in targetedBy) {
-							play("casting");
+							//play("casting");
 							//trace('would cast poison');
 							// I put a spell on you.
-							//attacker.addStatusEffect("poison");
+							attacker.addStatusEffect(StatusKinds.DEBUFF_POISON);
 						};
 					},
 					execute: function():void {
@@ -140,11 +142,6 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		override public function revive():void {
-			alpha = 1;
-			visible = true;
-			exists = true;
-			solid = true;
-			health = HP;
 			if (FSM.state != "walking") {
 				FSM.changeState("walking");
 			}

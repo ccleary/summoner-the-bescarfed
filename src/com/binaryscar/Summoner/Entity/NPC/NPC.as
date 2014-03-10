@@ -3,12 +3,12 @@ package com.binaryscar.Summoner.Entity.NPC
 	import com.binaryscar.Summoner.Entity.Entity;
 	import com.binaryscar.Summoner.Entity.EntityStatus.HealthBar;
 	import com.binaryscar.Summoner.Entity.EntityStatus.StatusEffectsController;
+	import com.binaryscar.Summoner.Entity.EntityStatus.StatusEffectKinds;
 	import com.binaryscar.Summoner.FiniteStateMachine.State;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachineEvent;
 	import com.binaryscar.Summoner.PlayState;
 	import com.binaryscar.Summoner.Player.Player;
-	import flash.events.StatusEvent;
 	
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxG;
@@ -33,7 +33,7 @@ package com.binaryscar.Summoner.Entity.NPC
 		protected var prevStateStorage:String;    // For pausing.
 
 		protected var player:Player;
-			
+		
 		private var avoidTimer:Number;				// Resets to ..Delay
 		private var avoidDelay:Number = 0.15;
 		
@@ -109,7 +109,6 @@ package com.binaryscar.Summoner.Entity.NPC
 			}
 		}
 		
-		
 		override public function kill():void {
 			FSM.changeState("dead");
 			if (target != null) {
@@ -120,6 +119,16 @@ package com.binaryscar.Summoner.Entity.NPC
 			}
 			super.kill();
 			//destroy();
+		}
+		
+		override public function revive():void {
+			alpha = 1;
+			visible = true;
+			exists = true;
+			solid = true;
+			health = HP;
+			entityExtras.SEC.clearAllEffects();
+			super.revive();
 		}
 		
 		public function get target():NPC {
@@ -217,6 +226,11 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		public function hurtPlayer(me:NPC, player:Player):void {
 			player.hurt(STR); //TODO This is a problem.
+		}
+		
+		public function addStatusEffect(statusKind:String):void {
+			
+			entityExtras.SEC.addStatusEffect(statusKind);
 		}
 		
 		private function initializeStates(FSM:StateMachine):void {
@@ -561,6 +575,7 @@ package com.binaryscar.Summoner.Entity.NPC
 				velocity.x -= Math.random()*10;
 			}
 		}
+		
 	}
 }
 

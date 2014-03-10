@@ -1,5 +1,6 @@
 package com.binaryscar.Summoner.Entity 
 {
+	import com.binaryscar.Summoner.Entity.EntityStatus.StatusEffectKinds;
 	import com.binaryscar.Summoner.FiniteStateMachine.StateMachine;
 	import com.binaryscar.Summoner.Player.Player;
 	import com.binaryscar.Summoner.PlayState;
@@ -60,6 +61,8 @@ package com.binaryscar.Summoner.Entity
 		protected var playState:PlayState;
 		
 		protected var cooldownTimer:Number;			// When this reaches 0: Can attack.
+		
+		protected var StatusKinds:StatusEffectKinds = StatusEffectKinds.getInstance();
 
 		public var targetedBy:Array = [];		// Can be targeted by multiple opposition entities.
 		

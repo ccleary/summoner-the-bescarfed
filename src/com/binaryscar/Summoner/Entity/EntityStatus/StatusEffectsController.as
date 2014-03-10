@@ -21,8 +21,10 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 	
 	public class StatusEffectsController extends FlxGroup
 	{		
-		public static const DEBUFF_POISON:String	= "poison";
-		public static const DEBUFF_SLOW:String		= "slow";
+		//public static const DEBUFF_POISON:String	= "poison";
+		//public static const DEBUFF_SLOW:String		= "slow";
+		
+		//private var StatusKinds:StatusEffectKinds = new StatusEffectKinds();
 		
 		private var attachedTo:Entity;
 		private var entityExtras:FlxGroup;
@@ -58,13 +60,13 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		}		
 		
 		public function updatePosition(x:int, y:int):void {
-			for each (var status:StatusEffect in this) {
+			for each (var status:StatusEffect in statusEffects) {
 				status.updatePosition(x, y);
 			}
 		}
 		
 		public function addStatusEffect(kind:String):void {
-			if (countDead() > 0) {
+			if (this.countDead() > 0) {
 				currentStatusEffect = getFirstDead() as StatusEffect;
 				currentStatusEffect.reset(kind, attachedTo, getCurrentXOffset(), attachedTo.y + offsetFromEntity[1]);
 				// TODO Revisit this
@@ -74,8 +76,8 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 				//_initializeEmitter(newStatus.emitter, newStatus.name);
 				statusEffects[kind] = newStatus;
 				
-				entityExtras.add(statusEffects[kind].statusBox);
-				entityExtras.add(statusEffects[kind].spiral);
+				add(statusEffects[kind].statusBox);
+				add(statusEffects[kind].spiral);
 				//newStatus = null; // gc?
 			} else {
 				trace("Status already exists. " + kind);
@@ -88,6 +90,10 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 				currentStatusCount--;
 				//garbage collection?
 			}
+		}
+		
+		public function clearAllEffects():void {
+			statusEffects = new Dictionary();
 		}
 		
 		private function getCurrentXOffset():int {

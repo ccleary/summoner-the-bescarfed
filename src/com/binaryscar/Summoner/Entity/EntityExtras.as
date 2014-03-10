@@ -22,10 +22,10 @@ package com.binaryscar.Summoner.Entity
 		
 		public static const GIBS_SMOKE:int = 0;
 		
-		private var attachedTo:Entity;
+		public var SEC:StatusEffectsController;
 		
 		private var HB:HealthBar;
-		private var SEC:StatusEffectsController;
+		private var attachedTo:Entity;
 		
 		private var secOffset:Vector.<int> = new Vector.<int>();
 		
