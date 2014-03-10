@@ -21,8 +21,8 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 	
 	public class StatusEffectsController extends FlxGroup
 	{		
-		//public static const DEBUFF_POISON:String	= "poison";
-		//public static const DEBUFF_SLOW:String		= "slow";
+		//public const DEBUFF_POISON:String	= "poison";
+		//public const DEBUFF_SLOW:String		= "slow";
 		
 		//private var StatusKinds:StatusEffectKinds = new StatusEffectKinds();
 		
@@ -63,6 +63,11 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 			for each (var status:StatusEffect in statusEffects) {
 				status.updatePosition(x, y);
 			}
+		}
+		
+		public function setOffsetFromEntity(xOffset:int, yOffset:int):void {
+			offsetFromEntity[0] = xOffset;
+			offsetFromEntity[1] = yOffset;
 		}
 		
 		public function addStatusEffect(kind:String):void {

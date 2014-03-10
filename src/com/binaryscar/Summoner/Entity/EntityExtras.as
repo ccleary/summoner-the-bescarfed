@@ -69,13 +69,16 @@ package com.binaryscar.Summoner.Entity
 		}
 		
 		public function setHealthBarOffset(xOffset:int, yOffset:int):void {
-			HB.offsetFromEntity[0] = xOffset;
-			HB.offsetFromEntity[1] = yOffset;
+			//HB.offsetFromEntity[0] = xOffset;
+			//HB.offsetFromEntity[1] = yOffset;
+			HB.setOffsetFromEntity(xOffset, yOffset);
 		}
 		
 		public function setStatusEffectsControllerOffset(xOffset:int, yOffset:int):void {
-			secOffset[0] = xOffset;
-			secOffset[1] = yOffset;
+			//secOffset[0] = xOffset;
+			//secOffset[1] = yOffset;
+			SEC.setOffsetFromEntity(xOffset, yOffset);
+			
 		}
 		
 		public function addEntityExtra(type:int, xOffset:int, yOffset:int):void {

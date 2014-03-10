@@ -17,7 +17,7 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		
 		private var attachedTo:Entity;
 		
-		public var offsetFromEntity:Vector.<int> = new Vector.<int>();
+		private var offsetFromEntity:Vector.<int> = new Vector.<int>();
 		
 		public function HealthBar(attachedTo:Entity, xOffset:int, yOffset:int)
 		{
@@ -60,6 +60,11 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 			frame.y = y + offsetFromEntity[1];
 			healthBar.x = frame.x + 1;
 			healthBar.y = frame.y + 1;
+		}
+		
+		public function setOffsetFromEntity(xOffset:int, yOffset:int):void {
+			offsetFromEntity[0] = xOffset;
+			offsetFromEntity[1] = yOffset;
 		}
 	}
 }

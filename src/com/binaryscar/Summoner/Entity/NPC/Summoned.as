@@ -40,6 +40,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			offset.y = 18;
 			width = 16;
 			offset.x = 8;
+			entityExtras.setStatusEffectsControllerOffset( -4, -20);
 			
 			health = HP;
 			elasticity = 1.5;
