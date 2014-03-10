@@ -74,6 +74,7 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 			if (this.countDead() > 0) {
 				currentStatusEffect = getFirstDead() as StatusEffect;
 				currentStatusEffect.reset(kind, attachedTo, getCurrentXOffset(), attachedTo.y + offsetFromEntity[1]);
+				currentStatusCount++;
 				// TODO Revisit this
 			}
 			if (statusEffects[kind] == null) {
@@ -84,6 +85,7 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 				add(statusEffects[kind].statusBox);
 				add(statusEffects[kind].spiral);
 				//newStatus = null; // gc?
+				currentStatusCount++;
 			} else {
 				trace("Status already exists. " + kind);
 			}
@@ -102,6 +104,8 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		}
 		
 		private function getCurrentXOffset():int {
+			trace("xOffset status ", offsetFromEntity[0] + (statusEffectWidth * currentStatusCount));
+			trace("xOffset status ", statusEffectWidth, " ", currentStatusCount);
 			return offsetFromEntity[0] + (statusEffectWidth * currentStatusCount);
 		}
 	}

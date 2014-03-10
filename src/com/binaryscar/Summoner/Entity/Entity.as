@@ -44,7 +44,7 @@ package com.binaryscar.Summoner.Entity
 		protected var _MSPD:int = 50;			// Base Speed, (this*1.2 for X) (this*0.8 for Y)
 		protected var _ASPD:int = 5;			// Figure out equation for this.
 		
-		protected var _MSPD_Mod = 1;			// Modifer starts by doing nothing.
+		protected var _MSPD_Mod:Number = 1;			// Modifer starts by doing nothing. X * 100%
 		
 		// Current status (affected by Status Effects, hurt, etc)
 		public var curHP:int = HP;

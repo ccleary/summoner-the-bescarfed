@@ -110,6 +110,7 @@ package com.binaryscar.Summoner.Entity.NPC
 							//trace('would cast poison');
 							// I put a spell on you.
 							attacker.addStatusEffect(StatusKinds.DEBUFF_POISON);
+							attacker.addStatusEffect(StatusKinds.DEBUFF_SLOW);
 						};
 					},
 					execute: function():void {
