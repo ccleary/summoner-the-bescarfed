@@ -83,7 +83,7 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 				statusEffects[kind] = newStatus;
 				
 				add(statusEffects[kind].statusBox);
-				add(statusEffects[kind].spiral);
+				add(statusEffects[kind].icon);
 				//newStatus = null; // gc?
 				currentStatusCount++;
 			} else {
@@ -101,11 +101,12 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		
 		public function clearAllEffects():void {
 			statusEffects = new Dictionary();
+			currentStatusCount = 0;
 		}
 		
 		private function getCurrentXOffset():int {
-			trace("xOffset status ", offsetFromEntity[0] + (statusEffectWidth * currentStatusCount));
-			trace("xOffset status ", statusEffectWidth, " ", currentStatusCount);
+			//trace("xOffset status ", offsetFromEntity[0] + (statusEffectWidth * currentStatusCount));
+			//trace("xOffset status ", statusEffectWidth, " ", currentStatusCount);
 			return offsetFromEntity[0] + (statusEffectWidth * currentStatusCount);
 		}
 	}

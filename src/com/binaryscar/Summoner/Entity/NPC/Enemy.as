@@ -112,6 +112,7 @@ package com.binaryscar.Summoner.Entity.NPC
 							attacker.addStatusEffect(StatusKinds.DEBUFF_POISON);
 							attacker.addStatusEffect(StatusKinds.DEBUFF_SLOW);
 						};
+						onSpellCooldown = true;
 					},
 					execute: function():void {
 						if (finished) {

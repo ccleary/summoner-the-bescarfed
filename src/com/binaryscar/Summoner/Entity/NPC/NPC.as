@@ -228,11 +228,6 @@ package com.binaryscar.Summoner.Entity.NPC
 			player.hurt(STR); //TODO This is a problem.
 		}
 		
-		public function addStatusEffect(statusKind:String):void {
-			
-			entityExtras.SEC.addStatusEffect(statusKind);
-		}
-		
 		private function initializeStates(FSM:StateMachine):void {
 			
 			FSM.addState("idle", 
@@ -552,7 +547,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			var compareX:Boolean = thisNPC.x == otherNPC.x;
 			
 			if (thisNPC.FSM.state != "avoidingDown" && thisNPC.FSM.state != "avoidingUp" && !thisNPC.immovable) {
-				trace("this is what happens when NPCs collide!! :: THIS :: " + thisNPC.kind);
+				//trace("this is what happens when NPCs collide!! :: THIS :: " + thisNPC.kind);
 				if (compareY) {
 					thisNPC.FSM.changeState("avoidingUp");
 				} else {

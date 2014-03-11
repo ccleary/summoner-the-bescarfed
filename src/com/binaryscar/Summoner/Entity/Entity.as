@@ -196,6 +196,14 @@ package com.binaryscar.Summoner.Entity
 			//return this.kind;
 		//}
 		
+		
+		public function addStatusEffect(statusKind:String):void {
+			entityExtras.SEC.addStatusEffect(statusKind);
+		}
+		
+		public function removeStatusEffect(statusKind:String):void {
+			entityExtras.SEC.removeStatusEffect(statusKind);
+		}
 	}
 
 }

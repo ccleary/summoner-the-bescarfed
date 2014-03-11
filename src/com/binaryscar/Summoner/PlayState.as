@@ -231,7 +231,6 @@ package com.binaryscar.Summoner
 				enemy = new Enemy(enemyGrp, summonedGrp, player, this, X, Y, FlxObject.LEFT, "walking");
 				enemyGrp.add(enemy);
 			}
-			trace("enemyGrp.members.length", enemyGrp.members.length);
 		}
 		
 		public function startFight(meNPC:NPC, oppNPC:NPC):void {
