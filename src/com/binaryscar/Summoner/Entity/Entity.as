@@ -82,8 +82,8 @@ package com.binaryscar.Summoner.Entity
 			
 			// Start doing these manually on a per-type basis? (i.e. for Summoned, for Player)
 			// so that we can use different offsets?
-			entityExtras.addEntityExtra(EntityExtras.HEALTH_BAR, -4, -14);
-			entityExtras.addEntityExtra(EntityExtras.STATUS_EFFECT_CTRL, -4, -19);
+			entityExtras.addEntityExtra(EntityExtras.HEALTH_BAR, -4, -14, playState.hud);
+			entityExtras.addEntityExtra(EntityExtras.STATUS_EFFECT_CTRL, -4, -19, playState.hud);
 		}
 		
 		override public function update():void {

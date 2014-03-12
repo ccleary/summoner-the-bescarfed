@@ -554,7 +554,7 @@ package com.binaryscar.Summoner.Entity.NPC
 					thisNPC.FSM.changeState("avoidingDown");
 				}
 			} else if (thisNPC.FSM.state == "avoidingDown" || thisNPC.FSM.state == "avoidingUp") {
-				acceleration.y += Math.random() * 5 + 1;
+				acceleration.y += Math.random() * 10 + 1;
 				thisNPC.avoidTimer += FlxG.elapsed*2; // Reset timer so the summoned keeps moving in same direction.
 			}
 			

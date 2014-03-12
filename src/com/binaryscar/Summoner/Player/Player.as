@@ -1,6 +1,7 @@
 package com.binaryscar.Summoner.Player 
 {
 	import com.binaryscar.Summoner.Entity.Entity;
+	import com.binaryscar.Summoner.Entity.EntityExtras;
 	import com.binaryscar.Summoner.Entity.EntityExtraSprite;
 	import com.binaryscar.Summoner.Entity.EntityStatus.HealthBar;
 	import com.binaryscar.Summoner.PlayState;
@@ -47,7 +48,7 @@ package com.binaryscar.Summoner.Player
 			
 			entityExtras.setHealthBarOffset( -2, -6);
 			
-			dots = entityExtras.addEntityExtraEmitter(8, 8, 20, 8, true, -20, 8);
+			dots = entityExtras.addEntityExtraEmitter(EntityExtras.GIBS_CAST, 8, 8, 20, 8, true, -20, 8);
 			dots.setXSpeed( -20, 20);
 			dots.setYSpeed( -20, 20);
 			dots.setRotation( 0, 0);

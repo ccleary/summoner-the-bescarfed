@@ -1,5 +1,6 @@
 package com.binaryscar.Summoner.Entity.NPC 
 {
+	import com.binaryscar.Summoner.Entity.EntityExtras;
 	import com.binaryscar.Summoner.Entity.EntityStatus.StatusEffectKinds;
 	import com.binaryscar.Summoner.Entity.EntityStatus.StatusEffectsController;
 	import com.binaryscar.Summoner.PlayState;
@@ -68,6 +69,8 @@ package com.binaryscar.Summoner.Entity.NPC
 			offset.y = 6;
 			health = HP;
 			
+			entityExtras.addEntityExtraEmitter(EntityExtras.GIBS_CAST, 32, 32, -12, 0);
+			
 			FSM.id = "[Enemy]";
 			addEnemyStates(FSM);
 
@@ -109,6 +112,7 @@ package com.binaryscar.Summoner.Entity.NPC
 							//play("casting");
 							//trace('would cast poison');
 							// I put a spell on you.
+							entityExtras.fireGibs(EntityExtras.GIBS_CAST);
 							attacker.addStatusEffect(StatusKinds.DEBUFF_POISON);
 							attacker.addStatusEffect(StatusKinds.DEBUFF_SLOW);
 						};

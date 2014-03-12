@@ -48,7 +48,7 @@ package com.binaryscar.Summoner
 		private var lost:Boolean = false;
 		private var won:Boolean = false;
 		
-		private var hud:HUD;
+		public var hud:HUD;
 		private var pausedOverlay:FlxGroup;
 		
 		public var livesCount:int = 20;

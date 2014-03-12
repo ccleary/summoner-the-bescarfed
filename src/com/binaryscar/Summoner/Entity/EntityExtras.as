@@ -3,6 +3,7 @@ package com.binaryscar.Summoner.Entity
 	import com.binaryscar.Summoner.Entity.EntityStatus.HealthBar;
 	import com.binaryscar.Summoner.Entity.EntityStatus.HealthBarController;
 	import com.binaryscar.Summoner.Entity.EntityStatus.StatusEffectsController;
+	import com.binaryscar.Summoner.HUD.HUD;
 	import org.flixel.FlxEmitter;
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxSprite;
@@ -21,6 +22,7 @@ package com.binaryscar.Summoner.Entity
 		public static const STATUS_EFFECT_CTRL:int = 1;
 		
 		public static const GIBS_SMOKE:int = 0;
+		public static const GIBS_CAST:int = 1;
 		
 		public var SEC:StatusEffectsController;
 		
@@ -81,15 +83,21 @@ package com.binaryscar.Summoner.Entity
 			
 		}
 		
-		public function addEntityExtra(type:int, xOffset:int, yOffset:int):void {
+		public function addEntityExtra(type:int, xOffset:int, yOffset:int, hud:HUD = null):void {
 			switch (type) {
 				case HEALTH_BAR :
 					HB = new HealthBar(attachedTo, xOffset, yOffset);
-					add(HB);
+					//add(HB);
+					if (hud != null) {
+						hud.add(HB);
+					}
 					break;
 				case STATUS_EFFECT_CTRL :
 					SEC = new StatusEffectsController(attachedTo, this, xOffset, yOffset);
-					add(SEC);
+					//add(SEC);
+					if (hud != null) {
+						hud.add(SEC);
+					}
 					break;
 				default :
 					break;
@@ -103,16 +111,20 @@ package com.binaryscar.Summoner.Entity
 			return currExtraSprite; // Return a reference for adding things like animations from the insantiator.
 		}
 		
-		public function addEntityExtraEmitter(width:int, height:int,  xOffset:int, yOffset:int, useDynamicPosition:Boolean=false, xOffset_left:int=0, yOffset_left:int=0):EntityExtraEmitter {
+		public function addEntityExtraEmitter(kind:int, width:int, height:int,  xOffset:int, yOffset:int, useDynamicPosition:Boolean=false, xOffset_left:int=0, yOffset_left:int=0):EntityExtraEmitter {
 			currExtraEmitter = new EntityExtraEmitter(attachedTo, (extraEmitterArray.length - 1), width, height, xOffset, yOffset, useDynamicPosition, xOffset_left, yOffset_left);
+			//while (extraEmitterArray.length < (kind -1)) {
+				//extraEmitterArray.push('');
+			//}
+			//extraEmitterArray[kind] = currExtraEmitter;
 			extraEmitterArray.push(currExtraEmitter);
 			add(currExtraEmitter);
 			return currExtraEmitter;
 		}
 		
-		public function fireGibs(type:int):void {
+		public function fireGibs(kind:int):void {
 			var gibs:FlxEmitter;
-			switch (type) {
+			switch (kind) {
 				case GIBS_SMOKE:
 				default :
 					gibs = gibs_smoke;
