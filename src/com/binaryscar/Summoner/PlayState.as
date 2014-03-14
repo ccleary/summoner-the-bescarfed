@@ -111,9 +111,20 @@ package com.binaryscar.Summoner
 			
 			pausedOverlay.visible = false;
 			add(pausedOverlay);
+			
+			//FlxG.paused = true;
 		}
 
 		override public function update():void {
+			
+			if (lost && FlxG.keys.justPressed("R")) {
+				FlxG.paused = false;
+				FlxG.resetState();
+			}
+			
+			if (lost) {
+				return;
+			}
 			
 			if (FlxG.keys.justPressed("P")) {
 				FlxG.paused = !FlxG.paused;
@@ -129,14 +140,6 @@ package com.binaryscar.Summoner
 			}
 			
 			super.update();
-			
-			if (lost && FlxG.keys.justPressed("R")) {
-				FlxG.resetState();
-			}
-			
-			if (lost) {
-				return;
-			}
 			
 			if (!player.alive || livesCount <= 0) {
 				lose();
