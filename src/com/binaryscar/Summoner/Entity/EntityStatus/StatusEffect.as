@@ -20,7 +20,7 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		[Embed(source = "../../../../../../art/se_poisonSpiral.png")]public var se_poisonSpiral:Class;
 		[Embed(source = "../../../../../../art/se_slowArrows.png")]public var se_slowArrows:Class;
 		
-		private const DEFAULT_TIMER:Number = 1;
+		private const DEFAULT_TIMER:Number = 3;
 		
 		private var attachedTo:Entity;
 		private var offsetFromEntity:Vector.<int> = new Vector.<int>();
@@ -46,6 +46,7 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 			super();
 			
 			statusBox = new FlxSprite(attachedTo.x + xOffset, attachedTo.y + yOffset);
+			statusBox.solid = false;
 			statusBox.makeGraphic(7, 7, 0xFF000000); // Black frame
 			
 			switch (kind) {
@@ -53,6 +54,7 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 					iconOffset[0] = 1;
 					iconOffset[1] = 1;
 					icon = new FlxSprite(statusBox.x + iconOffset[0], statusBox.y + iconOffset[1]);
+					icon.solid = false;
 					icon.loadGraphic(se_poisonSpiral, true, false, 5, 5);
 					icon.addAnimation("active", [0, 1, 2, 3], 4, true);
 					icon.play("active");
@@ -61,6 +63,7 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 					iconOffset[0] = 0;
 					iconOffset[1] = 0;
 					icon = new FlxSprite(statusBox.x + iconOffset[0], statusBox.y + iconOffset[1]);
+					icon.solid = false;
 					icon.loadGraphic(se_slowArrows, true, false, 7, 7);
 					icon.addAnimation("active", [0, 1], 2, true);
 					icon.play("active");
@@ -69,14 +72,37 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		}
 		
 		override public function update():void {
-			super.update(); // y u no trace?
+			super.update();
 			timer -= FlxG.elapsed;
-			trace("timer : " + timer);
 			if (timer <= 0) {
 				trace("Remove status : " + this.kind);
 				attachedTo.removeStatusEffect(this.kind);
+				return;
 			}
-			// TODO add status effect de/buffs
+			
+			switch (this.kind) {
+				case StatusEffectKinds.getInstance().DEBUFF_SLOW:
+					attachedTo.MSPD_Mod = 0.3;
+					break;
+				case StatusEffectKinds.getInstance().DEBUFF_POISON:
+					
+					break;
+			}
+		}
+		
+		override public function kill():void {
+			icon.kill();
+			statusBox.kill();
+			super.kill();
+			
+			switch (this.kind) {
+				case StatusEffectKinds.getInstance().DEBUFF_SLOW:
+					trace("mspd to normal");
+					attachedTo.MSPD_Mod = 1;
+					break;
+				case StatusEffectKinds.getInstance().DEBUFF_POISON:
+					break;
+			}
 		}
 		
 		public function updatePosition(x:int, y:int):void {
@@ -90,13 +116,12 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 			return this.kind;
 		}
 		
-		//override public function kill():void {
-			//super.kill();
-		//}
-		
 		public function reset(kind:String, attachedTo:Entity, xOffset:int, yOffset:int):void {
 			this.kind = kind;
 			this.attachedTo = attachedTo;
+			
+			//icon.visible = true;
+			//icon.revive();
 			
 			offsetFromEntity[0] = xOffset;
 			offsetFromEntity[1] = yOffset;

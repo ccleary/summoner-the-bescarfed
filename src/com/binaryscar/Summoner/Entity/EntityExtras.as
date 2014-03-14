@@ -90,6 +90,8 @@ package com.binaryscar.Summoner.Entity
 					//add(HB);
 					if (hud != null) {
 						hud.add(HB);
+					} else {
+						add(HB);
 					}
 					break;
 				case STATUS_EFFECT_CTRL :
@@ -97,6 +99,8 @@ package com.binaryscar.Summoner.Entity
 					//add(SEC);
 					if (hud != null) {
 						hud.add(SEC);
+					} else {
+						add(SEC);
 					}
 					break;
 				default :

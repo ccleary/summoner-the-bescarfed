@@ -79,15 +79,16 @@ package com.binaryscar.Summoner.Entity.NPC
 			}
 		}
 		
-		override public function update():void {
-			if (this.targetedBy.length > 1 && !onSpellCooldown) { //FIXME
+		override public function update():void {			
+			super.update();
+			
+			if (targetedBy.length > 1 && !onSpellCooldown) { //FIXME
+				trace('targetedBy.length ' + targetedBy.length);
 				if(state.toString() != "poisonCloud") {
 					trace("POISON CLOUD!");
 					FSM.changeState("poisonCloud");
 				}
 			}
-			
-			super.update();
 		}
 		
 		private function addEnemyStates(fsm:StateMachine):void 
@@ -113,7 +114,7 @@ package com.binaryscar.Summoner.Entity.NPC
 							//trace('would cast poison');
 							// I put a spell on you.
 							entityExtras.fireGibs(EntityExtras.GIBS_CAST);
-							attacker.addStatusEffect(StatusKinds.DEBUFF_POISON);
+							//attacker.addStatusEffect(StatusKinds.DEBUFF_POISON);
 							attacker.addStatusEffect(StatusKinds.DEBUFF_SLOW);
 						};
 						onSpellCooldown = true;

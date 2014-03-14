@@ -50,18 +50,22 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		}
 		
 		override public function update():void {
-			super.update();
-			
 			if (!attachedTo.alive) {
 				for each (var status:StatusEffect in this) {
-					status.kill();
+					if (status != null) {
+						status.kill();
+					}
 				}
 			}
+			super.update();
 		}		
 		
 		public function updatePosition(x:int, y:int):void {
 			for each (var status:StatusEffect in statusEffects) {
-				status.updatePosition(x, y);
+				if (status != null) {
+					status.update();
+					status.updatePosition(x, y);
+				}
 			}
 		}
 		
@@ -71,12 +75,12 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		}
 		
 		public function addStatusEffect(kind:String):void {
-			if (this.countDead() > 0) {
-				currentStatusEffect = getFirstDead() as StatusEffect;
-				currentStatusEffect.reset(kind, attachedTo, getCurrentXOffset(), attachedTo.y + offsetFromEntity[1]);
-				currentStatusCount++;
-				// TODO Revisit this
-			}
+			// TODO Revisit this
+			//if (this.countDead() > 0) {
+				//currentStatusEffect = getFirstDead() as StatusEffect;
+				//currentStatusEffect.reset(kind, attachedTo, getCurrentXOffset(), attachedTo.y + offsetFromEntity[1]);
+				//currentStatusCount++;
+			//}
 			if (statusEffects[kind] == null) {
 				var newStatus:StatusEffect = new StatusEffect(kind, attachedTo, getCurrentXOffset(), offsetFromEntity[1]);
 				//_initializeEmitter(newStatus.emitter, newStatus.name);
@@ -87,12 +91,13 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 				//newStatus = null; // gc?
 				currentStatusCount++;
 			} else {
-				trace("Status already exists. " + kind);
+				//trace("Status already exists. " + kind);
 			}
 		}
 		
 		public function removeStatusEffect(kind:String):void {
 			if (statusEffects[kind] != null) {
+				statusEffects[kind].kill();
 				statusEffects[kind] = null;
 				currentStatusCount--;
 				//garbage collection?
@@ -100,6 +105,11 @@ package com.binaryscar.Summoner.Entity.EntityStatus
 		}
 		
 		public function clearAllEffects():void {
+			for each (var status:StatusEffect in statusEffects) {
+				if (status != null) {
+					status.kill();
+				}
+			}
 			statusEffects = new Dictionary();
 			currentStatusCount = 0;
 		}

@@ -24,11 +24,12 @@ package com.binaryscar.Summoner.Entity
 	{
 		[Embed(source = "../../../../../art/shitty-redblock-enemy1.png")]public var ph_redblock:Class; //Placeholder
 		
-		public static const KIND_DEFAULT:String = "default";
-		public static const KIND_ENEMY:String = "enemy";
-		public static const KIND_NEUTRAL:String = "neutral";
-		public static const KIND_PLAYER:String = "player";
-		public static const KIND_SUMMONED:String = "summoned";
+		public static const KIND_DEFAULT:String 	= "default";
+		public static const KIND_ENEMY:String 		= "enemy";
+		public static const KIND_NEUTRAL:String 	= "neutral";
+		public static const KIND_OBSTACLE:String 	= "obstacle";
+		public static const KIND_PLAYER:String 		= "player";
+		public static const KIND_SUMMONED:String 	= "summoned";
 		
 		public var kind:String = KIND_DEFAULT;
 		
@@ -82,8 +83,10 @@ package com.binaryscar.Summoner.Entity
 			
 			// Start doing these manually on a per-type basis? (i.e. for Summoned, for Player)
 			// so that we can use different offsets?
-			entityExtras.addEntityExtra(EntityExtras.HEALTH_BAR, -4, -14, playState.hud);
-			entityExtras.addEntityExtra(EntityExtras.STATUS_EFFECT_CTRL, -4, -19, playState.hud);
+			//entityExtras.addEntityExtra(EntityExtras.HEALTH_BAR, -4, -14, playState.hud);
+			//entityExtras.addEntityExtra(EntityExtras.STATUS_EFFECT_CTRL, -4, -19, playState.hud);
+			entityExtras.addEntityExtra(EntityExtras.HEALTH_BAR, -4, -14);
+			entityExtras.addEntityExtra(EntityExtras.STATUS_EFFECT_CTRL, -4, -19);
 		}
 		
 		override public function update():void {
@@ -159,6 +162,14 @@ package com.binaryscar.Summoner.Entity
 			
 			drag.x = MSPD_X * 6;
 			drag.y = MSPD_Y * 4;
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			maxVelocity.x = MSPD_X;
 			maxVelocity.y = MSPD_Y;	

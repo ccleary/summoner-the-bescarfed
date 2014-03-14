@@ -98,6 +98,16 @@ package com.binaryscar.Summoner.Entity.NPC
 			}
 			state = FSM.getStateByName(FSM.state); // Actual obj:State, not name:String.
 			
+			// Clean up targetedBy array.
+			if (targetedBy.length > 0) {
+				for (var i:int = targetedBy.length-1; i >= 0; i--) {
+					var summ:NPC = targetedBy[i];
+					if (!summ.alive) {
+						targetedBy.splice(i, 1);
+					}
+				}
+			}
+			
 			FlxG.collide(this, allyGrp, avoidAlly);
 			FlxG.overlap(this, allyGrp, bounceAgaintAlly);
 			
@@ -285,7 +295,7 @@ package com.binaryscar.Summoner.Entity.NPC
 				{
 					parent: "moving",
 					enter: function():void {
-						MSPD_Mod = 1.2; // TODO find less invasive way to do this.
+						//MSPD_Mod = 1.2; // TODO find less invasive way to do this.
 					},
 					execute: function():void {
 						if (pursueTarget == null) {
@@ -297,7 +307,7 @@ package com.binaryscar.Summoner.Entity.NPC
 					},
 					exit: function():void {
 						angle = 0;
-						MSPD_Mod = 1;  // TODO find less invasive way to do this.
+						//MSPD_Mod = 1;  // TODO find less invasive way to do this.
 						acceleration.y = 0;
 						pursueTarget = null;
 					}
