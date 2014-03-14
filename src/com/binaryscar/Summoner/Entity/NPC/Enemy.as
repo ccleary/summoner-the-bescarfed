@@ -22,7 +22,7 @@ package com.binaryscar.Summoner.Entity.NPC
 	 */
 	public class Enemy extends NPC 
 	{
-		[Embed(source = "../../../../../../art/enemy-orc-1.png")]public var imgOrc:Class;
+		[Embed(source = "../../../../../../art/enemy-orc-2.png")]public var imgOrc:Class;
 		[Embed(source = "../../../../../../art/blackpx.png")]public var bkDot:Class;
 
 		public var initX:int;
@@ -58,8 +58,8 @@ package com.binaryscar.Summoner.Entity.NPC
 			
 			loadGraphic(imgOrc, false, true, 32, 32);
 			addAnimation("walking", [0, 0, 0, 0], 8, true);
-			addAnimation("casting", [0, 0, 0, 0], 8, true);
-			addAnimation("attacking", [0, 0, 0, 0, 0, 0, 0], 16, false);
+			addAnimation("casting", [0, 1, 1, 2], 8, true);
+			addAnimation("attacking", [0, 1, 1, 2], 8, false);
 			addAnimation("idle", [0]);
 			addAnimation("fightingIdle", [0]);
 			
