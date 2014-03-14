@@ -122,7 +122,7 @@ package com.binaryscar.Summoner
 				add(clickToStart_text);
 				clickToStart();
 			}
-			if (firstRun && FlxG.mouse.justPressed()) {
+			if (firstRun && (FlxG.mouse.justPressed() || FlxG.keys.justPressed("Z"))) {
 				remove(clickToStart_text);
 				firstRun = false;
 				FlxG.paused = false;
@@ -227,6 +227,8 @@ package com.binaryscar.Summoner
 					} else if (player.facing == FlxObject.LEFT) {
 						summoned = new Summoned(summonedGrp, enemyGrp, player, this, player.x - 20, player.y + 10, player.facing);
 					}
+					// Debugging help
+					summoned.ID = Math.round((Math.random() * 10) + (Math.random() * 100));
 					summonedGrp.add(summoned);
 				}
 			}
