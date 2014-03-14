@@ -99,6 +99,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			state = FSM.getStateByName(FSM.state); // Actual obj:State, not name:String.
 			
 			// Clean up targetedBy array.
+			//TODO make the dying target do the cleanup.
 			if (targetedBy.length > 0) {
 				for (var i:int = targetedBy.length-1; i >= 0; i--) {
 					var summ:NPC = targetedBy[i];
@@ -108,10 +109,19 @@ package com.binaryscar.Summoner.Entity.NPC
 				}
 			}
 			
+			
+			
 			FlxG.collide(this, allyGrp, avoidAlly);
 			FlxG.overlap(this, allyGrp, bounceAgaintAlly);
 			
 			FSM.update(); // Finite State Machine Update
+			
+			// Keep NPCs within the Y bounds of the stage.
+			if (getScreenXY().y < 10) {
+				y = 10;
+			} else if (getScreenXY().y > FlxG.camera.height - (this.height)) {
+				y = FlxG.camera.height - (this.height);
+			}
 			
 			if (getScreenXY().x < -64 || getScreenXY().x > (FlxG.width + 64)) { // It's off-screen.
 				trace('Kill off-screen :: ' + this.toString());
