@@ -329,7 +329,7 @@ package com.binaryscar.Summoner.Entity.NPC
 					parent: "moving",
 					from: ["moving", "walking", "sprinting", "idle", "paused"], // Not fighting.
 					enter: function():void {
-						trace(FSM.id + ' Enter avoid!');
+						//trace(FSM.id + ' Enter avoid!');
 						avoidTimer = avoidDelay;
 					},
 					execute: function():void {
@@ -562,20 +562,34 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		
-		private function avoidAlly(thisNPC:NPC, otherNPC:NPC):void {
+		private function avoidAlly(firstNPC:NPC, secondNPC:NPC):void {
+			trace('avoidAlly');
+			var thisNPC:NPC = (!firstNPC.immovable) ? firstNPC : secondNPC;
+			var otherNPC:NPC = (thisNPC == firstNPC) ? secondNPC : firstNPC;
+			
 			var compareY:Boolean = thisNPC.y <= otherNPC.y;
 			var compareX:Boolean = thisNPC.x == otherNPC.x;
 			
+			//trace('this ' + thisNPC.ID + ' : ' + thisNPC.x + ' ' + thisNPC.immovable);
+			//trace('other ' + otherNPC.ID + ' : ' + otherNPC.x + ' ' + otherNPC.immovable);
+			
+			// If we're not already in an "avoid" state...
 			if (thisNPC.FSM.state != "avoidingDown" && thisNPC.FSM.state != "avoidingUp" && !thisNPC.immovable) {
 				//trace("this is what happens when NPCs collide!! :: THIS :: " + thisNPC.kind);
-				if (compareY) {
+				if (compareY || thisNPC.y == otherNPC.y) {
 					thisNPC.FSM.changeState("avoidingUp");
 				} else {
 					thisNPC.FSM.changeState("avoidingDown");
 				}
-			} else if (thisNPC.FSM.state == "avoidingDown" || thisNPC.FSM.state == "avoidingUp") {
-				acceleration.y += Math.random() * 10 + 1;
-				thisNPC.avoidTimer += FlxG.elapsed*2; // Reset timer so the summoned keeps moving in same direction.
+			}
+			
+			if (thisNPC.FSM.state == "avoidingUp") {
+				thisNPC.acceleration.y -= Math.random() * 10 + 1;
+				thisNPC.avoidTimer += FlxG.elapsed*0.5; // Reset timer so the summoned keeps moving in same direction.
+				
+			} else if (thisNPC.FSM.state == "avoidingDown") {
+				thisNPC.acceleration.y += Math.random() * 10 + 1;
+				thisNPC.avoidTimer += FlxG.elapsed*0.5; // Reset timer so the summoned keeps moving in same direction.
 			}
 			
 			if (compareX && (FSM.state != "avoidingDown" && FSM.state != "avoidingUp")) {
@@ -584,10 +598,15 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		private function bounceAgaintAlly(thisNPC:NPC, otherNPC:NPC):void {
-			velocity.y += (thisNPC.y <= otherNPC.y) ? 20 : 20;
+			//trace('bounce against ally');
+			if (thisNPC.FSM.state == "avoidingUp" || velocity.y == 0 || velocity.y < 0) {
+				acceleration.y -= 20;
+			} else if (thisNPC.FSM.state == "avoidingDown" || velocity.y > 0) {
+				acceleration.y += 20;
+			}
 			var compareX:Boolean = thisNPC.x <= otherNPC.x;
 			if (compareX) {
-				velocity.x -= Math.random()*10;
+				velocity.x -= Math.random()*4;
 			}
 		}
 		
