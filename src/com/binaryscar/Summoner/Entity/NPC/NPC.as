@@ -563,7 +563,6 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		
 		private function avoidAlly(firstNPC:NPC, secondNPC:NPC):void {
-			trace('avoidAlly');
 			var thisNPC:NPC = (!firstNPC.immovable) ? firstNPC : secondNPC;
 			var otherNPC:NPC = (thisNPC == firstNPC) ? secondNPC : firstNPC;
 			
