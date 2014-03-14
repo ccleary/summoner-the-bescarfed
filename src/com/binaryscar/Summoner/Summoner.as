@@ -6,9 +6,8 @@ package com.binaryscar.Summoner
 	 * ...
 	 * @author Connor Cleary
 	 */
-	//[Frame(factoryClass = "com.binaryscar.Summoner.Preloader")]
-	//[SWF(width = "800", height = "480", backgroundColor = "#000000")] //Set the size and color of the Flash file
 	[SWF(width = "800", height = "480", backgroundColor = "#000000")] //Set the size and color of the Flash file
+	//[Frame(factoryClass = "Preloader")]
 	
 	public class Summoner extends FlxGame
 	{

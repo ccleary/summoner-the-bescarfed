@@ -48,7 +48,10 @@ package com.binaryscar.Summoner
 		private var lost:Boolean = false;
 		private var won:Boolean = false;
 		
-		public var hud:HUD;
+		private var firstRun:Boolean = true;
+		private var clickToStart_text:FlxText;
+		
+		private var hud:HUD;
 		private var pausedOverlay:FlxGroup;
 		
 		public var livesCount:int = 20;
@@ -85,7 +88,6 @@ package com.binaryscar.Summoner
 			spawnDelay = 2; // TEMP
 			enemySpawnTimer = spawnDelay;
 			
-			
 			player = new Player(30, 50, this);
 			
 			hud = new HUD(this);
@@ -112,11 +114,19 @@ package com.binaryscar.Summoner
 			pausedOverlay.visible = false;
 			add(pausedOverlay);
 			
-			//FlxG.paused = true;
+			clickToStart_text = new FlxText(this.gameWidth / 2 - 40, this.gameHeight / 2 - 30, 120, "Click to start");
 		}
 
 		override public function update():void {
-			
+			if (firstRun) {
+				add(clickToStart_text);
+				clickToStart();
+			}
+			if (firstRun && FlxG.mouse.justPressed()) {
+				remove(clickToStart_text);
+				firstRun = false;
+				FlxG.paused = false;
+			}
 			if (lost && FlxG.keys.justPressed("R")) {
 				FlxG.paused = false;
 				FlxG.resetState();
@@ -187,6 +197,10 @@ package com.binaryscar.Summoner
 		public function pause():void {
 			summonedGrp.callAll("pause");
 			enemyGrp.callAll("pause");
+		}
+		
+		public function clickToStart():void {
+			FlxG.paused = true;
 		}
 		
 		public function summon():void {
