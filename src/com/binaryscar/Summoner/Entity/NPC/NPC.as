@@ -39,11 +39,11 @@ package com.binaryscar.Summoner.Entity.NPC
 		
 		private var pursueSearchTimer:Number = 1; 	// Resets to ..Delay
 		private var pursueSearchDelay:Number = 1;
-		private var pursueDistance:int = 45000;
+		private var pursueDistance:int = 25000;
 		
 		public var pursueTarget:NPC;			// Can only be pursuing one target.
 		
-		public var _target:NPC;					// Can only have one active fighting-target.
+		public var fightTarget:NPC;					// Can only have one active fighting-target.
 				
 		private var tempTimer:Number = 1;
 		
@@ -68,6 +68,7 @@ package com.binaryscar.Summoner.Entity.NPC
 			//addAnimation("fightingIdle", [0]);
 			
 			MSPD = 40; // Base MSPD.
+			dragYFactor = 10;
 			
 			height = 32;
 			offset.y = 0;
@@ -123,18 +124,18 @@ package com.binaryscar.Summoner.Entity.NPC
 		}
 		
 		public function get target():NPC {
-			if (_target != null) {
-				return _target;
+			if (fightTarget != null) {
+				return fightTarget;
 			} else {
 				return null;
 			}
 		}
 		public function set target(oppNPC:NPC):void {
 			if (oppNPC != null) {
-				_target = oppNPC;
+				fightTarget = oppNPC;
 				FSM.changeState("fighting");
 			} else {
-				_target = null;
+				fightTarget = null;
 			}
 		}
 		
@@ -257,6 +258,8 @@ package com.binaryscar.Summoner.Entity.NPC
 				{
 					parent: "moving",
 					enter: function():void {
+						searchForPursueTargets();
+							
 						pursueSearchTimer = pursueSearchDelay;
 						if (facing === RIGHT) {
 							acceleration.x = ACCEL_X;
@@ -277,14 +280,15 @@ package com.binaryscar.Summoner.Entity.NPC
 					parent: "moving",
 					enter: function():void {
 						MSPD = MSPD * 1.2;
+						trace('Enter pursuing');
 					},
 					execute: function():void {
+						updatePursueTarget();
+						
 						if (pursueTarget == null) {
 							FSM.changeState("walking");
 							return;
 						}
-						
-						updatePursueTarget();
 					},
 					exit: function():void {
 						angle = 0;
@@ -300,7 +304,7 @@ package com.binaryscar.Summoner.Entity.NPC
 					parent: "moving",
 					from: ["moving", "walking", "sprinting", "idle", "paused"], // Not fighting.
 					enter: function():void {
-						trace(FSM.id + ' Enter avoid!');
+						//trace(FSM.id + ' Enter avoid!');
 						avoidTimer = avoidDelay;
 					},
 					execute: function():void {
@@ -446,94 +450,97 @@ package com.binaryscar.Summoner.Entity.NPC
 		// TODO Figure out why this is so inconsistent.
 		private function searchForPursueTargets():void {
 			if (pursueTarget != null) {
-				trace("already has pursue target, return");
+				//trace("already has pursue target, return");
 				return;
 			}
 			
-			//trace(this.kind + " searchForPursueTargets");
-			var pursueOptions:Array = [];
-			var distanceLimit:int = pursueDistance; // Start with the widest search net.
-			
-			if (pursueTarget == null && oppGrp != null && oppGrp.members.length > 0) { // Look for a new target if I don't have one already.
-				for each (var curr:NPC in oppGrp.members) {
-					if (!curr.alive) {
-						continue;
-					}
-					if ((facing == RIGHT && curr.x < x) || (facing == LEFT && curr.x > x)) { // Skip processing if oppNPC is behind me. 
-						continue;
-					}
-					 //Enemy center point.
-					var centerPoint:FlxPoint = curr.origin;
-					
-					var xDist:Number = centerPoint.x - x;
-					var yDist:Number = centerPoint.y - y;
-					
-					var sqDist:Number = (yDist * yDist) + (xDist * xDist);
-					if ( sqDist < distanceLimit ) {
-						// // GO AFTER FIRST FOUND TARGET
-						//pursueTarget = curr;
-						//FSM.changeState("pursuing");
-						//break;
-						
-						// // CONSIDER ALL OPTIONS
-						pursueOptions.push(new Array([sqDist, curr as NPC])); // Add an entity if it's within range.
-						distanceLimit = sqDist; // Set a new limit on search range, must be closer than this one
-						continue;
-					}
-				}
+			var pursueOptions:Array = getPursueOptions();
 				
-				// Now that we've populated hte pursueOptions array, check for closest one.
-				// TODO Figure out why the performance is inconsistent.
-				if (pursueOptions.length > 0) {
-					if (pursueOptions.length == 1) {
-						trace(" --- only one option");
-						pursueTarget = pursueOptions[0][1];
-						FSM.changeState("pursuing");
-						return;
-						
-					} else if (pursueOptions.length > 1) {
-						trace(" --- a bunch of options");
-						pursueOptions.sort(function(A:Array, B:Array) {
-							trace("Options : " + A[0] + " " + B[0]);
-							if (A[0] < B[0]) {
-								return -1;
-							} else if (A[0]  == B[0]) {
-								return 0;
-							} else {
-								return 1;
-							}
-						});
-						// Choose closest target.
-						pursueTarget = pursueOptions[0][1]
-						FSM.changeState("pursuing");
-						return;
-					}
+			// Now that we've populated the pursueOptions array, check for closest one.
+			// TODO Figure out why the performance is inconsistent.
+			if (pursueOptions.length > 0) {
+				if (pursueOptions.length == 1) {
+					//trace(" --- only one option");
+					
+					pursueTarget = pursueOptions[0].getOpponent();
+					FSM.changeState("pursuing");
+					return;
+					
+				} else if (pursueOptions.length > 1) {
+					trace(" --- a bunch of options");
+					pursueOptions.sort(function(A:PursueOption, B:PursueOption):int {
+						trace("Options : " + A[0] + " " + B[0]);
+						if (A.getSqDist() < B.getSqDist()) {
+							return -1;
+						} else if (A.getSqDist() == B.getSqDist()) {
+							return 0;
+						} else {
+							return 1;
+						}
+					});
+					// Choose closest target.
+					pursueTarget = pursueOptions[0][1]
+					FSM.changeState("pursuing");
+					return;
 				}
 			}
 			
 			// Fall through.
 			pursueTarget = null;
 		}
+		
+		private function getPursueOptions():Array {
+			if (oppGrp == null || oppGrp.members.length == 0) {
+				return [];
+			}
+			
+			var pursueOptions:Array = [];
+			var distanceLimit:int = this.pursueDistance; // Start with widest net
+			for each (var currOpponent:NPC in oppGrp.members) {
+				// Don't add dead entities
+				if (!currOpponent.alive) {
+					continue;
+				}
+				// Skip processing if oppNPC is behind me. 
+				if ((facing == RIGHT && currOpponent.x < x) || (facing == LEFT && currOpponent.x > x)) {
+					continue;
+				}
+				
+				// Get opponent center point.
+				var centerPoint:FlxPoint = currOpponent.origin;
+				var xDist:Number = centerPoint.x - x;
+				var yDist:Number = centerPoint.y - y;
+				
+				var sqDist:Number = (yDist * yDist) + (xDist * xDist);
+				if ( sqDist < distanceLimit ) {		
+					// CONSIDER ALL OPTIONS
+					var pursueOption:PursueOption = new PursueOption(sqDist, currOpponent as NPC);
+					pursueOptions.push(pursueOption); // Add an entity if it's within range.
+					distanceLimit = sqDist; // Set a new limit on search range, must be closer than this one
+				}
+			}
+			
+			return pursueOptions;
+		}
 
 		private function updatePursueTarget():void {
-			if (pursueTarget == null || !pursueTarget.alive) {
-				pursueTarget = null; // In case it just died.
-				if (FSM.state != "walking") {
-					FSM.changeState("walking");
-				}
+			if (pursueTarget == null) {
 				return;
-			} else if ( (facing == RIGHT && pursueTarget.x < x) 
-				|| (facing == LEFT && pursueTarget.x > x)) {
-				// Lose pursuit on targets behind me.
+			} 
+			if (!pursueTarget.alive) {
+				pursueTarget = null; // In case it just died.
+				return;
+			}
+			
+			// Lose pursuit on targets behind me.
+			if ((facing == RIGHT && pursueTarget.x < x) || 
+				(facing == LEFT  && pursueTarget.x > x)) {
 				pursueTarget = null;
-				if (FSM.state != "walking") {
-					FSM.changeState("walking");
-				}
 				return;
 			} else { // We still have a target, move toward it.
 				var yDiff:int = (pursueTarget.y + (pursueTarget.height/2)) - (this.y + (this.height/2));
-				if ( (acceleration.y > 0 && yDiff <= 0) // Moving downward && pursueTarget is above 
-					|| (acceleration.y < 0 && yDiff >= 0) ) { // Moving upward && pursueTarget is below
+				if ((acceleration.y > 0 && yDiff <= 0) || // Moving downward && pursueTarget is above 
+					(acceleration.y < 0 && yDiff >= 0) ) { // Moving upward && pursueTarget is below
 					//yDiff += yDiff;
 					acceleration.y = 0;
 				}

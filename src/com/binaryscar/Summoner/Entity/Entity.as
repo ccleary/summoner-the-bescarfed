@@ -43,6 +43,9 @@ package com.binaryscar.Summoner.Entity
 		protected var _MSPD:int = 50;			// Base Speed, (this*1.2 for X) (this*0.8 for Y)
 		protected var _ASPD:int = 5;			// Figure out equation for this.
 		
+		protected var dragXFactor:int = 6; // default
+		protected var dragYFactor:int = 4; // default
+		
 		// Current status (affected by Status Effects, hurt, etc)
 		public var curHP:int = HP;
 		public var curMP:int = MP;
@@ -152,8 +155,8 @@ package com.binaryscar.Summoner.Entity
 		public function set MSPD(value:int):void {
 			_MSPD = value;
 			
-			drag.x = (MSPD_X) * 6;
-			drag.y = (MSPD_Y) * 4;
+			drag.x = (MSPD_X) * this.dragXFactor;
+			drag.y = (MSPD_Y) * this.dragYFactor;
 			
 			maxVelocity.x = MSPD_X;
 			maxVelocity.y = MSPD_Y;	

@@ -145,7 +145,7 @@ package com.binaryscar.Summoner
 			enemySpawnTimer -= FlxG.elapsed;
 			if (enemySpawnTimer < 0 && !lost) {
 				enemySpawnTimer = spawnDelay;
-				createEnemy();
+				//createEnemy();
 			}
 			
 			if (FlxG.keys.justPressed("B")) {
